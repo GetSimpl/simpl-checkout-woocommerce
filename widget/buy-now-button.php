@@ -2,10 +2,11 @@
 add_action( 'woocommerce_after_add_to_cart_button', 'simpl_add_to_cart_btn' );
 function simpl_add_to_cart_btn(){
   // add_action('wp_enqueue_scripts', 'register_scripts');
-  $activatedFlag = get_option("wc_settings_tab_simpl_button_activated");
   $buttonText = get_option("wc_settings_tab_simpl_button_text");
+  $enabled_only_for_admin = WC_Simpl_Settings::IsSimplEnabledForAdmin() && current_user_can('manage_options');
   $productID = get_the_ID();
-  if($activatedFlag == "yes") {
+  
+  if(WC_Simpl_Settings::IsSimplButtonEnabled() || $enabled_only_for_admin) {
     $tempTest = SIMPL_PLUGIN_DIR . 'templates/button.php';
     load_template( $tempTest, false, array("button_text" => $buttonText, "product_id" => $productID) );    
   }

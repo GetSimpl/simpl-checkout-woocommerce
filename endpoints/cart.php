@@ -8,8 +8,27 @@ function create_cart( WP_REST_Request $request ) {
     $quantity = $request->get_params()["quantity"];
     initCartCommon();
     $cart = WC()->cart->add_to_cart($productID, $quantity, $variantID);
-
     return getRedirectionUrl();
+}
+
+function test_auth( WP_REST_Request $request ) {    
+    $api = new WC_REST_Authentication();
+    $authenticated = $api->authenticate("");
+    echo($authenticated);
+    echo("!!!");
+    if($authenticated) {
+        return "authenticated";
+    } else {
+        return "un-authenticated";
+    }
+}
+
+function get_items_permissions_check( WP_REST_Request $request ) {
+    if ( ! wc_rest_check_post_permissions( 'shop_order', 'read' ) ) {
+        return new WP_Error( 'woocommerce_rest_cannot_view', __( 'Sorry, you cannot list resources.', 'woocommerce' ), array( 'status' => rest_authorization_required_code() ) );
+    }
+
+    return true;
 }
 
 function simplCartRequest() {
@@ -31,8 +50,8 @@ function simplCartRequest() {
 
 function getRedirectionUrl() {
     $cart_request = simplCartRequest();
-    
-    $simplHttpResponse = wp_remote_post( "https://checkout-pi3-backend.stagingsimpl.com/api/v2/cart/initiate", array(
+    $simpl_host = WC_Simpl_Settings::GetSimplHost();    
+    $simplHttpResponse = wp_remote_post( "https://".$simpl_host."/api/v2/cart/initiate", array(
         "body" => json_encode($cart_request),
         "headers" => array("Shopify-Shop-Domain" => "checkout-staging-v2.myshopify.com", "content-type" => "application/json"),
     ));
