@@ -83,6 +83,18 @@ class WC_Simpl_Settings {
             'id'       => 'wc_settings_tab_simpl_button_section'
         );
 
+        $settings['simpl_button_position'] = array(
+            'name' => __( 'Button Position', 'woocommerce-settings-tab-simpl' ),
+            'type' => 'select',
+            'desc' => __( 'Enter button place holder', 'woocommerce-settings-tab-simpl' ),
+            'id'   => 'wc_settings_tab_simpl_button_position',
+            'options' => array(
+                'woocommerce_after_add_to_cart_button' => 'After add to cart button',
+                'woocommerce_before_add_to_cart_button' => 'Before add to cart button'
+            ),
+            'value' => 'woocommerce_before_add_to_cart_button'
+        );
+
         $settings['simpl_button_text'] = array(
             'name' => __( 'Button text', 'woocommerce-settings-tab-simpl' ),
             'type' => 'text',

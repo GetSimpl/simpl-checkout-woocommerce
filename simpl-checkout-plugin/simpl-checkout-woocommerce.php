@@ -13,5 +13,6 @@ define('SIMPL_CONFIG_STAGING_URL', 'checkout3pp.stagingsimpl.com');
 define('SIMPL_CONFIG_PRODUCTION_URL', 'checkout3pp.getsimpl.com');
 include_once 'simpl-settings.php';
 include_once 'endpoints/api.php';
-include_once 'widget/buy-now-button.php';
+// include_once 'widget/buy-now-button.php';
+include_once 'widget/buy-now-v1.php';
 ?>

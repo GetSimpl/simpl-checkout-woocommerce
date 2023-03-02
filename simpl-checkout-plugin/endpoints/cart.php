@@ -3,6 +3,7 @@
 include dirname(__DIR__) . "/helpers/cart_helper.php";
 
 function create_cart( WP_REST_Request $request ) {
+    return 'https://checkout.stagingsimpl.com/cart?cart-session-token=c6ba7a3d69132b1e4984793ff40784ae';
     $productID = $request->get_params()["product_id"];
     $variantID = $request->get_params()["variant_id"];
     $quantity = $request->get_params()["quantity"];
