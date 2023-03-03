@@ -5,10 +5,14 @@ import { showIframeModal } from "./checkoutFrame";
 import { addIframe } from "./checkoutFrame";
 
 export const renderWidget = (widgetConfig) => {
-  const { button, cta_text } = widgetConfig;
+  const { button, cta_text, buttons, pages, text_color } = widgetConfig;
 
   for (let i = 0; i < simpl_containers.length; i++) {
-    displayCTA(simpl_containers[i], button, cta_text);
+    let current_page = simpl_containers[i].getAttribute("page");
+    let background = simpl_containers[i].getAttribute("data-background");
+    let button_template = buttons[pages[current_page]];
+
+    displayCTA(simpl_containers[i], button_template, cta_text, background, text_color);
     attachCTAClickEvent(simpl_containers[i]);
   }
 };
@@ -39,14 +43,16 @@ const payClickHandler = (simpl_container) => {
   fetch("/wp-json/simpl/v1/cart", {
     method: "POST",
     body: JSON.stringify({
-      product_id: productID,
-      variant_id: variantId,
-      quantity: quantity,
-      isCart,
+      product_id: parseInt(productID),
+      variant_id: parseInt(variantId),
+      quantity: parseInt(quantity),
     }),
     headers: { "content-type": "application/json" },
   })
-    .then((response) => response.json())
+    .then((response) => {
+      console.log(response);
+      return response.json();
+    })
     .then((result) => {
       console.log(result);
       showIframeModal();

@@ -1,9 +1,21 @@
 import { DEFAULT_CHECKOUT_STYLE_SHEET } from "./consts";
 
-export const displayCTA = (simpl_container, button, cta_text = "") => {
+export const displayCTA = (
+  simpl_container,
+  button,
+  cta_text = "",
+  background = "",
+  text_color = ""
+) => {
   simpl_container.innerHTML = button;
   if (cta_text) {
     simpl_container.querySelector(".simpl-button-text").innerHTML = cta_text;
+  }
+  if (background) {
+    simpl_container.querySelector(".simpl-button").style.background = background;
+  }
+  if (text_color) {
+    simpl_container.querySelector(".simpl-button-text").style.color = text_color;
   }
 };
 
