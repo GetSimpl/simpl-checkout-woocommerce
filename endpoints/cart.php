@@ -8,8 +8,27 @@ function create_cart( WP_REST_Request $request ) {
     $quantity = $request->get_params()["quantity"];
     initCartCommon();
     $cart = WC()->cart->add_to_cart($productID, $quantity, $variantID);
-
     return getRedirectionUrl();
+}
+
+function test_auth( WP_REST_Request $request ) {    
+    $api = new WC_REST_Authentication();
+    $authenticated = $api->authenticate("");
+    echo($authenticated);
+    echo("!!!");
+    if($authenticated) {
+        return "authenticated";
+    } else {
+        return "un-authenticated";
+    }
+}
+
+function get_items_permissions_check( WP_REST_Request $request ) {
+    if ( ! wc_rest_check_post_permissions( 'shop_order', 'read' ) ) {
+        return new WP_Error( 'woocommerce_rest_cannot_view', __( 'Sorry, you cannot list resources.', 'woocommerce' ), array( 'status' => rest_authorization_required_code() ) );
+    }
+
+    return true;
 }
 
 function simplCartRequest() {
@@ -17,7 +36,7 @@ function simplCartRequest() {
     $response = array("source" => "cart");
     foreach($cart as $item_id => $item) {
         $price = round($item['line_subtotal']*100) + round($item['line_subtotal_tax']*100);
-        $response["unique_id"] = $item['key'];
+        $response["unique_device_id"] = $item['key'];
         $cartObj = array("total_price" => $price);
         $cartObj["total_price"] = $price;
         $cartObj["total_discount"] = 0;
@@ -31,14 +50,15 @@ function simplCartRequest() {
 
 function getRedirectionUrl() {
     $cart_request = simplCartRequest();
-    
-    $simplHttpResponse = wp_remote_post( "https://checkout-pi3-backend.stagingsimpl.com/api/v2/cart/initiate", array(
+    $simpl_host = WC_Simpl_Settings::simpl_host();    
+    $simplHttpResponse = wp_remote_post( "https://".$simpl_host."/wc/v1/cart", array(
         "body" => json_encode($cart_request),
         "headers" => array("Shopify-Shop-Domain" => "checkout-staging-v2.myshopify.com", "content-type" => "application/json"),
     ));
 
     if ( ! is_wp_error( $simplHttpResponse ) ) {
         $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
+        echo(json_encode($body));
         return $body["redirection_url"];
     } else {
         $error_message = $simplHttpResponse->get_error_message();
