@@ -1,5 +1,6 @@
 <?php
 class WC_Simpl_Settings {
+
     public static function init() {
         add_filter( 'woocommerce_settings_tabs_array', __CLASS__ . '::add_settings_tab', 50 );
         add_action( 'woocommerce_settings_tabs_settings_tab_simpl', __CLASS__ . '::settings_tab' );
@@ -16,13 +17,21 @@ class WC_Simpl_Settings {
         woocommerce_admin_fields( self::get_settings() );
     }
 
-    public static function GetSimplHost() {
+    public static function simpl_host() {
         $staging_env = get_option("wc_settings_tab_simpl_test_env");
         if($staging_env == "yes") {
             return SIMPL_CONFIG_STAGING_URL;
         }
         
         return SIMPL_CONFIG_PRODUCTION_URL;
+    }
+
+    public static function simpl_authorized_flag_key() {
+        $staging_env = get_option("wc_settings_tab_simpl_test_env");
+        if($staging_env == "yes") {
+            return "simpl_test_authorized";
+        }
+        return "simpl_authorized";
     }
 
     public static function IsSimplButtonEnabled() {
@@ -33,12 +42,30 @@ class WC_Simpl_Settings {
         return get_option("wc_settings_tab_simpl_enabled_to_admin") == 'yes';
     }
 
+    public static function store_url() {
+        return parse_url(get_site_url(), PHP_URL_HOST);
+    }
+
+    public static function store_url_with_prefix() {
+        return get_site_url();
+    }
+
     public static function update_settings() {
         woocommerce_update_options( self::get_settings() );
     }
 
-    public static function get_settings() {        
-        echo(self::GetSimplHost());
+    public static function get_settings() {
+        echo(wp_create_nonce( 'wc_store_api' ));
+        $endpoint = '/wc-auth/v1/authorize?';
+        $params = [
+            'app_name' => 'simpl_wordpress_integration',
+            'scope' => 'read_write',
+            'user_id' => 1,
+            'return_url' => self::store_url_with_prefix()."/wp-admin/admin.php?page=wc-settings&tab=settings_tab_simpl",
+            'callback_url' => self::store_url_with_prefix()."/wp-json/wc-simpl/v1/authenticate_simpl"
+        ];
+        $query_string = http_build_query( $params );
+        $auth_endpoint = self::store_url_with_prefix().$endpoint.$query_string;
         
         $settings = array(
             'section_title' => array(
@@ -61,12 +88,12 @@ class WC_Simpl_Settings {
             'id'   => 'wc_settings_tab_simpl_enabled_to_admin'
         );
 
-        $simpl_authorized = get_option("simpl_authorized");
+        $simpl_authorized = get_option(self::simpl_authorized_flag_key());
         if($simpl_authorized != "true") {
             $settings['api_key'] = array(
                 'name' => __( 'Click below link to proceed', 'woocommerce-settings-tab-simpl' ),
                 'type' => 'title',
-                'desc' => __( '<a class = "button-primary" href = "/wc-auth/v1/authorize?app_name=simpl_wordpress_integration&scope=read_write&user_id=simpl_user_id&return_url=localhost:3000/wp-json/wc-simpl/v1/authenticate_simpl&callback_url=webhook.site/201ead30-af8d-43df-b7c3-22a65d457995">Generate API key for Simpl</a>', 'woocommerce-settings-tab-simpl' ),
+                'desc' => __( '<a class = "button-primary" href = "'.$auth_endpoint.'">Generate API key for Simpl</a>', 'woocommerce-settings-tab-simpl' ),
                 'id'   => 'wc_settings_tab_simpl_api_key'
             );
         }
@@ -100,6 +127,13 @@ class WC_Simpl_Settings {
             'type' => 'text',
             'desc' => __( 'Enter button place holder', 'woocommerce-settings-tab-simpl' ),
             'id'   => 'wc_settings_tab_simpl_button_text'
+        );
+
+        $settings['simpl_button_bg'] = array(
+            'name' => __( 'Button background', 'woocommerce-settings-tab-simpl' ),
+            'type' => 'text',
+            'desc' => __( 'Enter button background', 'woocommerce-settings-tab-simpl' ),
+            'id'   => 'wc_settings_tab_simpl_button_bg'
         );
 
         $settings['simpl_button_activated'] = array(

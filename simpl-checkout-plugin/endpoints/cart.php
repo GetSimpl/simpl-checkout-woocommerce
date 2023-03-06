@@ -3,7 +3,6 @@
 include dirname(__DIR__) . "/helpers/cart_helper.php";
 
 function create_cart( WP_REST_Request $request ) {
-    return 'https://checkout.stagingsimpl.com/cart?cart-session-token=c6ba7a3d69132b1e4984793ff40784ae';
     $productID = $request->get_params()["product_id"];
     $variantID = $request->get_params()["variant_id"];
     $quantity = $request->get_params()["quantity"];
@@ -37,7 +36,7 @@ function simplCartRequest() {
     $response = array("source" => "cart");
     foreach($cart as $item_id => $item) {
         $price = round($item['line_subtotal']*100) + round($item['line_subtotal_tax']*100);
-        $response["unique_id"] = $item['key'];
+        $response["unique_device_id"] = $item['key'];
         $cartObj = array("total_price" => $price);
         $cartObj["total_price"] = $price;
         $cartObj["total_discount"] = 0;
@@ -51,14 +50,15 @@ function simplCartRequest() {
 
 function getRedirectionUrl() {
     $cart_request = simplCartRequest();
-    $simpl_host = WC_Simpl_Settings::GetSimplHost();    
-    $simplHttpResponse = wp_remote_post( "https://".$simpl_host."/api/v2/cart/initiate", array(
+    $simpl_host = WC_Simpl_Settings::simpl_host();    
+    $simplHttpResponse = wp_remote_post( "https://".$simpl_host."/wc/v1/cart", array(
         "body" => json_encode($cart_request),
         "headers" => array("Shopify-Shop-Domain" => "checkout-staging-v2.myshopify.com", "content-type" => "application/json"),
     ));
 
     if ( ! is_wp_error( $simplHttpResponse ) ) {
         $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
+        echo(json_encode($body));
         return $body["redirection_url"];
     } else {
         $error_message = $simplHttpResponse->get_error_message();

@@ -13,8 +13,13 @@ add_action( 'rest_api_init', function () {
     ) );
 
     register_rest_route( 'wc-simpl/v1/', '/authenticate_simpl', array(
-      'methods' => 'GET',
+      'methods' => 'POST',
       'callback' => 'authenticate_simpl'
+    ) );
+
+    register_rest_route( 'wc-simpl/v1/', '/revert_authenticate_simpl', array(
+      'methods' => 'GET',
+      'callback' => 'revert_authorization_flag'
     ) );
 
     //shipping list

@@ -8,10 +8,18 @@ add_action('wp_footer', 'load_widget_script');
 
 function simpl_add_to_cart_btn(){    
     global $product;
+    $color = get_option("wc_settings_tab_simpl_button_bg");
     $isCartPage = is_cart();
     $productID = get_the_ID();
-    echo '<div>123456</div>';
-    echo '<div class="simpl-checkout-cta-container" data-product-id=' .$productID. ' isCartPage=' .$isCartPage. '></div>';
+    if(is_cart()){
+        $page = 'cart';
+    } else if (is_shop()){
+        $page = 'shop';
+    } else{
+        $page = 'product';
+    }
+    
+    echo '<div class="simpl-checkout-cta-container" data-background=' .$color. ' page=' .$page. ' data-product-id=' .$productID. ' isCartPage=' .$isCartPage. '></div>';
 }
 
 function load_widget_script(){
