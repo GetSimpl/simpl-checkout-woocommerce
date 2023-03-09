@@ -16,9 +16,6 @@ function simpl_cart_payload_conversion($order_id=NULL) {
         $billing_address = WC()->checkout->get_value('billing')["address_1"];
         $cartObj["shipping_address"] = ($shipping_address != "" ? $shipping_address : null);
         $cartObj["billing_address"] = ($billing_address != "" ? $billing_address : null);
-        $cartObj["applied_discounts"] = WC()->cart->get_coupons();
-        $cartObj["total_discount"] = $discount_amount;
-        $cartObj["item_subtotal_price"] = $price; 
         $applied_discounts = array();
         $applied_discount_count = 0;
         foreach(WC()->cart->get_coupons() as $coupon_code => $coupon) {
@@ -28,6 +25,9 @@ function simpl_cart_payload_conversion($order_id=NULL) {
         $cartObj["applied_discounts"] = $applied_discounts;
         $cartObj["total_discount"] = $discount_amount;
         $cartObj["item_subtotal_price"] = $price; 
+        $cartObj["total_tax"] = WC()->cart->get_total_tax(); 
+        $cartObj["total_shipping"] = WC()->cart->get_shipping_total();
+        $cartObj["checkout_url"] = WC()->cart->get_checkout_url();
         $shipping_methods_count = 0;
         $shipping_methods_array = array();
         foreach ( WC()->cart->get_shipping_packages() as $package_id => $package ) {
