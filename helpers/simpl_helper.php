@@ -19,10 +19,33 @@ function simpl_cart_payload_conversion($order_id=NULL) {
         $cartObj["applied_discounts"] = WC()->cart->get_coupons();
         $cartObj["total_discount"] = $discount_amount;
         $cartObj["item_subtotal_price"] = $price; 
-        $shipping_methods = WC()->cart->calculate_shipping();
+        $applied_discounts = array();
+        $applied_discount_count = 0;
+        foreach(WC()->cart->get_coupons() as $coupon_code => $coupon) {
+            $applied_discounts[$applied_discount_count] = array("code" => $coupon_code, "amount" => $coupon->get_amount(), "free_shipping" => $coupon->enable_free_shipping());
+            $applied_discount_count += 1;
+        }
+        $cartObj["applied_discounts"] = $applied_discounts;
+        $cartObj["total_discount"] = $discount_amount;
+        $cartObj["item_subtotal_price"] = $price; 
+        $shipping_methods_count = 0;
         $shipping_methods_array = array();
-        foreach($shipping_methods as $item_id => $item) {
-            $shipping_methods_array[$item->get_id()] = array("price" => $item->get_cost(), "name" => $item->get_label());
+        foreach ( WC()->cart->get_shipping_packages() as $package_id => $package ) {
+            // Check if a shipping for the current package exist
+            if ( WC()->session->__isset( 'shipping_for_package_'.$package_id ) ) {
+                // Loop through shipping rates for the current package
+                foreach ( WC()->session->get( 'shipping_for_package_'.$package_id )['rates'] as $shipping_rate_id => $shipping_rate ) {
+                    $rate_id     = $shipping_rate->get_id(); // same thing that $shipping_rate_id variable (combination of the shipping method and instance ID)
+                    $method_id   = $shipping_rate->get_method_id(); // The shipping method slug
+                    $instance_id = $shipping_rate->get_instance_id(); // The instance ID
+                    $label_name  = $shipping_rate->get_label(); // The label name of the method
+                    $cost        = $shipping_rate->get_cost(); // The cost without tax
+                    $tax_cost    = $shipping_rate->get_shipping_tax(); // The tax cost
+                    $taxes       = $shipping_rate->get_taxes(); // The taxes details (array)
+                    $shipping_methods_array[$shipping_methods_count] = array("id" => $rate_id, "name" => $label_name, "slug" => $method_id, "amount" => $cost, "total_tax" => $tax_cost, "taxes" => $taxes);
+                    $shipping_methods_count += 1;
+                }
+            }
         }
         $cartObj["shipping_methods"] = $shipping_methods_array;
         $cartObj["items"] = getCartLineItem($cart_content);

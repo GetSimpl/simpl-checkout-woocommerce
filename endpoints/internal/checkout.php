@@ -51,14 +51,9 @@ function update_checkout( WP_REST_Request $request ) {
         if(WC()->cart->is_empty()) {
             return new WP_REST_Response(array("code"=> "bad_request", "message"=> "error in creating checkout for given params"), 400);
         }
-        WC()->checkout();
-        $shipping_address = $request->get_params()["shipping_address"];
-        $billing_address = $request->get_params()["billing_address"];    
-        if(isset($shipping_address) && isset($billing_address)) {
-            WC()->customer->set_shipping_address($shipping_address);
-            WC()->customer->set_billing_address($billing_address);   
-            
-        }
+
+        WC()->checkout();  
+        set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
         $order = update_order_from_cart($request->get_params()["checkout_order_id"]);
         $cart_payload = simpl_cart_payload_conversion($order->id);
         return $cart_payload;
@@ -95,7 +90,8 @@ function apply_coupon(WP_REST_Request $request) {
         if($notice_message["type"] == "error") {
             return new WP_Error("user_error", $notice_message["message"]);
         }
-        update_order_latest_cart($order);
+        $order->apply_coupon($coupon_code);
+        $order->save();
         return simpl_cart_payload_conversion($order_id);
     }    
     return array("not_found");
@@ -115,7 +111,8 @@ function remove_coupon(WP_REST_Request $request) {
         if($notice_message["type"] == "error") {
             return new WP_Error("user_error", $notice_message["message"]);
         }
-        update_order_latest_cart($order);
+        $order->remove_coupon($coupon_code);
+        $order->save();
         return simpl_cart_payload_conversion($order_id);
     }    
     return array("not_found");
