@@ -2,10 +2,10 @@
 
 class SimplIntegration {
     public static function cart_redirection_url($cart) {
-        $cart_request = cart_payload(1);
+        $cart_request = self::cart_payload($cart);
         $simpl_host = WC_Simpl_Settings::simpl_host();    
     
-        $simplHttpResponse = wp_remote_post( "https://".$simpl_host."/wc/v1/cart", array(
+        $simplHttpResponse = wp_remote_post( "https://".$simpl_host."/v1/cart", array(
             "body" => json_encode($cart_request),
             "headers" => array("Shopify-Shop-Domain" => "checkout-staging-v2.myshopify.com", "content-type" => "application/json"),
         ));
