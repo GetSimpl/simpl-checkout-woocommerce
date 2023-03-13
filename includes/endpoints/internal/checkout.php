@@ -1,8 +1,8 @@
 <?php
 
-include_once SIMPL_PLUGIN_DIR . "/helpers/cart_helper.php";
-include_once SIMPL_PLUGIN_DIR . "/helpers/simpl_helper.php";
-include_once SIMPL_PLUGIN_DIR . "/helpers/wc_helper.php";
+include_once SIMPL_PLUGIN_DIR . "/includes/simpl_integration/simpl_integration.php";
+include_once SIMPL_PLUGIN_DIR . "/includes/helpers/cart_helper.php";
+include_once SIMPL_PLUGIN_DIR . "/includes/helpers/wc_helper.php";
 
 
 function create_checkout( WP_REST_Request $request ) {
@@ -28,7 +28,7 @@ function create_checkout( WP_REST_Request $request ) {
         }
         WC()->cart->calculate_totals();
         $order = create_order_from_cart();
-        $cart_payload = simpl_cart_payload_conversion($order->id);
+        $cart_payload = SimplIntegration::cart_payload(WC()->cart, $order->id);
         return $cart_payload;
     } catch (Exception $fe) {
         return new WP_Error("user_error", $e->getMessage());
@@ -40,22 +40,24 @@ function create_checkout( WP_REST_Request $request ) {
 function update_checkout( WP_REST_Request $request ) {
     try {
         $items = $request->get_params()["items"];
-        if(!isset($items) || count($items) == 0) {
-            return new WP_REST_Response(array("code"=> "bad_request", "message"=> "items cannot be empty"), 400);
-        }
         initCartCommon();
         WC()->cart->empty_cart();
-        foreach($items as $item_id => $item) {
-            WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"]);
+        if(isset($items) && count($items) > 0) {
+            foreach($items as $item_id => $item) {
+                WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"]);
+            }
+            if(WC()->cart->is_empty()) {
+                return new WP_REST_Response(array("code"=> "bad_request", "message"=> "error in creating checkout for given params"), 400);
+            }
+        } else {
+            $order_id = $request->get_params()["checkout_order_id"];
+            $order = wc_get_order((int)$order_id);
+            convert_wc_order_to_wc_cart($order);
         }
-        if(WC()->cart->is_empty()) {
-            return new WP_REST_Response(array("code"=> "bad_request", "message"=> "error in creating checkout for given params"), 400);
-        }
-
         WC()->checkout();  
         set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
         $order = update_order_from_cart($request->get_params()["checkout_order_id"]);
-        $cart_payload = simpl_cart_payload_conversion($order->id);
+        $cart_payload = SimplIntegration::cart_payload(WC()->cart, $order->id);
         return $cart_payload;
     } catch (Exception $fe) {
         return new WP_Error("user_error", $e->getMessage());
@@ -71,7 +73,7 @@ function fetch_checkout(WP_REST_Request $request) {
     $order = wc_get_order((int)$order_id);
     if($order) {
         convert_wc_order_to_wc_cart($order);
-        return simpl_cart_payload_conversion($order_id);
+        return SimplIntegration::cart_payload(WC()->cart, $order_id);
     }
     return array("not_found");
 }
@@ -92,7 +94,7 @@ function apply_coupon(WP_REST_Request $request) {
         }
         $order->apply_coupon($coupon_code);
         $order->save();
-        return simpl_cart_payload_conversion($order_id);
+        return SimplIntegration::cart_payload(WC()->cart, $order_id);
     }    
     return array("not_found");
 }
@@ -113,7 +115,7 @@ function remove_coupon(WP_REST_Request $request) {
         }
         $order->remove_coupon($coupon_code);
         $order->save();
-        return simpl_cart_payload_conversion($order_id);
+        return SimplIntegration::cart_payload(WC()->cart, $order_id);
     }    
     return array("not_found");
 }
