@@ -8,7 +8,7 @@ function create_cart( WP_REST_Request $request ) {
     $variantID = $request->get_params()["variant_id"];
     $quantity = $request->get_params()["quantity"];
     initCartCommon();
-    $cart = WC()->cart->add_to_cart($productID, $quantity, $variantID);
+    WC()->cart->add_to_cart($productID, $quantity, $variantID);
     return get_simpl_redirection_session_url();
 }
 ?>

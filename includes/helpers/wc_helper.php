@@ -1,4 +1,5 @@
 <?php        
+
 function create_order_from_cart() {
     initCartCommon();
     $order = new WC_Order();  
@@ -81,4 +82,3 @@ function updateToSimplDraft($orderId) {
     ));
 }
 ?>
-

@@ -8,7 +8,7 @@ class WC_Simpl_Settings {
     }
     
     public static function add_settings_tab( $settings_tabs ) {
-        $settings_tabs['settings_tab_simpl'] = __( 'Simpl settings', 'woocommerce-settings-tab-simpl' );
+        $settings_tabs['settings_tab_simpl'] = __( 'Simpl checkout', 'woocommerce-settings-tab-simpl' );
         return $settings_tabs;
     }
 

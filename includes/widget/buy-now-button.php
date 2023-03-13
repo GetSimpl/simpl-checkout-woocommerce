@@ -6,10 +6,8 @@ function simpl_add_to_cart_btn(){
   $enabled_only_for_admin = WC_Simpl_Settings::IsSimplEnabledForAdmin() && current_user_can('manage_woocommerce');
   $productID = get_the_ID();
   
-  echo(WC_Simpl_Settings::IsSimplButtonEnabled());
-  echo($enabled_only_for_admin);
   if(WC_Simpl_Settings::IsSimplButtonEnabled() || $enabled_only_for_admin) {
-    $tempTest = SIMPL_PLUGIN_DIR . 'templates/button.php';
+    $tempTest = SIMPL_PLUGIN_DIR . 'includes/widget/button.php';
     load_template( $tempTest, false, array("button_text" => $buttonText, "product_id" => $productID) );    
   }
 }

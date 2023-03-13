@@ -1,8 +1,4 @@
 <?php
-include_once "public/cart.php";
-include_once "public/auth.php";
-include_once "internal/checkout.php";
-
 add_action( 'rest_api_init', function () {
     register_rest_route( 'simpl/v1', '/cart', array(
       'methods' => 'POST',
