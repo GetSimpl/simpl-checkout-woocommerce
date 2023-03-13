@@ -3,6 +3,7 @@
 include dirname(__DIR__) . "/helpers/cart_helper.php";
 
 function create_cart( WP_REST_Request $request ) {
+    return "https://checkout.getsimpl.com/cart?cart-session-token=5d3a817a6b5e87aa4e56d6995c73e00e";
     $productID = $request->get_params()["product_id"];
     $variantID = $request->get_params()["variant_id"];
     $quantity = $request->get_params()["quantity"];
