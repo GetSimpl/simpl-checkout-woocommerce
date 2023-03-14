@@ -52,6 +52,7 @@ function get_applied_discounts_from_cart() {
         $applied_discounts[$applied_discount_count] = array("code" => $coupon_code, "amount" => $coupon->get_amount(), "free_shipping" => $coupon->enable_free_shipping());
         $applied_discount_count += 1;
     }
+    return $applied_discounts;
 }
 
 function getCartLineItem($cart) {
