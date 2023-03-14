@@ -26,6 +26,15 @@ class WC_Simpl_Settings {
         return SIMPL_CONFIG_PRODUCTION_URL;
     }
 
+    public static function widget_script() {
+        $staging_env = get_option("wc_settings_tab_simpl_test_env");
+        if($staging_env == "yes") {
+            return WIDGET_SCRIPT_STAGING_URL;
+        }
+        
+        return WIDGET_SCRIPT_PRODUCTION_URL;
+    }
+
     public static function simpl_authorized_flag_key() {
         $staging_env = get_option("wc_settings_tab_simpl_test_env");
         if($staging_env == "yes") {
