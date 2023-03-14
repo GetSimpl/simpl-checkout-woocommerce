@@ -38,6 +38,14 @@ class WC_Simpl_Settings {
         return get_option("wc_settings_tab_simpl_button_activated") == 'yes';
     }
 
+    public static function cta_position_pdp() {
+        return get_option("wc_settings_tab_simpl_button_position");
+    }
+
+    public static function cta_bg_color() {
+        return get_option("wc_settings_tab_simpl_button_bg");
+    }
+
     public static function IsSimplEnabledForAdmin() {
         return get_option("wc_settings_tab_simpl_enabled_to_admin") == 'yes';
     }
@@ -110,11 +118,29 @@ class WC_Simpl_Settings {
             'id'       => 'wc_settings_tab_simpl_button_section'
         );
 
+        $settings['simpl_button_position'] = array(
+            'name' => __( 'Button Position in PDP', 'woocommerce-settings-tab-simpl' ),
+            'type' => 'select',
+            'id'   => 'wc_settings_tab_simpl_button_position',
+            'options' => array(
+                'woocommerce_after_add_to_cart_button' => 'After add to cart button',
+                'woocommerce_before_add_to_cart_button' => 'Before add to cart button'
+            ),
+            'value' => 'woocommerce_before_add_to_cart_button'
+        );
+
         $settings['simpl_button_text'] = array(
             'name' => __( 'Button text', 'woocommerce-settings-tab-simpl' ),
             'type' => 'text',
             'desc' => __( 'Enter button place holder', 'woocommerce-settings-tab-simpl' ),
             'id'   => 'wc_settings_tab_simpl_button_text'
+        );
+
+        $settings['simpl_button_bg'] = array(
+            'name' => __( 'Button background', 'woocommerce-settings-tab-simpl' ),
+            'type' => 'text',
+            'desc' => __( 'Enter button background color', 'woocommerce-settings-tab-simpl' ),
+            'id'   => 'wc_settings_tab_simpl_button_bg'
         );
 
         $settings['simpl_button_activated'] = array(
