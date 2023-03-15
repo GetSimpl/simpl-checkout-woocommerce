@@ -36,6 +36,12 @@ add_action( 'rest_api_init', function () {
       // 'permission_callback' => 'internal_authenticate'
     ) );
 
+    register_rest_route( 'wc-simpl/v1', '/order', array(
+      'methods' => 'POST',
+      'callback' => 'create_order',
+      // 'permission_callback' => 'internal_authenticate'
+    ) );
+
     register_rest_route( 'simpl/v1/', '/test', array(
       'methods' => 'GET',
       'callback' => 'test_auth'
