@@ -50,6 +50,18 @@ class WC_Simpl_Settings {
         return get_option("wc_settings_tab_simpl_button_activated") == 'yes';
     }
 
+    public static function showInPdpPage() {
+        return get_option("wc_settings_tab_simpl_button_pdp_activated") == 'yes';
+    }
+
+    public static function showInCollectionsPage() {
+        return get_option("wc_settings_tab_simpl_button_collections_activated") == 'yes';
+    }
+
+    public static function showInCartPage() {
+        return get_option("wc_settings_tab_simpl_button_cart_activated") == 'yes';
+    }
+
     public static function cta_position_pdp() {
         return get_option("wc_settings_tab_simpl_button_position");
     }
@@ -163,6 +175,39 @@ class WC_Simpl_Settings {
         );
 
         $settings['section_end_2'] = array(
+            'type' => 'sectionend',
+            'id' => 'wc_settings_tab_simpl_button_section_end'
+        );
+
+        $settings['section_title_3'] = array(
+            'name'     => __( 'Button Visibility', 'woocommerce-settings-tab-simpl' ),
+            'type'     => 'title',
+            'desc'     => '',
+            'id'       => 'wc_settings_tab_simpl_button_section'
+        );
+
+        $settings['simpl_button_pdp_activated'] = array(
+            'name' => __( 'PDP', 'woocommerce-settings-tab-simpl' ),
+            'type' => 'checkbox',
+            'desc' => __( 'show simpl checkout button in PDP page', 'woocommerce-settings-tab-simpl' ),
+            'id'   => 'wc_settings_tab_simpl_button_pdp_activated'
+        );
+
+        $settings['simpl_button_collections_activated'] = array(
+            'name' => __( 'Collections', 'woocommerce-settings-tab-simpl' ),
+            'type' => 'checkbox',
+            'desc' => __( 'show simpl checkout button in Collections page', 'woocommerce-settings-tab-simpl' ),
+            'id'   => 'wc_settings_tab_simpl_button_collections_activated'
+        );
+
+        $settings['simpl_button_cart_activated'] = array(
+            'name' => __( 'Cart', 'woocommerce-settings-tab-simpl' ),
+            'type' => 'checkbox',
+            'desc' => __( 'show simpl checkout button in Cart page', 'woocommerce-settings-tab-simpl' ),
+            'id'   => 'wc_settings_tab_simpl_button_cart_activated'
+        );
+
+        $settings['section_end_3'] = array(
             'type' => 'sectionend',
             'id' => 'wc_settings_tab_simpl_button_section_end'
         );

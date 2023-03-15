@@ -1,11 +1,19 @@
 <?php 
 $buttonPosition_pdp = WC_Simpl_Settings::cta_position_pdp();
-// hook for pdp page
-add_action( $buttonPosition_pdp, 'simpl_add_to_cart_btn' );
-// hook for cart page
-add_action( 'woocommerce_after_cart_totals', 'simpl_add_to_cart_btn');
-// hook for collections page
-add_action( 'woocommerce_after_shop_loop_item', 'simpl_add_to_cart_btn');
+
+if(WC_Simpl_Settings::showInPdpPage()){
+  // hook for pdp page
+  add_action( $buttonPosition_pdp, 'simpl_add_to_cart_btn' );
+}
+if(WC_Simpl_Settings::showInCollectionsPage()){
+  // hook for collections page
+  add_action( 'woocommerce_after_shop_loop_item', 'simpl_add_to_cart_btn');
+}
+if(WC_Simpl_Settings::showInCartPage()){
+  // hook for cart page
+  add_action( 'woocommerce_after_cart_totals', 'simpl_add_to_cart_btn');
+}
+
 // footer hook to load script
 add_action('wp_footer', 'load_widget_script');
 
