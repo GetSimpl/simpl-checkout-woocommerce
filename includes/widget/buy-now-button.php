@@ -1,19 +1,34 @@
 <?php 
-add_action( 'woocommerce_after_add_to_cart_button', 'simpl_add_to_cart_btn' );
-function simpl_add_to_cart_btn(){
-  // add_action('wp_enqueue_scripts', 'register_scripts');
-  $buttonText = get_option("wc_settings_tab_simpl_button_text");
-  $enabled_only_for_admin = WC_Simpl_Settings::IsSimplEnabledForAdmin() && current_user_can('manage_woocommerce');
-  $productID = get_the_ID();
-  
+$buttonPosition_pdp = WC_Simpl_Settings::cta_position_pdp();
+// hook for pdp page
+add_action( $buttonPosition_pdp, 'simpl_add_to_cart_btn' );
+// hook for cart page
+add_action( 'woocommerce_after_cart_totals', 'simpl_add_to_cart_btn');
+// hook for collections page
+add_action( 'woocommerce_after_shop_loop_item', 'simpl_add_to_cart_btn');
+// footer hook to load script
+add_action('wp_footer', 'load_widget_script');
 
+function simpl_add_to_cart_btn(){
+  $enabled_only_for_admin = WC_Simpl_Settings::IsSimplEnabledForAdmin() && current_user_can('manage_woocommerce');  
+  
   if(WC_Simpl_Settings::IsSimplButtonEnabled() || $enabled_only_for_admin) {
-    $tempTest = SIMPL_PLUGIN_DIR . 'includes/widget/button.php';
-    load_template( $tempTest, false, array("button_text" => $buttonText, "product_id" => $productID) );    
+    $color = WC_Simpl_Settings::cta_bg_color();
+    $productID = get_the_ID();
+    if(is_cart()){
+        $page = 'cart';
+    } else if (is_shop()){
+        $page = 'shop';
+    } else{
+        $page = 'product';
+    }
+    
+    echo '<div class="simpl-checkout-cta-container simpl-button-container" data-background=' .$color. ' page=' .$page. ' data-product-id=' .$productID. '></div>';
   }
 }
 
-function register_scripts () {
-  wp_register_script( 'jquery-simpl', 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jqueryexample.min.js');
+function load_widget_script(){
+  $script_url = WC_Simpl_Settings::widget_script();
+  echo '<script type="text/javascript" src=' .$script_url. '></script>';
 }
 ?>
