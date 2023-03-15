@@ -48,9 +48,19 @@ function simpl_init_gateway_class() {
 
          public function remove_simpl_gateway( $available_gateways ) {
             global $woocommerce;
+            if(WC()->session) {
+                $simpl_order_id = WC()->session->get("simpl_order_id");
+                $order = wc_get_order((int)$simpl_order_id);
+                if($order) {
+                    $status = $order->get_status();
+                    if($status != "draft") {
+                        unset( $available_gateways['simpl'] );                
+                    }
+                }         
+            }
             // $cart_hash = WC()->cart-> get_cart_hash();
             // if(wc_verify_nonce("simpl_cart_".$cart_hash)) {
-            //     unset( $available_gateways['simpl'] );
+                // unset( $available_gateways['simpl'] );
             // }
             return $available_gateways;
          }
@@ -74,6 +84,15 @@ function simpl_init_gateway_class() {
                 'result'    => 'success',
                 'redirect'  => $this->get_return_url( $order )
             );
+        }
+
+        public function process_refund($orderId, $amount = null, $reason = '') {            
+            // $simplHttpResponse = wp_remote_post( "https://webhook.site/15d3a3ef-58bc-41bc-9633-0e9f19593c69?test=123", array(
+            //     "body" => json_encode(array("order_id" => $order_id)),
+            //     "headers" => array("Shopify-Shop-Domain" => "checkout-staging-v2.myshopify.com", "content-type" => "application/json"),
+            // ));
+            // var_dump($order_id);
+            return false;
         }
         
     }

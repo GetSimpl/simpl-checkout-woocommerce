@@ -26,22 +26,22 @@ class SimplIntegration {
     public function cart_payload($cart, $order_id=NULL) {
         $cart_content = $cart->get_cart();
         $response = array("source" => "cart");
-    $checkout = $cart->checkout;
+        $checkout = $cart->checkout;
         foreach($cart_content as $item_id => $item) {
-            $price = round($item['line_subtotal']*100) + round($item['line_subtotal_tax']*100);
             $response["unique_id"] = $item['key'];
             $cart_payload = array("total_price" => $price);
             $cart_payload["total_price"] = $price;
-            $discount_amount = 0;
-            if($cart->get_discount_total()) {
-                $discount_amount = $cart->get_discount_total();
-            }
             $shipping_address = $cart->get_customer()->get_shipping_address();
             $billing_address = $cart->get_customer()->get_billing_address();
             $cart_payload["shipping_address"] = ($shipping_address != "" ? $shipping_address : null);
             $cart_payload["billing_address"] = ($billing_address != "" ? $billing_address : null);
-            $cart_payload["applied_discounts"] = $this->get_applied_discounts_from_cart($cart);
+            $cart_payload["applied_discounts"] = $this->formatted_coupons($cart->get_coupons());
+            $discount_amount = 0;
+            if($cart->get_discount_total()) {
+                $discount_amount = $cart->get_discount_total();
+            }
             $cart_payload["total_discount"] = $discount_amount;
+            $price = round($item['line_subtotal']*100) + round($item['line_subtotal_tax']*100);
             $cart_payload["item_subtotal_price"] = $price; 
             $cart_payload["total_tax"] = $cart->get_total_tax(); 
             $cart_payload["total_shipping"] = $cart->get_shipping_total();
@@ -59,6 +59,26 @@ class SimplIntegration {
     }
 
 
+    public function order_payload($order) {
+        $response = array();
+        $response["id"] = $order->id;
+        $response["total_price"] = $order->get_total();
+        $response["items"] = $this->getOrderLineItem($order);        
+        $response["shipping_address"] = $order->get_address('shipping');
+        $response["billing_address"] = $order->get_address('billing');
+        $response["applied_discounts"] = $this->formatted_coupons($order->get_coupons());
+        $discount_amount = 0;
+        if($order->get_discount_total()) {
+            $discount_amount = $order->get_discount_total();
+        }
+        $response["total_discount"] = $discount_amount;
+        $response["item_subtotal_price"] = $order->get_subtotal(); 
+        $response["total_tax"] = $order->get_total_tax(); 
+        $response["total_shipping"] = $order->get_shipping_total();
+        $response["shipping_methods"] = $this->formatted_shipping_methods($order->get_shipping_methods());
+        return $response;
+    }
+
     protected function get_applied_shipping_method($cart) {
         $chosen_shipping_method = $cart->calculate_shipping();
         if(count($chosen_shipping_method) > 0) {
@@ -67,14 +87,25 @@ class SimplIntegration {
         return "";
     }
 
-    protected function get_applied_discounts_from_cart($cart) {
+    protected function formatted_coupons($coupons) {
         $applied_discounts = array();
         $applied_discount_count = 0;
-        foreach($cart->get_coupons() as $coupon_code => $coupon) {
+        foreach($coupons as $coupon_code => $coupon) {
             $applied_discounts[$applied_discount_count] = array("code" => $coupon_code, "amount" => $coupon->get_amount(), "free_shipping" => $coupon->enable_free_shipping());
             $applied_discount_count += 1;
         }
         return $applied_discounts;
+    }
+
+    protected function formatted_shipping_methods($shipping_methods) {
+        $shipping_methods_array = array();
+        foreach($shipping_methods as $item_id => $item) {
+            $shipping_methods_array["id"] = $item->get_id();
+            $shipping_methods_array["method_id"] = $item->get_method_id();
+            $shipping_methods_array["amount"] = $item->get_total();
+            $shipping_methods_array["total_tax"] = $item->get_total_tax();
+        }
+        return $shipping_methods_array;
     }
 
     function get_shipping_methods($cart) {
@@ -98,6 +129,30 @@ class SimplIntegration {
                 }
             }
             return $shipping_methods_array;
+    }
+
+    function getOrderLineItem($order) {
+        $i = 0;
+    
+        foreach($order->get_items() as $item_id => $item) { 
+            $product =  wc_get_product( $item['product_id']); 
+            $price = round($item['line_subtotal']*100) + round($item['line_subtotal_tax']*100);
+    
+           $data[$i]['sku'] = $product->get_sku();
+           $data[$i]['quantity'] = (int)$item['quantity'];
+           $data[$i]['title'] = mb_substr($product->get_title(), 0, 125, "UTF-8");
+           $data[$i]['description'] = mb_substr($product->get_title(), 0, 250,"UTF-8");
+           $productImage = $product->get_image_id()?? null;
+           $data[$i]['image'] = $productImage? wp_get_attachment_url( $productImage ) : null;
+           $data[$i]['url'] = $product->get_permalink();
+           $data[$i]['price'] = (empty($product->get_price())=== false) ? $price/$item['quantity'] : 0;
+           $data[$i]['variant_id'] = $item['variation_id'];
+           $data[$i]['product_id'] = $item['product_id'];
+           $data[$i]['offer_price'] = (empty($productDetails['sale_price'])=== false) ? (int) $productDetails['sale_price']*100 : $price/$item['quantity'];
+           $i++;
+        } 
+    
+        return $data;
     }
     
 }
