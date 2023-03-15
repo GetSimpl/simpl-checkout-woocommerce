@@ -23,7 +23,8 @@ function create_checkout( WP_REST_Request $request ) {
         }
         WC()->cart->calculate_totals();
         $order = create_order_from_cart();
-        $cart_payload = SimplIntegration::cart_payload(WC()->cart, $order->id);
+        $si = new SimplIntegration();
+        $cart_payload =  $si->cart_payload(WC()->cart, $order->id);
         return $cart_payload;
     } catch (Exception $fe) {
         return new WP_Error("user_error", $e->getMessage());
@@ -54,7 +55,8 @@ function update_checkout( WP_REST_Request $request ) {
         }
         set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
         $order = update_order_from_cart($request->get_params()["checkout_order_id"]);
-        $cart_payload = SimplIntegration::cart_payload(WC()->cart, $order->id);
+        $si = new SimplIntegration();
+        $cart_payload = $si->cart_payload(WC()->cart, $order->id);
         return $cart_payload;
     } catch (Exception $fe) {
         return new WP_Error("user_error", $e->getMessage());
@@ -70,7 +72,8 @@ function fetch_checkout(WP_REST_Request $request) {
     $order = wc_get_order((int)$order_id);
     if($order) {
         convert_wc_order_to_wc_cart($order);
-        return SimplIntegration::cart_payload(WC()->cart, $order_id);
+        $si = new SimplIntegration();
+        return $si->cart_payload(WC()->cart, $order_id);
     }
     return array("not_found");
 }

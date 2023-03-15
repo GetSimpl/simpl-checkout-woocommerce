@@ -23,38 +23,6 @@ function initCartCommon()
     }
 }
 
-function get_shipping_methods() {
-    $shipping_methods_count = 0;
-        $shipping_methods_array = array();
-        foreach ( WC()->cart->get_shipping_packages() as $package_id => $package ) {
-            // Check if a shipping for the current package exist
-            if ( WC()->session->__isset( 'shipping_for_package_'.$package_id ) ) {
-                // Loop through shipping rates for the current package
-                foreach ( WC()->session->get( 'shipping_for_package_'.$package_id )['rates'] as $shipping_rate_id => $shipping_rate ) {
-                    $rate_id     = $shipping_rate->get_id(); // same thing that $shipping_rate_id variable (combination of the shipping method and instance ID)
-                    $method_id   = $shipping_rate->get_method_id(); // The shipping method slug
-                    $label_name  = $shipping_rate->get_label(); // The label name of the method
-                    $cost        = $shipping_rate->get_cost(); // The cost without tax
-                    $tax_cost    = $shipping_rate->get_shipping_tax(); // The tax cost
-                    $taxes       = $shipping_rate->get_taxes(); // The taxes details (array)
-                    $shipping_methods_array[$shipping_methods_count] = array("id" => $rate_id, "slug" => $method_id, "name" => $label_name, "amount" => $cost, "total_tax" => $tax_cost, "taxes" => $taxes);
-                    $shipping_methods_count += 1;
-                }
-            }
-        }
-        return $shipping_methods_array;
-}
-
-function get_applied_discounts_from_cart() {
-    $applied_discounts = array();
-    $applied_discount_count = 0;
-    foreach(WC()->cart->get_coupons() as $coupon_code => $coupon) {
-        $applied_discounts[$applied_discount_count] = array("code" => $coupon_code, "amount" => $coupon->get_amount(), "free_shipping" => $coupon->enable_free_shipping());
-        $applied_discount_count += 1;
-    }
-    return $applied_discounts;
-}
-
 function getCartLineItem($cart) {
     $i = 0;
 

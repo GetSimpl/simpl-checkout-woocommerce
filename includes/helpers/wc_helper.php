@@ -33,6 +33,22 @@ function update_order_from_cart($order_id) {
     return $order;
 }
 
+function update_shipping_line($order_id) {
+    $order = wc_get_order($order_id);        
+    $order->remove_order_items("shipping");
+    $shipping_methods = WC()->cart->calculate_shipping();
+    if(count($shipping_methods) > 0) {
+        $item = new WC_Order_Item_Shipping();
+        $item->set_method_id($shipping_methods[0]->get_id());
+        $item->set_method_title($shipping_methods[0]->get_label());
+        $item->set_total($shipping_methods[0]->get_cost());
+        $item->calculate_taxes($shipping_methods[0]->get_taxes());
+        $order->add_item($item);        
+    }
+    $order->save();
+    return $order;
+}
+
 function set_address_in_cart($shipping_address, $billing_address) {
     if(isset($shipping_address) && isset($billing_address)) {
         WC()->customer->set_shipping_address($shipping_address);
