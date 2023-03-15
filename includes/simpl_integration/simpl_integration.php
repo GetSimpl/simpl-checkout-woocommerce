@@ -5,11 +5,11 @@ class SimplIntegration {
         $cart_request = self::cart_payload($cart);
         $simpl_host = WC_Simpl_Settings::simpl_host();    
     
-        $simplHttpResponse = wp_remote_post( "https://".$simpl_host."/v1/cart", array(
+        $simplHttpResponse = wp_remote_post( "https://".$simpl_host."/api/v1/wc/cart", array(
             "body" => json_encode($cart_request),
             "headers" => array("Shopify-Shop-Domain" => "checkout-staging-v2.myshopify.com", "content-type" => "application/json"),
         ));
-    
+
         if ( ! is_wp_error( $simplHttpResponse ) ) {
             $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
     
