@@ -12,7 +12,7 @@ function create_order_from_cart() {
     }
     $order->update_meta_data('is_simpl_checkout_order', 'yes');
     $order->save();
-    updateToSimplDraft($order->id);
+    updateToSimplDraft($order->get_id());
     return $order;
 }    
 

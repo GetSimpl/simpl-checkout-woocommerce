@@ -75,7 +75,7 @@ function fetch_checkout(WP_REST_Request $request) {
         $si = new SimplIntegration();
         return $si->cart_payload(WC()->cart, $order_id);
     }
-    return array("not_found");
+    return new WP_REST_Response(array("code"=> "not_found", "message"=> "invalid checkout_order_id"), 404);
 }
 
 function internal_authenticate() {    

@@ -4,7 +4,7 @@ function initCartCommon()
     if (defined('WC_ABSPATH')) {
         // WC 3.6+ - Cart and other frontend functions are not included for REST requests.
         include_once WC_ABSPATH . 'includes/wc-cart-functions.php'; // nosemgrep: file-inclusion
-        include_once SIMPL_PLUGIN_DIR . "/helpers/notice_helper.php";
+        include_once SIMPL_PLUGIN_DIR . "/includes/helpers/notice_helper.php";
     }
 
     if (null === WC()->session) {
