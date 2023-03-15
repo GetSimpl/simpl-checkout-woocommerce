@@ -9,6 +9,7 @@ function create_cart( WP_REST_Request $request ) {
     $quantity = $request->get_params()["quantity"];
     initCartCommon();
     WC()->cart->add_to_cart($productID, $quantity, $variantID);
-    return SimplIntegration::cart_redirection_url(WC()->cart);
+    $si = new SimplIntegration();
+    return $si->cart_redirection_url(WC()->cart);
 }
 ?>

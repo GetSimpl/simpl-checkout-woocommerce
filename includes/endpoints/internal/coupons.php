@@ -6,6 +6,7 @@ include_once SIMPL_PLUGIN_DIR . "/includes/helpers/wc_helper.php";
 
 function apply_coupon(WP_REST_Request $request) {
     global $notice_message;
+    $si = new SimplIntegration();
     initCartCommon();
     WC()->cart->empty_cart();
     $order_id = $request->get_params()["checkout_order_id"];
@@ -20,13 +21,14 @@ function apply_coupon(WP_REST_Request $request) {
         }
         $order->apply_coupon($coupon_code);
         $order->save();
-        return SimplIntegration::cart_payload(WC()->cart, $order_id);
+        return $si->cart_payload(WC()->cart, $order_id);
     }    
     return array("not_found");
 }
 
 function remove_coupon(WP_REST_Request $request) {
     global $notice_message;
+    $si = new SimplIntegration();
     initCartCommon();
     WC()->cart->empty_cart();
     $order_id = $request->get_params()["checkout_order_id"];
@@ -41,7 +43,7 @@ function remove_coupon(WP_REST_Request $request) {
         }
         $order->remove_coupon($coupon_code);
         $order->save();
-        return SimplIntegration::cart_payload(WC()->cart, $order_id);
+        return $si->cart_payload(WC()->cart, $order_id);
     }    
     return array("not_found");
 }

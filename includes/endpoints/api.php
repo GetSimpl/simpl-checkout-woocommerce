@@ -15,6 +15,11 @@ add_action( 'rest_api_init', function () {
       'callback' => 'apply_coupon',
     ) );
 
+    register_rest_route( 'wc-simpl/v1', '/checkout/shipping-method', array(
+      'methods' => 'POST',
+      'callback' => 'set_shipping_method',
+    ) );
+
     register_rest_route( 'wc-simpl/v1', '/checkout/coupon', array(
       'methods' => 'DELETE',
       'callback' => 'remove_coupon',
