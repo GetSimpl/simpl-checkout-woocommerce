@@ -1,5 +1,5 @@
 <?php 
-$buttonPosition_pdp = WC_Simpl_Settings::cta_position_pdp();
+$buttonPosition_pdp = WC_Simpl_Settings::ctaPositionPdp();
 
 if(WC_Simpl_Settings::showInPdpPage()){
   // hook for pdp page
@@ -21,7 +21,7 @@ function simpl_add_to_cart_btn(){
   $enabled_only_for_admin = WC_Simpl_Settings::IsSimplEnabledForAdmin() && current_user_can('manage_woocommerce');  
   
   if(WC_Simpl_Settings::IsSimplButtonEnabled() || $enabled_only_for_admin) {
-    $color = WC_Simpl_Settings::cta_bg_color();
+    $color = WC_Simpl_Settings::ctaBgColor();
     $productID = get_the_ID();
     if(is_cart()){
         $page = 'cart';
@@ -36,7 +36,7 @@ function simpl_add_to_cart_btn(){
 }
 
 function load_widget_script(){
-  $script_url = WC_Simpl_Settings::widget_script();
+  $script_url = WC_Simpl_Settings::widgetScriptUrl();
   echo '<script type="text/javascript" src=' .$script_url. '></script>';
 }
 ?>

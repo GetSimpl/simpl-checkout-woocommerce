@@ -26,7 +26,7 @@ class WC_Simpl_Settings {
         return SIMPL_CONFIG_PRODUCTION_URL;
     }
 
-    public static function widget_script() {
+    public static function widgetScriptUrl() {
         if(SIMPL_ENV == "localhost") {
             return WIDGET_SCRIPT_LOCALHOST;
         }        
@@ -62,11 +62,11 @@ class WC_Simpl_Settings {
         return get_option("wc_settings_tab_simpl_button_cart_activated") == 'yes';
     }
 
-    public static function cta_position_pdp() {
+    public static function ctaPositionPdp() {
         return get_option("wc_settings_tab_simpl_button_position");
     }
 
-    public static function cta_bg_color() {
+    public static function ctaBgColor() {
         return get_option("wc_settings_tab_simpl_button_bg");
     }
 
