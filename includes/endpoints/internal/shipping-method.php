@@ -15,6 +15,8 @@ function set_shipping_method( WP_REST_Request $request ) {
         $cart = convert_wc_order_to_wc_cart($order);
         WC()->session->set('chosen_shipping_methods', array( $shipping_method ));        
         update_shipping_line($order_id);
+        WC()->cart->calculate_shipping();
+        WC()->cart->calculate_totals();
         $si = new SimplIntegration();
         return $si->cart_payload(WC()->cart, $order_id);
     }

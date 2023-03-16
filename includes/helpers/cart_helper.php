@@ -4,7 +4,9 @@ function initCartCommon()
     if (defined('WC_ABSPATH')) {
         // WC 3.6+ - Cart and other frontend functions are not included for REST requests.
         include_once WC_ABSPATH . 'includes/wc-cart-functions.php'; // nosemgrep: file-inclusion
-        include_once SIMPL_PLUGIN_DIR . "/includes/helpers/notice_helper.php";
+        include_once WC_ABSPATH . 'includes/wc-notice-functions.php'; // nosemgrep: file-inclusion
+        include_once WC_ABSPATH . 'includes/wc-template-hooks.php'; // nosemgrep: file-inclusion
+        // include_once SIMPL_PLUGIN_DIR . "/includes/helpers/notice_helper.php";
     }
 
     if (null === WC()->session) {
@@ -13,13 +15,20 @@ function initCartCommon()
         WC()->session->init();        
     }
 
-    if (null === WC()->customer) {
-        WC()->customer = new WC_Customer(get_current_user_id(), true);
+    if ( is_null( WC()->customer ) ) {
+        if ( is_user_logged_in() ) {
+            WC()->customer = new WC_Customer( get_current_user_id() );
+        } else {
+            WC()->customer = new WC_Customer( get_current_user_id(), true );
+        }
+
+        // Customer should be saved during shutdown.
+        add_action( 'shutdown', array( WC()->customer, 'save' ), 10 );
     }
 
-    if (null === WC()->cart) {
+    // Load Cart.
+    if ( null === WC()->cart ) {
         WC()->cart = new WC_Cart();
-        WC()->cart->get_cart();
     }
 }
 
