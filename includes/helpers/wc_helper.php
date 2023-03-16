@@ -94,7 +94,7 @@ function convert_wc_order_to_wc_cart($order) {
 function updateToSimplDraft($orderId) {
     wp_update_post(array(
         'ID'          => $orderId,
-        'post_status' => 'draft',
+        'post_status' => 'checkout-draft',
     ));
 }
 ?>
