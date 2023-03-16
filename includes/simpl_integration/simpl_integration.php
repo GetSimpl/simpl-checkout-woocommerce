@@ -28,10 +28,17 @@ class SimplIntegration {
         $response = array("source" => "cart");
         $checkout = $cart->checkout;
         foreach($cart_content as $item_id => $item) {
-            $response["unique_id"] = $item['key'];
+            $unique_device_id = WC()->session->get("simpl:session:id");
+            if($unique_device_id) {
+                $unique_device_id = WC()->session->get("simpl:session:id");
+            } else {
+                $unique_device_id = uniqid();
+                WC()->session->set("simpl:session:id", $unique_device_id);
+            }
+            $response["unique_id"] = $unique_device_id;
             $price = round($item['line_subtotal']*100) + round($item['line_subtotal_tax']*100);
-            $cart_payload = array("total_price" => $price);
-            $cart_payload["total_price"] = $price;
+            $cart_payload = array();
+            $cart_payload["total_price"] = (int)$cart->get_total('float') * 100;
             $shipping_address = $cart->get_customer()->get_shipping_address();
             $billing_address = $cart->get_customer()->get_billing_address();
             $cart_payload["shipping_address"] = ($shipping_address != "" ? $shipping_address : null);

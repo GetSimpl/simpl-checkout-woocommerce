@@ -92,7 +92,7 @@ class WC_Simpl_Settings {
         $params = [
             'app_name' => 'simpl_wordpress_integration',
             'scope' => 'read_write',
-            'user_id' => 1,
+            'user_id' => 2,
             'return_url' => self::store_url_with_prefix()."/wp-admin/admin.php?page=wc-settings&tab=settings_tab_simpl",
             'callback_url' => self::store_url_with_prefix()."/wp-json/wc-simpl/v1/authenticate_simpl"
         ];
