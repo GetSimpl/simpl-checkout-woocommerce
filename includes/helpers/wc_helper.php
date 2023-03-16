@@ -12,7 +12,7 @@ function create_order_from_cart() {
     }
     $order->update_meta_data('is_simpl_checkout_order', 'yes');
     $order->save();
-    updateToSimplDraft($order->id);
+    updateToSimplDraft($order->get_id());
     return $order;
 }    
 
@@ -94,7 +94,7 @@ function convert_wc_order_to_wc_cart($order) {
 function updateToSimplDraft($orderId) {
     wp_update_post(array(
         'ID'          => $orderId,
-        'post_status' => 'draft',
+        'post_status' => 'checkout-draft',
     ));
 }
 ?>

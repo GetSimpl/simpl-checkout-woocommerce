@@ -29,6 +29,7 @@ class SimplIntegration {
         $checkout = $cart->checkout;
         foreach($cart_content as $item_id => $item) {
             $response["unique_id"] = $item['key'];
+            $price = round($item['line_subtotal']*100) + round($item['line_subtotal_tax']*100);
             $cart_payload = array("total_price" => $price);
             $cart_payload["total_price"] = $price;
             $shipping_address = $cart->get_customer()->get_shipping_address();
@@ -41,11 +42,10 @@ class SimplIntegration {
                 $discount_amount = $cart->get_discount_total();
             }
             $cart_payload["total_discount"] = $discount_amount;
-            $price = round($item['line_subtotal']*100) + round($item['line_subtotal_tax']*100);
             $cart_payload["item_subtotal_price"] = $price; 
             $cart_payload["total_tax"] = $cart->get_total_tax(); 
             $cart_payload["total_shipping"] = $cart->get_shipping_total();
-            $cart_payload["checkout_url"] = $cart->get_checkout_url();
+            $cart_payload["checkout_url"] = wc_get_checkout_url();
             $cart_payload["shipping_methods"] = $this->get_shipping_methods($cart);
             $cart_payload["applied_shipping_method"] = $this->get_applied_shipping_method($cart);
             $cart_payload["items"] = getCartLineItem($cart_content);
@@ -61,7 +61,7 @@ class SimplIntegration {
 
     public function order_payload($order) {
         $response = array();
-        $response["id"] = $order->id;
+        $response["id"] = $order->get_id();
         $response["total_price"] = $order->get_total();
         $response["items"] = $this->getOrderLineItem($order);        
         $response["shipping_address"] = $order->get_address('shipping');
@@ -82,7 +82,7 @@ class SimplIntegration {
     protected function get_applied_shipping_method($cart) {
         $chosen_shipping_method = $cart->calculate_shipping();
         if(count($chosen_shipping_method) > 0) {
-            return $chosen_shipping_method[0]->id;
+            return $chosen_shipping_method[0]->get_id();
         }
         return "";
     }

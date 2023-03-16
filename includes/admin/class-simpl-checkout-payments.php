@@ -53,7 +53,7 @@ function simpl_init_gateway_class() {
                 $order = wc_get_order((int)$simpl_order_id);
                 if($order) {
                     $status = $order->get_status();
-                    if($status != "draft") {
+                    if($status != "checkout-draft") {
                         unset( $available_gateways['simpl'] );                
                     }
                 }         
@@ -69,8 +69,8 @@ function simpl_init_gateway_class() {
     
             $order = wc_get_order( $order_id );
                     
-            // Mark as on-hold (we're awaiting the payment)
-            $order->update_status( 'on-hold', __( 'Awaiting offline payment', 'wc-gateway-offline' ) );
+            // // Mark as on-hold (we're awaiting the payment)
+            // $order->update_status( 'on-hold', __( 'Awaiting offline payment', 'wc-gateway-offline' ) );
                     
             // Reduce stock levels
             $order->reduce_order_stock();
@@ -87,10 +87,10 @@ function simpl_init_gateway_class() {
         }
 
         public function process_refund($orderId, $amount = null, $reason = '') {            
-            // $simplHttpResponse = wp_remote_post( "https://webhook.site/15d3a3ef-58bc-41bc-9633-0e9f19593c69?test=123", array(
-            //     "body" => json_encode(array("order_id" => $order_id)),
-            //     "headers" => array("Shopify-Shop-Domain" => "checkout-staging-v2.myshopify.com", "content-type" => "application/json"),
-            // ));
+            $simplHttpResponse = wp_remote_post( "https://webhook.site/15d3a3ef-58bc-41bc-9633-0e9f19593c69?test=123", array(
+                "body" => json_encode(array("order_id" => $order_id)),
+                "headers" => array("Shopify-Shop-Domain" => "checkout-staging-v2.myshopify.com", "content-type" => "application/json"),
+            ));
             // var_dump($order_id);
             return false;
         }
