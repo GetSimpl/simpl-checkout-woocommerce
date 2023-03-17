@@ -39,4 +39,3 @@ function load_widget_script(){
   $script_url = WC_Simpl_Settings::widgetScriptUrl();
   echo '<script type="text/javascript" src=' .$script_url. '></script>';
 }
-?>

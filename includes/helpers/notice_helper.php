@@ -10,4 +10,3 @@
             return new WP_Error("user_error", $notice_message["message"]);
         }
     }
-?>

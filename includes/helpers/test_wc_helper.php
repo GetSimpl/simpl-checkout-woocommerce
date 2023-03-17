@@ -27,4 +27,3 @@
         
         return array("product_id" => $product->get_id(), "variant_id" => $variation->get_id());
     }
-?>

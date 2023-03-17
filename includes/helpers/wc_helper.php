@@ -10,7 +10,7 @@ function create_order_from_cart() {
         $order->set_address($shipping_address, 'shipping');
         $order->set_address($billing_address, 'billing');
     }
-    $order->update_meta_data('is_simpl_checkout_order', 'yes');
+    $order->update_meta_data(SIMPL_ORDER_METADATA, 'yes');
     $order->save();
     updateToSimplDraft($order->get_id());
     return $order;
@@ -56,6 +56,11 @@ function set_address_in_cart($shipping_address, $billing_address) {
     }
 }
 
+function load_cart_from_order($order_id) {
+    $order = wc_get_order((int)$order_id);
+    convert_wc_order_to_wc_cart($order);
+}
+
 function convert_wc_order_to_wc_cart($order) {
     initCartCommon();
     $variationAttributes = [];
@@ -84,11 +89,9 @@ function convert_wc_order_to_wc_cart($order) {
             }
         }
         set_address_in_cart($order->get_address('shipping'), $order->get_address('billing'));
-    } else {
-        return false;
     }
     
-    return true;
+    return WC()->cart;
 }
 
 function updateToSimplDraft($orderId) {
@@ -97,4 +100,13 @@ function updateToSimplDraft($orderId) {
         'post_status' => 'checkout-draft',
     ));
 }
-?>
+
+function add_to_cart($items) {
+    WC()->cart->empty_cart();
+    foreach($items as $item_id => $item) {
+        WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"]);
+    }
+    if(WC()->cart->is_empty()) {
+        return new WP_REST_Response(array("code"=> "bad_request", "message"=> "error in creating checkout for given params"), 400);
+    }
+}
