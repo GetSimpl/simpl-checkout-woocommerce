@@ -71,19 +71,13 @@ function initCartCommon()
     }
 
     if ( is_null( WC()->customer ) ) {
-        if ( is_user_logged_in() ) {
-            WC()->customer = new WC_Customer( get_current_user_id() );
-        } else {
-            WC()->customer = new WC_Customer( get_current_user_id(), true );
-        }
-
-        // Customer should be saved during shutdown.
-        add_action( 'shutdown', array( WC()->customer, 'save' ), 10 );
+        WC()->customer = new WC_Customer( get_current_user_id() );
     }
 
     // Load Cart.
     if ( null === WC()->cart ) {
         WC()->cart = new WC_Cart();
+        WC()->cart->empty_cart();
     }
 }
 

@@ -14,6 +14,8 @@ define("SIMPL_ENV", getenv("SIMPL_ENV"));
 define('WIDGET_SCRIPT_LOCALHOST', 'http://localhost:4300/');
 define('WIDGET_SCRIPT_STAGING_URL', 'https://res.cloudinary.com/dlkxxfbi9/raw/upload/v1678951701/script/simpl-checkout-woocommerce-widget.iife_rxwoq9.js');
 define('WIDGET_SCRIPT_PRODUCTION_URL', 'https://res.cloudinary.com/dlkxxfbi9/raw/upload/v1678951701/script/simpl-checkout-woocommerce-widget.iife_rxwoq9.js');
+define("SIMPL_ORDER_STATUS_CHECKOUT", "checkout-draft");
+define("SIMPL_ORDER_METADATA", "is_simpl_checkout_order");
 include_once 'includes/admin/index.php';
 include_once 'includes/endpoints/index.php';
 include_once 'includes/widget/buy-now-button.php';
