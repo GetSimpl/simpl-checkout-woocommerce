@@ -37,7 +37,7 @@ function remove_coupon(WP_REST_Request $request) {
         return $validation_errors;
     }
 
-    $order = wc_get_order($request->get_params()["checkout_order_id"]);
+    $order = wc_get_order((int)$request->get_params()["checkout_order_id"]);
     $coupon_code = $request->get_params()["coupon_code"];
 
     $cart = convert_wc_order_to_wc_cart($order);
@@ -51,5 +51,3 @@ function remove_coupon(WP_REST_Request $request) {
     $si = new SimplIntegration();
     return $si->cart_payload(WC()->cart, $order_id);
 }
-
-?>

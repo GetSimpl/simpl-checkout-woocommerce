@@ -44,5 +44,3 @@ function validate_shipping_address_or_items($request_params) {
     }
     return NULL;        
 }
-
-?>

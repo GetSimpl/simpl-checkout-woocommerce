@@ -11,4 +11,3 @@
     include_once SIMPL_PLUGIN_DIR . "/includes/helpers/cart_helper.php";
     include_once SIMPL_PLUGIN_DIR . "/includes/helpers/wc_helper.php";
     include_once SIMPL_PLUGIN_DIR . "/includes/helpers/validators.php";
-?>

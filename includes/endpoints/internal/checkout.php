@@ -83,5 +83,3 @@ function internal_authenticate() {
     $authenticated = $api->authenticate("");
     return $authenticated;
 }
-
-?>

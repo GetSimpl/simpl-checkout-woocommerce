@@ -28,5 +28,3 @@ function create_order( WP_REST_Request $request ) {
 
     return "";
 }
-
-?>

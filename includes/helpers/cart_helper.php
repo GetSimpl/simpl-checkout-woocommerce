@@ -104,4 +104,3 @@ function getCartLineItem($cart) {
 
     return $data;
 }
-?>

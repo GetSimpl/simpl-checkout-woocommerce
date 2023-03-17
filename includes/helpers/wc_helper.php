@@ -110,5 +110,3 @@ function add_to_cart($items) {
         return new WP_REST_Response(array("code"=> "bad_request", "message"=> "error in creating checkout for given params"), 400);
     }
 }
-
-?>

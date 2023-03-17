@@ -22,5 +22,3 @@ function set_shipping_method( WP_REST_Request $request ) {
     }
     return "";
 }
-
-?>
