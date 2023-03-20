@@ -18,5 +18,6 @@ define('WIDGET_SCRIPT_STAGING_URL', 'https://res.cloudinary.com/dlkxxfbi9/raw/up
 define('WIDGET_SCRIPT_PRODUCTION_URL', 'https://res.cloudinary.com/dlkxxfbi9/raw/upload/v1679032840/script/simpl-checkout-woocommerce-widget.iife_fogz3m.js');
 include_once 'includes/admin/index.php';
 include_once 'includes/endpoints/index.php';
+include_once 'includes/helpers/debug_helper.php';
 include_once 'includes/widget/buy-now-button.php';
 ?>
