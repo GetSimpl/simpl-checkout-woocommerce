@@ -1,0 +1,40 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/simpl-checkout-woocommerce
+    docker:
+      # specify the version you desire here
+      - image: circleci/php:7.0-fpm-node-browsers
+      - image: circleci/mysql:5.7.22-ram
+
+    steps:
+      - checkout
+      - run:
+          name: Preparations
+          command: |
+            # sudo apt-get install pv mysql-client sshpass
+            # sudo docker-php-ext-install mysqli pdo pdo_mysql # WTF, why aren't these installed already?
+            composer install
+            composer wp-install
+
+
+      - run:
+          name: Test
+          command: |
+            ./run-test.sh
+
+      - save_cache:
+          key: v1-dependencies-{{ checksum "composer.json" }}
+          paths:
+            - ./vendor
+
+      - save_cache:
+          key: v1-dependencies-{{ checksum "htdocs/wp-content/themes/wordpress-theme-base/package.json" }}
+          paths:
+            - /home/circleci/repo/htdocs/wp-content/themes/wordpress-theme-base/node_modules
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build

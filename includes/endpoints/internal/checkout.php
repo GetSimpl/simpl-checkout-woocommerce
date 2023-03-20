@@ -1,22 +1,29 @@
 <?php
 function create_checkout( WP_REST_Request $request ) {
     try {
-        $items = $request->get_params()["items"];
-        $validation_errors = validate_line_items($items);
+        $validation_errors = validate_line_items($request);
         if(isset($validation_errors)) {
             return $validation_errors;
 
         }
+        $items = $request->get_params()["items"];
         initCartCommon();
-        add_to_cart($items);
-        set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
+        
+        $error = add_to_cart($items);
+        if(isset($error)) {
+            return $error;
+        }
+        
+        if(isset($request->get_params()["shipping_address"]) && isset($request->get_params()["billing_address"])) {
+            set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
+        }
         WC()->cart->calculate_totals();
         $order = create_order_from_cart();
         $si = new SimplIntegration();
-        $cart_payload =  $si->cart_payload(WC()->cart, $order->id);
+        $cart_payload =  $si->cart_payload(WC()->cart, $order->get_id());
         return $cart_payload;
     } catch (Exception $fe) {
-        return new WP_Error("user_error", $e->getMessage());
+        return new WP_Error("user_error", $fe->getMessage());
     } catch (Error $fe) {
         return new WP_Error("user_error", "error in creating checkout", array("error_mesage" => $fe->getMessage(), "backtrace" => $fe->getTraceAsString()));
     }    
@@ -38,7 +45,7 @@ function update_checkout( WP_REST_Request $request ) {
         }
 
         if(isset($items) && count($items) > 0) {
-            $validation_errors = validate_line_items($items);
+            $validation_errors = validate_line_items($request);
             if(isset($validation_errors)) {
                 return $validation_errors;
             }

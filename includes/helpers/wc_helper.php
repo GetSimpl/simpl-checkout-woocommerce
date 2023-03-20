@@ -3,7 +3,7 @@
 function create_order_from_cart() {
     initCartCommon();
     $order = new WC_Order();  
-    WC()->checkout->set_data_from_cart( $order);        
+    set_data_from_cart( $order);        
     $shipping_address = WC()->checkout->get_value('shipping')["address_1"];
     $billing_address = WC()->checkout->get_value('billing')["address_1"];  
     if($shipping_address != "" && $billing_address != "") {
@@ -31,6 +31,23 @@ function update_order_from_cart($order_id) {
     }
     $order->save();
     return $order;
+}
+
+//Created this method to sup
+function set_data_from_cart( &$order ) {
+    $order_vat_exempt = WC()->cart->get_customer()->get_is_vat_exempt() ? 'yes' : 'no';
+    $order->add_meta_data( 'is_vat_exempt', $order_vat_exempt, true );
+    $order->set_shipping_total( WC()->cart->get_shipping_total() );
+    $order->set_discount_total( WC()->cart->get_discount_total() );
+    $order->set_discount_tax( WC()->cart->get_discount_tax() );
+    $order->set_cart_tax( WC()->cart->get_cart_contents_tax() + WC()->cart->get_fee_tax() );
+    $order->set_shipping_tax( WC()->cart->get_shipping_tax() );
+    $order->set_total( WC()->cart->get_total( 'edit' ) );
+    WC()->checkout->create_order_line_items( $order, WC()->cart );
+    WC()->checkout->create_order_fee_lines( $order, WC()->cart );
+    WC()->checkout->create_order_shipping_lines( $order, WC()->session->get( 'chosen_shipping_methods' ), WC()->shipping()->get_packages() );
+    WC()->checkout->create_order_tax_lines( $order, WC()->cart );
+    WC()->checkout->create_order_coupon_lines( $order, WC()->cart );
 }
 
 function update_shipping_line($order_id) {
@@ -83,8 +100,9 @@ function convert_wc_order_to_wc_cart($order) {
             
             WC()->cart->add_to_cart($productId, $quantity, $variationId, $variationAttributes, $customData);                
         }
-        if(count($order->get_coupon_codes()) > 0) {
-            foreach ($order->get_coupon_codes() as $item_id => $coupon_code) {
+        $order_coupons = get_order_coupon_codes($order);
+        if(count($order_coupons) > 0) {
+            foreach ($order_coupons as $item_id => $coupon_code) {
                 WC()->cart->add_discount($coupon_code);
             }
         }
@@ -92,6 +110,18 @@ function convert_wc_order_to_wc_cart($order) {
     }
     
     return WC()->cart;
+}
+
+function get_order_coupon_codes($order) {
+	$coupon_codes = array();
+	$coupons      = $order->get_items( 'coupon' );
+
+	if ( $coupons ) {
+		foreach ( $coupons as $coupon ) {
+			$coupon_codes[] = $coupon->get_code();
+		}
+	}
+	return $coupon_codes;
 }
 
 function updateToSimplDraft($orderId) {
@@ -107,6 +137,6 @@ function add_to_cart($items) {
         WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"]);
     }
     if(WC()->cart->is_empty()) {
-        return new WP_REST_Response(array("code"=> "bad_request", "message"=> "error in creating checkout for given params"), 400);
+        return new WP_REST_Response(array("code"=> "bad_request", "message"=> "invalid line items"), 400);
     }
 }
