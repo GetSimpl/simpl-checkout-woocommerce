@@ -5,15 +5,16 @@ jobs:
     docker:
       # specify the version you desire here
       - image: cimg/php:7.4
-      - image: circleci/mysql:5.7.22-ram
+      - image: cimg/mysql:8.0
 
     steps:
       - checkout
       - run:
           name: Preparations
           command: |
-            apt-get update
-            apt-get install pv mysql-client sshpass
+            sudo apt-get update
+            sudo apt-get install -y mysql-client
+            sudo apt-get install pv sshpass
             composer install
             composer wp-install
 
