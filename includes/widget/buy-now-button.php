@@ -1,15 +1,15 @@
 <?php 
-$buttonPosition_pdp = WC_Simpl_Settings::ctaPositionPdp();
+$buttonPosition_pdp = WC_Simpl_Settings::cta_position_in_pdp();
 
-if(WC_Simpl_Settings::showInPdpPage()){
+if(WC_Simpl_Settings::can_display_in_pdp_page()){
   // hook for pdp page
   add_action( $buttonPosition_pdp, 'simpl_add_to_cart_btn' );
 }
-if(WC_Simpl_Settings::showInCollectionsPage()){
+if(WC_Simpl_Settings::can_display_in_collections_page()){
   // hook for collections page
   add_action( 'woocommerce_after_shop_loop_item', 'simpl_add_to_cart_btn');
 }
-if(WC_Simpl_Settings::showInCartPage()){
+if(WC_Simpl_Settings::can_display_in_cart_page()){
   // hook for cart page
   add_action( 'woocommerce_after_cart_totals', 'simpl_add_to_cart_btn');
 }
@@ -18,10 +18,10 @@ if(WC_Simpl_Settings::showInCartPage()){
 add_action('wp_footer', 'load_widget_script');
 
 function simpl_add_to_cart_btn(){
-  $enabled_only_for_admin = WC_Simpl_Settings::IsSimplEnabledForAdmin() && current_user_can('manage_woocommerce');  
+  $enabled_only_for_admin = WC_Simpl_Settings::is_simpl_enabled_for_admins() && current_user_can('manage_woocommerce');  
   
-  if(WC_Simpl_Settings::IsSimplButtonEnabled() || $enabled_only_for_admin) {
-    $color = WC_Simpl_Settings::ctaBgColor();
+  if(WC_Simpl_Settings::is_simpl_button_enabled() || $enabled_only_for_admin) {
+    $color = WC_Simpl_Settings::cta_color();
     $productID = get_the_ID();
     if(is_cart()){
         $page = 'cart';
@@ -36,6 +36,6 @@ function simpl_add_to_cart_btn(){
 }
 
 function load_widget_script(){
-  $script_url = WC_Simpl_Settings::widgetScriptUrl();
+  $script_url = WC_Simpl_Settings::widget_script_url();
   echo '<script type="text/javascript" src=' .$script_url. '></script>';
 }
