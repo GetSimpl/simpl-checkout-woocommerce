@@ -72,6 +72,10 @@ class WC_Simpl_Settings {
         return get_option("wc_settings_tab_simpl_button_position");
     }
 
+    public static function cta_text() {
+        return get_option("wc_settings_tab_simpl_button_text");
+    }
+
     public static function merchant_credentials() {
         return array("client_id" => get_option("wc_settings_tab_simpl_merchant_client_id"), "client_secret" => get_option("wc_settings_tab_simpl_merchant_client_secret"));
     }
@@ -202,9 +206,22 @@ class WC_Simpl_Settings {
 
             $settings['simpl_button_text'] = array(
                 'name' => __( 'Button text', 'woocommerce-settings-tab-simpl' ),
-                'type' => 'text',
-                'desc' => __( 'Enter button place holder', 'woocommerce-settings-tab-simpl' ),
-                'id'   => 'wc_settings_tab_simpl_button_text'
+                'type' => 'select',
+                'desc' => __( 'select button place holder', 'woocommerce-settings-tab-simpl' ),
+                'id'   => 'wc_settings_tab_simpl_button_text',
+                'options' => array(
+                    '' => 'Default',
+                    'Buy Now' => 'Buy Now',
+                    'Buy It Now' => 'Buy It Now',
+                    'Checkout with Simpl' => 'Checkout with Simpl',
+                    'Buy with UPI/COD'  => 'Buy with UPI/COD',
+                    'Buy with UPI' => 'Buy with UPI',
+                    'Quick Buy' => 'Quick Buy',
+                    'Order Now' => 'Order Now',
+                    'Checkout' => 'Checkout',
+                    'UPI / Pay-in-3 / COD' => 'UPI / Pay-in-3 / COD'
+                ),
+                'value' => ''
             );
 
             $settings['simpl_button_bg'] = array(
