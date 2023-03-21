@@ -21,7 +21,8 @@ function simpl_add_to_cart_btn(){
   $enabled_only_for_admin = WC_Simpl_Settings::is_simpl_enabled_for_admins() && current_user_can('manage_woocommerce');  
   
   if(WC_Simpl_Settings::is_simpl_button_enabled() || $enabled_only_for_admin) {
-    $color = WC_Simpl_Settings::cta_color();
+    $color = WC_Simpl_Settings::cta_color() || "default";
+    console_log($color);
     $productID = get_the_ID();
     if(is_cart()){
         $page = 'cart';
@@ -30,7 +31,6 @@ function simpl_add_to_cart_btn(){
     } else{
         $page = 'product';
     }
-    
     echo '<div class="simpl-checkout-cta-container simpl-button-container" data-background=' .$color. ' page=' .$page. ' data-product-id=' .$productID. '></div>';
   }
 }
