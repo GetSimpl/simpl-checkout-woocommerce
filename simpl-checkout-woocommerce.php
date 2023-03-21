@@ -20,4 +20,6 @@ include_once 'includes/admin/index.php';
 include_once 'includes/endpoints/index.php';
 include_once 'includes/helpers/debug_helper.php';
 include_once 'includes/widget/buy-now-button.php';
+register_activation_hook( __FILE__, 'my_plugin_activate' );
+register_deactivation_hook( __FILE__, 'my_plugin_deactivate' );
 ?>

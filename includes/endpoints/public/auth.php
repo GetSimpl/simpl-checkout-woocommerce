@@ -1,13 +1,19 @@
 <?php
+
 function authenticate_simpl( WP_REST_Request $request ) {    
     //POST call to simpl with credentials
     //adds header related to shop domain
-    echo(json_encode($request->get_params()));
     $simpl_host = WC_Simpl_Settings::simpl_host();
     $store_url = WC_Simpl_Settings::store_url();
+    $client_credentials = WC_Simpl_Settings::merchant_credentials();
     $simplHttpResponse = wp_remote_post( "https://".$simpl_host."/api/v1/app/install", array(
         "body" => json_encode($request->get_params()),
-        "headers" => array("shop-domain" => $store_url, "content-type" => "application/json"),
+        "headers" => array(
+                "shop-domain" => $store_url,
+                "merchant_client_id" => $client_credentials["client_id"],
+                "merchant_client_secret" => $client_credentials["client_secret"],                
+                "content-type" => "application/json"
+            ),
     ));
 
     if ( ! is_wp_error( $simplHttpResponse ) ) {
