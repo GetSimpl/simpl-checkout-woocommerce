@@ -72,6 +72,10 @@ class WC_Simpl_Settings {
         return get_option("wc_settings_tab_simpl_button_position");
     }
 
+    public static function cta_position_in_cart() {
+        return get_option("wc_settings_tab_simpl_button_position_cart");
+    }
+
     public static function cta_text() {
         return get_option("wc_settings_tab_simpl_button_text");
     }
@@ -202,6 +206,17 @@ class WC_Simpl_Settings {
                     'woocommerce_before_add_to_cart_button' => 'Before add to cart button'
                 ),
                 'value' => 'woocommerce_before_add_to_cart_button'
+            );
+
+            $settings['simpl_button_position_cart'] = array(
+                'name' => __( 'Button Position in Cart Page', 'woocommerce-settings-tab-simpl' ),
+                'type' => 'select',
+                'id'   => 'wc_settings_tab_simpl_button_position_cart',
+                'options' => array(
+                    'woocommerce_proceed_to_checkout' => 'Before Proceed to checkout',
+                    'woocommerce_after_cart_totals' => 'After Proceed to checkout'
+                ),
+                'default' => 'woocommerce_proceed_to_checkout'
             );
 
             $settings['simpl_button_text'] = array(
