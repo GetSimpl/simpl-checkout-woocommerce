@@ -18,7 +18,6 @@ jobs:
             composer install
             composer wp-install
 
-
       - run:
           name: Test
           command: |
