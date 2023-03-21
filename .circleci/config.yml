@@ -12,7 +12,7 @@ jobs:
       - run:
           name: Preparations
           command: |
-            apt update & upgrade
+            apt-get update
             apt-get install pv mysql-client sshpass
             composer install
             composer wp-install
