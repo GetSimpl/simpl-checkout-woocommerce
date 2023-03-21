@@ -155,6 +155,7 @@ class SimplIntegration {
            $data[$i]['price'] = (empty($product->get_price())=== false) ? $price/$item['quantity'] : 0;
            $data[$i]['variant_id'] = $item['variation_id'];
            $data[$i]['product_id'] = $item['product_id'];
+           $data[$i]['id'] = $item->get_id();
            $data[$i]['offer_price'] = (empty($productDetails['sale_price'])=== false) ? (int) $productDetails['sale_price']*100 : $price/$item['quantity'];
            $i++;
         } 
