@@ -12,6 +12,10 @@
     "composer/installers": "^1.0",
     "woocommerce/woocommerce": "^3.5"
   },
+  "require-dev": {
+    "composer/installers": "^1.0",
+    "woocommerce/woocommerce": "^3.5"
+  },
   "config": {
     "allow-plugins": {
       "composer/installers": true,

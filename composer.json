@@ -17,13 +17,5 @@
   },
   "scripts": {
     "wp-install": "wp-install --full --env-file .env --wp-composer-file composer.wp-install.json"
-  },
-  "config": {
-    "allow-plugins": {
-      "composer/installers": true
-    }
-  },
-  "require": {
-    "woocommerce/woocommerce": "^3.5"
   }
 }
