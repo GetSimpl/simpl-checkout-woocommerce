@@ -1,7 +1,4 @@
 <?php
-add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
-add_action( 'plugins_loaded', 'simpl_init_gateway_class' );
-
 function simpl_add_gateway_class( $gateways ) {
 	$gateways[] = 'WC_Simpl_Gateway'; // your class name is here
 	return $gateways;
