@@ -26,7 +26,7 @@ function simpl_checkout_int() {
     define('WIDGET_SCRIPT_PRODUCTION_URL', 'https://res.cloudinary.com/dlkxxfbi9/raw/upload/v1679032840/script/simpl-checkout-woocommerce-widget.iife_fogz3m.js');
     include_once 'includes/admin/index.php';
     include_once 'includes/endpoints/index.php';
-    include_once 'includes/widget/buy-now-button.php';
+    include_once 'includes/widget/index.php';
     add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
     add_action( 'plugins_loaded', 'simpl_init_gateway_class' );
     register_activation_hook( __FILE__, 'my_plugin_activate' );
