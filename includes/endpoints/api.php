@@ -8,6 +8,14 @@ add_action( 'rest_api_init', function () {
       }
     ) );
 
+    register_rest_route( 'simpl/v1', '/events', array(
+      'methods' => 'POST',
+      'callback' => 'create_events',
+      'permission_callback' => function () {
+        return true;
+      }
+    ) );
+
     register_rest_route( 'wc-simpl/v1', '/checkout', array(
       'methods' => 'GET',
       'callback' => 'fetch_checkout',
