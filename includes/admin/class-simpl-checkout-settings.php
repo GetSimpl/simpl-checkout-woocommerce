@@ -69,7 +69,7 @@ class WC_Simpl_Settings {
     }
 
     public static function cta_position_in_pdp() {
-        return get_option("wc_settings_tab_simpl_button_position");
+        return get_option("wc_settings_tab_simpl_button_position_pdp");
     }
 
     public static function cta_position_in_cart() {
@@ -197,10 +197,10 @@ class WC_Simpl_Settings {
                 'id'       => 'wc_settings_tab_simpl_button_section'
             );
 
-            $settings['simpl_button_position'] = array(
+            $settings['simpl_button_position_pdp'] = array(
                 'name' => __( 'Button Position in PDP', 'woocommerce-settings-tab-simpl' ),
                 'type' => 'select',
-                'id'   => 'wc_settings_tab_simpl_button_position',
+                'id'   => 'wc_settings_tab_simpl_button_position_pdp',
                 'options' => array(
                     'woocommerce_after_add_to_cart_button' => 'After add to cart button',
                     'woocommerce_before_add_to_cart_button' => 'Before add to cart button'
