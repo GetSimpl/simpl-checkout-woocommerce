@@ -1,16 +1,4 @@
 version: 2
-aliases:
-  - &filter-only-feature-branches
-    branches:
-      ignore: main
-    tags:
-      ignore: /^v[0-9]+(\.[0-9]+)*/
-  - &filter-only-main
-    branches:
-      only:
-        - main
-
-
 jobs:
   setup:
     working_directory: ~/simpl-checkout-woocommerce
@@ -59,16 +47,12 @@ workflows:
   feature_branch_workflow:
     jobs:
       - setup:
-        filters: *filter-only-feature-branches
       - test:
-        filters: *filter-only-feature-branches
         requires:
           - setup
   main_workflow:
     jobs:
       - setup:
-        filters: *filter-only-main
       - test:
-        filters: *filter-only-main
         requires:
           - setup       
