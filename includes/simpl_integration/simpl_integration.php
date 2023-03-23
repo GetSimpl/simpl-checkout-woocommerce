@@ -2,7 +2,7 @@
 
 class SimplIntegration {
     public function cart_redirection_url($cart) {
-        $cart_request = self::cart_payload($cart);
+        $cart_request = self::static_cart_payload($cart);
         $simpl_host = WC_Simpl_Settings::simpl_host();    
     
         $simplHttpResponse = wp_remote_post( "https://".$simpl_host."/api/v1/wc/cart", array(
@@ -163,7 +163,7 @@ class SimplIntegration {
                         $cost        = $shipping_rate->get_cost(); // The cost without tax
                         $tax_cost    = $shipping_rate->get_shipping_tax(); // The tax cost
                         $taxes       = $shipping_rate->get_taxes(); // The taxes details (array)
-                        $shipping_methods_array[$shipping_methods_count] = array("id" => $rate_id, "slug" => $method_id, "name" => $label_name, "amount" => $cost, "total_tax" => $tax_cost, "taxes" => $taxes);
+                        $shipping_methods_array[$shipping_methods_count] = array("id" => $rate_id, "slug" => $method_id, "name" => $label_name, "amount" => round($cost*100), "total_tax" =>round($tax_cost*100), "taxes" => $taxes);
                         $shipping_methods_count += 1;
                     }
                 }
