@@ -22,7 +22,7 @@
         $variation = new WC_Product_Variation();
         $variation->set_parent_id( $product->get_id() );
         $variation->set_attributes( array( 'magical' => 'Yes' ) );
-        $variation->set_regular_price( 1000000 ); // yep, magic hat is quite expensive
+        $variation->set_regular_price( 10 );
         $variation->save();
         
         return array("product_id" => $product->get_id(), "variant_id" => $variation->get_id());

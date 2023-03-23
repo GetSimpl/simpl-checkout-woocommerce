@@ -24,78 +24,51 @@ class SimplIntegration {
 
 
     public function static_cart_payload($cart) {
-        $cart_content = $cart->get_cart();
         $response = array("source" => "cart");
-        $checkout = $cart->checkout;
-        foreach($cart_content as $item_id => $item) {
-            $unique_device_id = WC()->session->get("simpl:session:id");
-            if($unique_device_id) {
-                $unique_device_id = WC()->session->get("simpl:session:id");
-            } else {
-                $unique_device_id = uniqid();
-                WC()->session->set("simpl:session:id", $unique_device_id);
-            }
-            $response["unique_id"] = $unique_device_id;
-            $price = round($item['line_subtotal']*100) + round($item['line_subtotal_tax']*100);
-            $cart_payload = array();
-            $cart_payload["total_price"] = round($cart->get_total('float') * 100);
-            $cart_payload["applied_discounts"] = $this->formatted_coupons($cart->get_coupons());
-            $discount_amount = 0;
-            if($cart->get_discount_total()) {
-                $discount_amount = $cart->get_discount_total();
-            }
-            $cart_payload["total_discount"] = $discount_amount;
-            $cart_payload["item_subtotal_price"] = $price; 
-            $cart_payload["total_tax"] = $cart->get_total_tax(); 
-            $cart_payload["total_shipping"] = $cart->get_shipping_total();
-            $cart_payload["checkout_url"] = wc_get_checkout_url();
-            $cart_payload["shipping_methods"] = $this->get_shipping_methods($cart);
-            $cart_payload["applied_shipping_method"] = $this->get_applied_shipping_method($cart);
-            $cart_payload["items"] = getCartLineItem($cart_content);
-            $cart_payload['attributes'] = array('a' => '2');
-            $response["cart"] = $cart_payload;
-        }
+        $cart_payload = $this->cart_common_payload($cart);
+        $response["cart"] = $cart_payload;
         return $response;
     }
 
     public function cart_payload($cart, $order_id=NULL) {
-        $cart_content = $cart->get_cart();
         $response = array("source" => "cart");
         $checkout = $cart->checkout;
-        foreach($cart_content as $item_id => $item) {
-            $unique_device_id = WC()->session->get("simpl:session:id");
-            if($unique_device_id) {
-                $unique_device_id = WC()->session->get("simpl:session:id");
-            } else {
-                $unique_device_id = uniqid();
-                WC()->session->set("simpl:session:id", $unique_device_id);
-            }
-            $response["unique_id"] = $unique_device_id;
-            $price = round($item['line_subtotal']*100) + round($item['line_subtotal_tax']*100);
-            $cart_payload = array();
-            $cart_payload["total_price"] = round($cart->get_total('float') * 100);
-            $shipping_address = $cart->get_customer()->get_shipping_address();
-            $billing_address = $cart->get_customer()->get_billing_address();
-            $cart_payload["shipping_address"] = ($shipping_address != "" ? $shipping_address : null);
-            $cart_payload["billing_address"] = ($billing_address != "" ? $billing_address : null);
-            $cart_payload["applied_discounts"] = $this->formatted_coupons($cart->get_coupons());
-            $discount_amount = 0;
-            if($cart->get_discount_total()) {
-                $discount_amount = $cart->get_discount_total();
-            }
-            $cart_payload["total_discount"] = $discount_amount;
-            $cart_payload["item_subtotal_price"] = $price; 
-            $cart_payload["total_tax"] = $cart->get_total_tax(); 
-            $cart_payload["total_shipping"] = $cart->get_shipping_total();
-            $cart_payload["checkout_url"] = wc_get_checkout_url();
-            $cart_payload["shipping_methods"] = $this->get_shipping_methods($cart);
-            $cart_payload["applied_shipping_method"] = $this->get_applied_shipping_method($cart);
-            $cart_payload["items"] = getCartLineItem($cart_content);
-            $cart_payload['attributes'] = array('a' => '2');
-            $cart_payload['checkout_order_id'] = $order_id;
-            $response["cart"] = $cart_payload;
-        }
+        $cart_payload = $this->cart_common_payload($cart);
+        $shipping_address = $cart->get_customer()->get_shipping_address();
+        $billing_address = $cart->get_customer()->get_billing_address();
+        $cart_payload["shipping_address"] = ($shipping_address != "" ? $shipping_address : null);
+        $cart_payload["billing_address"] = ($billing_address != "" ? $billing_address : null);
+        $cart_payload['checkout_order_id'] = $order_id;
+        $response["cart"] = $cart_payload;
         return $response;
+    }
+
+    function cart_common_payload($cart) {
+        $unique_device_id = WC()->session->get("simpl:session:id");
+        if($unique_device_id) {
+            $unique_device_id = WC()->session->get("simpl:session:id");
+        } else {
+            $unique_device_id = uniqid();
+            WC()->session->set("simpl:session:id", $unique_device_id);
+        }
+        $response["unique_id"] = $unique_device_id;
+        $cart_payload = array();
+        $cart_payload["total_price"] = $cart->get_total('float');
+        $cart_payload["applied_discounts"] = $this->formatted_coupons($cart->get_coupons());
+        $discount_amount = 0;
+        if($cart->get_discount_total()) {
+            $discount_amount = $cart->get_discount_total();
+        }
+        $cart_payload["total_discount"] = $discount_amount;
+        $cart_payload["item_subtotal_price"] = $cart->get_subtotal();
+        $cart_payload["total_tax"] = $cart->get_total_tax(); 
+        $cart_payload["checkout_url"] = wc_get_checkout_url();
+        $cart_payload["shipping_methods"] = $this->get_shipping_methods($cart);
+        $cart_payload["applied_shipping_method"] = $this->get_applied_shipping_method($cart);
+        $cart_content = $cart->get_cart();
+        $cart_payload["items"] = getCartLineItem($cart_content);
+        $cart_payload['attributes'] = array('a' => '2');
+        return $cart_payload;
     }
 
 
