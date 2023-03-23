@@ -5,6 +5,12 @@ aliases:
       ignore: main
     tags:
       ignore: /^v[0-9]+(\.[0-9]+)*/
+  - &filter-only-main
+    branches:
+      only:
+        - main
+
+
 jobs:
   build:
     working_directory: ~/simpl-checkout-woocommerce
@@ -57,3 +63,11 @@ workflows:
         filters: *filter-only-feature-branches
         requires:
           - build
+  main_workflow:
+    jobs:
+      - build:
+        filters: *filter-only-feature-branches
+      - test:
+        filters: *filter-only-feature-branches
+        requires:
+          - build          
