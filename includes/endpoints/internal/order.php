@@ -15,7 +15,8 @@ function create_order( WP_REST_Request $request ) {
     $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
     if($available_gateways["simpl"]) {
         $result = $available_gateways["simpl"]->process_payment($order_id);
-        WC()->session->set("simpl_order_id", "");
+        WC()->session->set("simpl_order_id", null);
+        WC()->session->set("simpl:session:id", null);
         if($result["result"] == "success") {
             $si = new SimplIntegration();
             $order_payload = $si->order_payload($order);
