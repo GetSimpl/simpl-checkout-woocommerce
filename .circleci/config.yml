@@ -51,7 +51,9 @@ jobs:
 workflows:
   feature_branch_workflow:
     jobs:
-      - build
-      - test
+      - build:
+        filters: *filter-only-feature-branches
+      - test:
+        filters: *filter-only-feature-branches
         requires:
           - build
