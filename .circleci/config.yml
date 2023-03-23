@@ -12,7 +12,7 @@ aliases:
 
 
 jobs:
-  build:
+  setup:
     working_directory: ~/simpl-checkout-woocommerce
     docker:
       # specify the version you desire here
@@ -58,17 +58,17 @@ workflows:
   version: 2
   feature_branch_workflow:
     jobs:
-      - build:
+      - setup:
         filters: *filter-only-feature-branches
       - test:
         filters: *filter-only-feature-branches
         requires:
-          - build:
+          - setup
   main_workflow:
     jobs:
-      - build:
+      - setup:
         filters: *filter-only-main
       - test:
         filters: *filter-only-main
         requires:
-          - build:          
+          - setup       
