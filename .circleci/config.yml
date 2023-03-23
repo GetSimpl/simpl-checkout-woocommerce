@@ -49,12 +49,9 @@ jobs:
             ./run-test.sh
 
 workflows:
-  version: 2
   feature_branch_workflow:
     jobs:
       - build
-        filters: *filter-only-feature-branches
       - test
-        filters: *filter-only-feature-branches
         requires:
           - build
