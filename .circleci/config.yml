@@ -67,8 +67,8 @@ workflows:
   main_workflow:
     jobs:
       - build:
-        filters: *filter-only-feature-branches
+        filters: *filter-only-main
       - test:
-        filters: *filter-only-feature-branches
+        filters: *filter-only-main
         requires:
           - build:          
