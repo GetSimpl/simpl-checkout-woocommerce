@@ -44,7 +44,11 @@ jobs:
 
 workflows:
   version: 2
-  build:
+  feature_branch_workflow:
     jobs:
       - build
+        filters: *filter-only-feature-branches
       - test
+        filters: *filter-only-feature-branches
+        requires:
+          - build
