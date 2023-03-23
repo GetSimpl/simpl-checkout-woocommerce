@@ -55,6 +55,7 @@ jobs:
             ./run-test.sh
 
 workflows:
+  version: 2
   feature_branch_workflow:
     jobs:
       - build:
