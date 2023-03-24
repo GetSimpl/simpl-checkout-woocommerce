@@ -1,4 +1,15 @@
-version: 2.1
+version: 2
+aliases:
+  - &filter-only-feature-branches
+    branches:
+      ignore: main
+    tags:
+      ignore: /^v[0-9]+(\.[0-9]+)*/
+  - &filter-only-main
+    branches:
+      only:
+        - main
+
 jobs:
   setup:
     working_directory: ~/simpl-checkout-woocommerce
