@@ -88,7 +88,8 @@ function getCartLineItem($cart) {
         $product =  wc_get_product( $item['product_id']); 
         $price = round($item['line_subtotal']*100) + round($item['line_subtotal_tax']*100);
 
-       $data[$i]['sku'] = $product->get_sku();
+	   $data[$i]['id'] = (string)$item['product_id'] . (string)$item['variation_id'];
+	   $data[$i]['sku'] = $product->get_sku();
        $data[$i]['quantity'] = (int)$item['quantity'];
        $data[$i]['title'] = mb_substr($product->get_title(), 0, 125, "UTF-8");
        $data[$i]['description'] = mb_substr($product->get_title(), 0, 250,"UTF-8");

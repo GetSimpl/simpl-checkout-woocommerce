@@ -32,8 +32,8 @@ class Test_Checkout_Endpoint extends WP_UnitTestCase{
         $response = $this->server->dispatch( $request );
         $response_data = $response->get_data();
         $this->assertEquals($response_data["source"], "cart");
-        $this->assertEquals($response_data["cart"]["total_price"], 100000000);
-        $this->assertEquals($response_data["cart"]["item_subtotal_price"], 100000000);
+        $this->assertEquals($response_data["cart"]["total_price"], '10.00');
+        $this->assertEquals($response_data["cart"]["item_subtotal_price"], '10.00');
         $this->assertEquals($response_data["cart"]["checkout_order_id"], $order->get_id());
 	}
 
@@ -44,11 +44,15 @@ class Test_Checkout_Endpoint extends WP_UnitTestCase{
         $order = create_order_from_cart();
         $request = new WP_REST_Request( 'POST', '/wc-simpl/v1/checkout' );
         $request["items"] = array(array("product_id" => $data['product_id'], "variant_id" => $data['variant_id'], "quantity" => 1));
+        $request["shipping_address"] = array("city"=> "chennai", "country" => "india", "line1" => "123", "line2" => "456");
+        $request["billing_address"] = array("city"=> "chennai", "country" => "india", "line1" => "123", "line2" => "456");
         $response = $this->server->dispatch( $request );
         $response_data = $response->get_data();
         $this->assertEquals($response_data["source"], "cart");
-        $this->assertEquals($response_data["cart"]["total_price"], 100000000);
-        $this->assertEquals($response_data["cart"]["item_subtotal_price"], 100000000);
+        $this->assertEquals($response_data["cart"]["total_price"], '10.00');
+        $this->assertEquals($response_data["cart"]["shipping_address"], array("city"=> "chennai", "country" => "india", "line1" => "123", "line2" => "456"));
+        $this->assertEquals($response_data["cart"]["billing_address"], array("city"=> "chennai", "country" => "india", "line1" => "123", "line2" => "456"));
+        $this->assertEquals($response_data["cart"]["item_subtotal_price"], '10.00');
         $this->assertNotNull($response_data["cart"]["checkout_order_id"]);
 	}
 

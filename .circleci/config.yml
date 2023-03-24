@@ -1,6 +1,17 @@
 version: 2
+aliases:
+  - &filter-only-feature-branches
+    branches:
+      ignore: main
+    tags:
+      ignore: /^v[0-9]+(\.[0-9]+)*/
+  - &filter-only-main
+    branches:
+      only:
+        - main
+
 jobs:
-  build:
+  setup:
     working_directory: ~/simpl-checkout-woocommerce
     docker:
       # specify the version you desire here
@@ -33,24 +44,25 @@ jobs:
             sudo apt-get install pv sshpass
             composer install
             composer wp-install
-
+  test:
+    working_directory: ~/simpl-checkout-woocommerce
+    steps:
+      - run_tests
       - run:
           name: Test
           command: |
             ./run-test.sh
 
-      - save_cache:
-          key: v1-dependencies-{{ checksum "composer.json" }}
-          paths:
-            - ./vendor
-
-      - save_cache:
-          key: v1-dependencies-{{ checksum "htdocs/wp-content/themes/wordpress-theme-base/package.json" }}
-          paths:
-            - /home/circleci/repo/htdocs/wp-content/themes/wordpress-theme-base/node_modules
-
 workflows:
-  version: 2
-  build-deploy:
+  feature_branch_workflow:
     jobs:
-      - build
+      - setup:
+      - test:
+        requires:
+          - setup
+  main_workflow:
+    jobs:
+      - setup:
+      - test:
+        requires:
+          - setup       
