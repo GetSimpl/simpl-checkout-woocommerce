@@ -4,12 +4,13 @@ class SimplIntegration {
     public function cart_redirection_url($cart) {
         $cart_request = self::static_cart_payload($cart);
         $simpl_host = WC_Simpl_Settings::simpl_host();    
-    
+
+        
         $simplHttpResponse = wp_remote_post( "https://".$simpl_host."/api/v1/wc/cart", array(
             "body" => json_encode($cart_request),
             "headers" => array("Shopify-Shop-Domain" => "checkout-staging-v2.myshopify.com", "content-type" => "application/json"),
         ));
-
+        
         if ( ! is_wp_error( $simplHttpResponse ) ) {
             $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
     
@@ -24,14 +25,14 @@ class SimplIntegration {
 
 
     public function static_cart_payload($cart) {
-        $response = array("source" => "cart");
+        $response = array("source" => "cart", "unique_id" => $this->unique_device_id());
         $cart_payload = $this->cart_common_payload($cart);
         $response["cart"] = $cart_payload;
         return $response;
     }
 
     public function cart_payload($cart, $order_id=NULL) {
-        $response = array("source" => "cart");
+        $response = array("source" => "cart", "unique_id" => $this->unique_device_id());
         $checkout = $cart->checkout;
         $cart_payload = $this->cart_common_payload($cart);
         $shipping_address = $cart->get_customer()->get_shipping_address();
@@ -44,23 +45,16 @@ class SimplIntegration {
     }
 
     function cart_common_payload($cart) {
-        $unique_device_id = WC()->session->get("simpl:session:id");
-        if($unique_device_id) {
-            $unique_device_id = WC()->session->get("simpl:session:id");
-        } else {
-            $unique_device_id = uniqid();
-            WC()->session->set("simpl:session:id", $unique_device_id);
-        }
-        $response["unique_id"] = $unique_device_id;
+
         $cart_payload = array();
-        $cart_payload["total_price"] = $cart->get_total('float');
+        $cart_payload["total_price"] = (float)$cart->get_total('float');
         $cart_payload["applied_discounts"] = $this->formatted_coupons($cart->get_coupons());
         $discount_amount = 0;
         if($cart->get_discount_total()) {
             $discount_amount = $cart->get_discount_total();
         }
         $cart_payload["total_discount"] = $discount_amount;
-        $cart_payload["item_subtotal_price"] = $cart->get_subtotal();
+        $cart_payload["item_subtotal_price"] = (float)$cart->get_subtotal();
         $cart_payload["total_tax"] = $cart->get_total_tax(); 
         $cart_payload["checkout_url"] = wc_get_checkout_url();
         $cart_payload["shipping_methods"] = $this->get_shipping_methods($cart);
@@ -69,6 +63,18 @@ class SimplIntegration {
         $cart_payload["items"] = getCartLineItem($cart_content);
         $cart_payload['attributes'] = array('a' => '2');
         return $cart_payload;
+    }
+
+    protected function unique_device_id() {
+        $unique_device_id = WC()->session->get("simpl:session:id");
+        if($unique_device_id) {
+            $unique_device_id = WC()->session->get("simpl:session:id");
+        } else {
+            $unique_device_id = uniqid();
+            WC()->session->set("simpl:session:id", $unique_device_id);
+        }
+
+        return $unique_device_id;
     }
 
 
