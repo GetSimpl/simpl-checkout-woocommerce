@@ -1,6 +1,7 @@
 <?php 
 $buttonPosition_pdp = WC_Simpl_Settings::cta_position_in_pdp();
 $buttonPosition_cart = WC_Simpl_Settings::cta_position_in_cart();
+$buttonPosition_collection = WC_Simpl_Settings::cta_position_in_collection();
 
 if(WC_Simpl_Settings::can_display_in_pdp_page()){
   // hook for pdp page
@@ -8,7 +9,10 @@ if(WC_Simpl_Settings::can_display_in_pdp_page()){
 }
 if(WC_Simpl_Settings::can_display_in_collections_page()){
   // hook for collections page
-  add_action( 'woocommerce_after_shop_loop_item', 'simpl_add_to_cart_btn');
+  if($buttonPosition_collection)
+    add_action( 'woocommerce_after_shop_loop_item', 'simpl_add_to_cart_btn');
+  else
+    add_action( 'woocommerce_after_shop_loop_item', 'simpl_add_to_cart_btn', 9); 
 }
 if(WC_Simpl_Settings::can_display_in_cart_page()){
   // hook for cart page

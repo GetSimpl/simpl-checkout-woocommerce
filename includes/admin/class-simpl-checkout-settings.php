@@ -76,6 +76,10 @@ class WC_Simpl_Settings {
         return get_option("wc_settings_tab_simpl_button_position_cart");
     }
 
+    public static function cta_position_in_collection() {
+        return get_option("wc_settings_tab_simpl_button_position_collection");
+    }
+
     public static function cta_text() {
         return get_option("wc_settings_tab_simpl_button_text");
     }
@@ -217,6 +221,17 @@ class WC_Simpl_Settings {
                     'woocommerce_after_cart_totals' => 'After Proceed to checkout'
                 ),
                 'default' => 'woocommerce_proceed_to_checkout'
+            );
+            
+            $settings['simpl_button_position_collection'] = array(
+                'name' => __( 'Button Position in Collection Page', 'woocommerce-settings-tab-simpl' ),
+                'type' => 'select',
+                'id'   => 'wc_settings_tab_simpl_button_position_collection',
+                'options' => array(
+                    '0' => 'Before Add to cart',
+                    '1' => 'After Add to cart'
+                ),
+                'default' => '1'
             );
 
             $settings['simpl_button_text'] = array(
