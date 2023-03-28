@@ -26,3 +26,24 @@ jobs:
       - run: composer install
       - run: composer wp-install
       - run: ./vendor/phpunit/phpunit/phpunit
+
+  build-and-publish-artifact:
+    name: Build and publish artifact
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build project
+        run: |
+          composer install --no-dev --optimize-autoloader
+          mkdir build
+      - name: Create artifact
+        uses: montudor/action-zip@v0.1.0
+        with:
+          args: zip -X -r build/simpl-checkout-plugin.zip . -x *.git* node_modules/\* .* "*/\.*" CODE_OF_CONDUCT.md CONTRIBUTING.md ISSUE_TEMPLATE.md PULL_REQUEST_TEMPLATE.md *.dist composer.* dev-helpers** build** .wp-install** vendor**
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+            name: simpl-checkout-plugin
+            path: build/simpl-checkout-plugin.zip
