@@ -38,7 +38,7 @@ define( 'WP_DEBUG', true );
  */
 
 define( 'DB_NAME', 'checkout_test' );
-define( 'DB_USER', 'admin' );
+define( 'DB_USER', 'root' );
 define( 'DB_PASSWORD', 'password' );
 define( 'DB_HOST', 'mysql' );
 define( 'DB_CHARSET', 'utf8' );
