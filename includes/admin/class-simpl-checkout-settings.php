@@ -236,14 +236,15 @@ class WC_Simpl_Settings {
                     'Checkout' => 'Checkout',
                     'UPI / Pay-in-3 / COD' => 'UPI / Pay-in-3 / COD'
                 ),
-                'value' => ''
+                'default' => ''
             );
 
             $settings['simpl_button_bg'] = array(
                 'name' => __( 'Button background', 'woocommerce-settings-tab-simpl' ),
                 'type' => 'text',
                 'desc' => __( 'Enter button background color', 'woocommerce-settings-tab-simpl' ),
-                'id'   => 'wc_settings_tab_simpl_button_bg'
+                'id' => 'wc_settings_tab_simpl_button_bg',
+                'default' => ''
             );
 
             $settings['simpl_button_activated'] = array(

@@ -22,9 +22,8 @@ function simpl_add_to_cart_btn(){
   $enabled_only_for_admin = WC_Simpl_Settings::is_simpl_enabled_for_admins() && current_user_can('manage_woocommerce');  
 
   if(WC_Simpl_Settings::is_simpl_button_enabled() || $enabled_only_for_admin) {
-    $color = WC_Simpl_Settings::cta_color() || "default";
+    $color = WC_Simpl_Settings::cta_color();
     $buttonText = WC_Simpl_Settings::cta_text();
-    console_log($color);
     $productID = get_the_ID();
     if(is_cart()){
         $page = 'cart';
@@ -34,11 +33,15 @@ function simpl_add_to_cart_btn(){
         $page = 'product';
     }
 
-    echo '<div class="simpl-checkout-cta-container simpl-button-container" data-background=' .$color. ' page=' .$page. ' data-product-id=' .$productID. ' data-text="' .$buttonText. '"></div>';
+    $button = getWidgetConfig();
+    console_log($button);
+    $template = SIMPL_PLUGIN_DIR . './includes/widget/template.php';
+    load_template($template, false, array("data-background" => $color, "page" => $page, "data-product-id" => $productID, "data-text" => $buttonText, "data-button" => $button));
   }
 }
 
 function load_widget_script(){
+  updateCtaWithAdminSettings();
   $script_url = WC_Simpl_Settings::widget_script_url();
   echo '<script type="text/javascript" src=' .$script_url. '></script>';
 }
