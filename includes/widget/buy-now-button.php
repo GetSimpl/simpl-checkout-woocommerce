@@ -1,5 +1,6 @@
 <?php 
 $buttonPosition_pdp = WC_Simpl_Settings::cta_position_in_pdp();
+$buttonPosition_cart = WC_Simpl_Settings::cta_position_in_cart();
 
 if(WC_Simpl_Settings::can_display_in_pdp_page()){
   // hook for pdp page
@@ -11,7 +12,7 @@ if(WC_Simpl_Settings::can_display_in_collections_page()){
 }
 if(WC_Simpl_Settings::can_display_in_cart_page()){
   // hook for cart page
-  add_action( 'woocommerce_after_cart_totals', 'simpl_add_to_cart_btn');
+  add_action( $buttonPosition_cart, 'simpl_add_to_cart_btn');
 }
 
 // footer hook to load script
