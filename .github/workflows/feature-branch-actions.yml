@@ -8,7 +8,6 @@ jobs:
       mysql:
         image: mysql:latest
         env:
-          MYSQL_ROOT_HOST: localhost
           MYSQL_DATABASE: checkout_test
           MYSQL_ALLOW_EMPTY_PASSWORD: false
           MYSQL_USER: admin
