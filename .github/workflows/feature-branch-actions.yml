@@ -4,10 +4,10 @@ on: [push]
 jobs:
   test:
     runs-on: ubuntu-latest
-    container:
+    container: ubuntu/mysql:latest
     services:
       mysql:
-        image: ubuntu/mysql:latest
+        image: mysql:latest
         env:
           MYSQL_ROOT_HOST: 127.0.0.1
           MYSQL_ROOT_PASSWORD: password
