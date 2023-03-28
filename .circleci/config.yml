@@ -1,4 +1,3 @@
-version: 2
 aliases:
   - &filter-only-feature-branches
     branches:
@@ -10,6 +9,7 @@ aliases:
       only:
         - main
 
+version: 2
 jobs:
   setup:
     working_directory: ~/simpl-checkout-woocommerce
@@ -47,22 +47,26 @@ jobs:
   test:
     working_directory: ~/simpl-checkout-woocommerce
     steps:
-      - run_tests
+      - run_tests:
+          filters: *filter-only-feature-branches
       - run:
           name: Test
           command: |
             ./run-test.sh
 
 workflows:
+  version: 2
   feature_branch_workflow:
     jobs:
       - setup:
+          filters: *filter-only-feature-branches
       - test:
-        requires:
-          - setup
+          requires:
+            - setup
   main_workflow:
     jobs:
       - setup:
+          filters: *filter-only-feature-branches
       - test:
-        requires:
-          - setup       
+          requires:
+            - setup       
