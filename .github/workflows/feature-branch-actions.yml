@@ -1,0 +1,13 @@
+name: test-build-deploy
+run-name: Running feature branch workflow
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - run: composer install
+      - run: composer wp-install
