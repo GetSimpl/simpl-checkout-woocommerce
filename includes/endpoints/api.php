@@ -48,6 +48,14 @@ add_action( 'rest_api_init', function () {
       }
       ) );
 
+    register_rest_route( 'wc-simpl/v1', '/checkout/coupons', array(
+      'methods' => 'DELETE',
+      'callback' => 'remove_coupons',
+      'permission_callback' => function () {
+        return true;
+      }
+      ) );  
+
     register_rest_route( 'wc-simpl/v1', '/checkout', array(
       'methods' => 'POST',
       'callback' => 'create_checkout',

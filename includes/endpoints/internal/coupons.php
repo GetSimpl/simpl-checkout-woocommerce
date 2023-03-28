@@ -51,3 +51,25 @@ function remove_coupon(WP_REST_Request $request) {
     $si = new SimplIntegration();
     return $si->cart_payload(WC()->cart, $order_id);
 }
+
+
+function remove_coupons(WP_REST_Request $request) {
+    global $notice_message;
+    initCartCommon();
+
+    $order = wc_get_order((int)$request->get_params()["checkout_order_id"]);
+
+    $cart = convert_wc_order_to_wc_cart($order);
+    $cart->remove_coupons();
+    $notice_message = $_SESSION["simpl_session_message"];
+    if($notice_message["type"] == "error") {
+        return new WP_Error("user_error", $notice_message["message"]);
+    }
+    $coupon_codes  = $order->get_coupon_codes();
+    foreach($coupon_codes as $index => $code) {
+        $order->remove_coupon($code);
+    }
+    $order->save();
+    $si = new SimplIntegration();
+    return $si->cart_payload(WC()->cart, $order_id);
+}
