@@ -5,7 +5,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-      image: mysql:latest
+      image: ubuntu/mysql:latest
       env:
         MYSQL_ROOT_HOST: 127.0.0.1
         MYSQL_ROOT_PASSWORD: password
