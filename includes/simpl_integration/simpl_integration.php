@@ -39,6 +39,7 @@ class SimplIntegration {
         $billing_address = $cart->get_customer()->get_billing_address();
         $cart_payload["shipping_address"] = ($shipping_address != "" ? $shipping_address : null);
         $cart_payload["billing_address"] = ($billing_address != "" ? $billing_address : null);
+
         $cart_payload['checkout_order_id'] = $order_id;
         $response["cart"] = $cart_payload;
         return $response;
@@ -54,7 +55,13 @@ class SimplIntegration {
             $discount_amount = $cart->get_discount_total();
         }
         $cart_payload["total_discount"] = $discount_amount;
-        $cart_payload["item_subtotal_price"] = (float)$cart->get_subtotal();
+        if(wc_prices_include_tax()) {
+            $cart_payload['tax_included'] = true;
+        } else {
+            $cart_payload['tax_included'] = false;
+        }
+        $cart_payload["item_subtotal_price"] = (float)$cart->get_subtotal() + (float)$cart->get_subtotal_tax();
+
         $cart_payload["total_tax"] = $cart->get_total_tax(); 
         $cart_payload["checkout_url"] = wc_get_checkout_url();
         $cart_payload["shipping_methods"] = $this->get_shipping_methods($cart);
@@ -142,7 +149,7 @@ class SimplIntegration {
                         $cost        = $shipping_rate->get_cost(); // The cost without tax
                         $tax_cost    = $shipping_rate->get_shipping_tax(); // The tax cost
                         $taxes       = $shipping_rate->get_taxes(); // The taxes details (array)
-                        $shipping_methods_array[$shipping_methods_count] = array("id" => $rate_id, "slug" => $method_id, "name" => $label_name, "amount" => round($cost*100), "total_tax" =>round($tax_cost*100), "taxes" => $taxes);
+                        $shipping_methods_array[$shipping_methods_count] = array("id" => $rate_id, "slug" => $method_id, "name" => $label_name, "amount" => (float)$cost, "total_tax" =>(float)$tax_cost, "taxes" => $taxes);
                         $shipping_methods_count += 1;
                     }
                 }
@@ -155,7 +162,7 @@ class SimplIntegration {
     
         foreach($order->get_items() as $item_id => $item) { 
             $product =  wc_get_product( $item['product_id']); 
-            $price = round($item['line_subtotal']*100) + round($item['line_subtotal_tax']*100);
+            $price = (float)$item['line_subtotal'] + (float)$item['line_subtotal_tax'];
     
            $data[$i]['sku'] = $product->get_sku();
            $data[$i]['quantity'] = (int)$item['quantity'];
@@ -168,7 +175,7 @@ class SimplIntegration {
            $data[$i]['variant_id'] = $item['variation_id'];
            $data[$i]['product_id'] = $item['product_id'];
            $data[$i]['id'] = $item->get_id();
-           $data[$i]['offer_price'] = (empty($productDetails['sale_price'])=== false) ? (int) $productDetails['sale_price']*100 : $price/$item['quantity'];
+           $data[$i]['offer_price'] = (empty($productDetails['sale_price'])=== false) ? (float)$productDetails['sale_price'] : $price/$item['quantity'];
            $i++;
         } 
     
