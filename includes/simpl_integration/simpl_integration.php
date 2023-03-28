@@ -90,6 +90,7 @@ class SimplIntegration {
         $response["id"] = $order->get_id();
         $response["total_price"] = $order->get_total();
         $response["items"] = $this->getOrderLineItem($order);        
+        $response["taxes"] = $order->get_taxes();
         $response["shipping_address"] = $order->get_address('shipping');
         $response["billing_address"] = $order->get_address('billing');
         $response["applied_discounts"] = $this->formatted_coupons($order->get_coupons());
