@@ -24,5 +24,6 @@ jobs:
       - run: export DB_HOST=127.0.0.1
       - run: sudo /etc/init.d/mysql start
       - run: composer install
+      - run: composer wp-install
       - run: vendor/phpunit/phpunit/phpunit
 
