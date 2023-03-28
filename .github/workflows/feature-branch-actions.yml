@@ -20,7 +20,9 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-      - run: sudo systemctl start mysql &&  echo "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';"| sudo /usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf
+      - run: sudo systemctl start mysql &&  echo "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';"| sudo /usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf
+      - run: sudo systemctl start mysql &&  echo "FLUSH PRIVILEGES;"| sudo /usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf
+      - run: sudo systemctl restart mysql
       - run: composer install
       - run: composer wp-install
       - run: ./vendor/phpunit/phpunit/phpunit
