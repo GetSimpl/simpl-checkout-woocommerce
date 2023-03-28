@@ -40,7 +40,7 @@ define( 'WP_DEBUG', true );
 define( 'DB_NAME', 'checkout_test' );
 define( 'DB_USER', 'admin' );
 define( 'DB_PASSWORD', 'password' );
-define( 'DB_HOST', '127.0.0.1' );
+define( 'DB_HOST', 'mysql' );
 define( 'DB_CHARSET', 'utf8' );
 define( 'DB_COLLATE', '' );
 define( 'PLUGIN_DIR',  realpath(dirname(__FILE__) . '/../'));
