@@ -1,0 +1,9 @@
+div#wc_settings_tab_simpl_api_key-description + table + table + h2 {
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+}
+
+div#wc_settings_tab_simpl_button_visibility-description + table + h2 {
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+}
