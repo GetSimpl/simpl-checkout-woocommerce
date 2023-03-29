@@ -80,28 +80,3 @@ function initCartCommon()
         WC()->cart->empty_cart();
     }
 }
-
-function getCartLineItem($cart) {
-    $i = 0;
-
-    foreach($cart as $item_id => $item) { 
-        $product =  wc_get_product( $item['product_id']); 
-		$price = round((float)$item['line_subtotal'] + (float)$item['line_subtotal_tax']);
-
-	   $data[$i]['id'] = (string)$item['product_id'] . (string)$item['variation_id'];
-	   $data[$i]['sku'] = $product->get_sku();
-       $data[$i]['quantity'] = (int)$item['quantity'];
-       $data[$i]['title'] = mb_substr($product->get_title(), 0, 125, "UTF-8");
-       $data[$i]['description'] = mb_substr($product->get_title(), 0, 250,"UTF-8");
-       $productImage = $product->get_image_id()?? null;
-       $data[$i]['image'] = $productImage? wp_get_attachment_url( $productImage ) : null;
-       $data[$i]['url'] = $product->get_permalink();
-       $data[$i]['price'] = (empty($product->get_price())=== false) ? $price/$item['quantity'] : 0;
-       $data[$i]['variant_id'] = $item['variation_id'];
-       $data[$i]['product_id'] = $item['product_id'];
-       $data[$i]['offer_price'] = round((empty($productDetails['sale_price'])=== false) ? (float) $productDetails['sale_price'] : $price/$item['quantity']);
-       $i++;
-    } 
-
-    return $data;
-}

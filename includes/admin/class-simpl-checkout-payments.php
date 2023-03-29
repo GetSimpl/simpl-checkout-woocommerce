@@ -48,6 +48,9 @@ function simpl_init_gateway_class() {
             if(WC()->session) {
                 $simpl_order_id = WC()->session->get("simpl_order_id");
                 $order = wc_get_order((int)$simpl_order_id);
+                if(!$order) {
+                    unset( $available_gateways['simpl'] );                                    
+                }
                 if($order) {
                     $status = $order->get_status();
                     if($status != "checkout-draft") {
@@ -55,10 +58,6 @@ function simpl_init_gateway_class() {
                     }
                 }         
             }
-            // $cart_hash = WC()->cart-> get_cart_hash();
-            // if(wc_verify_nonce("simpl_cart_".$cart_hash)) {
-                // unset( $available_gateways['simpl'] );
-            // }
             return $available_gateways;
          }
 
@@ -88,7 +87,6 @@ function simpl_init_gateway_class() {
                 "body" => json_encode(array("order_id" => $order_id)),
                 "headers" => array("Shopify-Shop-Domain" => "checkout-staging-v2.myshopify.com", "content-type" => "application/json"),
             ));
-            // var_dump($order_id);
             return false;
         }
         
