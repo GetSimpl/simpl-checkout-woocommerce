@@ -33,14 +33,14 @@ jobs:
     needs: [test]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Build project
         run: |
           mkdir build
       - name: Create artifact
-        uses: montudor/action-zip@v0.1.0
+        uses: montudor/action-zip@v1
         with:
-          args: zip -X -r build/simpl-checkout-plugin.zip . -x *.git* *.dist composer.* dev-helpers** build** tests** bin**
+          args: zip -r build/simpl-checkout-plugin.zip .
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
