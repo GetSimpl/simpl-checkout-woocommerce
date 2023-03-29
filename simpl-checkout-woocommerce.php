@@ -27,6 +27,7 @@ function simpl_checkout_int() {
     include_once 'includes/admin/index.php';
     include_once 'includes/endpoints/index.php';
     include_once 'includes/widget/index.php';
+    include_once 'includes/plugin_support/index.php';
     add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
     add_action( 'plugins_loaded', 'simpl_init_gateway_class' );
     register_activation_hook( __FILE__, 'my_plugin_activate' );

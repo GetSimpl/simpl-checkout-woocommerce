@@ -296,9 +296,9 @@ class WC_Simpl_Settings {
 
     protected static function is_valid_credentials() {
         return true;
-        $simplHttpResponse = wp_remote_get( "https://".$simpl_host."/api/v1/app/verify", array(
+        $simplHttpResponse = wp_remote_get( "https://".$simpl_host."/api/v1/wc/app/verify", array(
             "headers" => array(
-                    "shop-domain" => $store_url,
+                    "shop_domain" => $store_url,
                     "merchant_client_id" => $client_credentials["client_id"],
                     "merchant_client_secret" => $client_credentials["client_secret"],                
                     "content-type" => "application/json"

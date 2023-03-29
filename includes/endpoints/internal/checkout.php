@@ -58,6 +58,7 @@ function update_checkout( WP_REST_Request $request ) {
         $order = update_order_from_cart($request->get_params()["checkout_order_id"]);
         $si = new SimplIntegration();
         $cart_payload = $si->cart_payload(WC()->cart, $order->id);
+        do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
         return $cart_payload;
     } catch (Exception $fe) {
         return new WP_Error("user_error", $e->getMessage());
