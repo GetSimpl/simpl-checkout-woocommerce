@@ -22,8 +22,8 @@ function simpl_checkout_int() {
     define('WIDGET_SCRIPT_LOCALHOST', 'http://localhost:4300/');
     define("SIMPL_ORDER_STATUS_CHECKOUT", "checkout-draft");
     define("SIMPL_ORDER_METADATA", "is_simpl_checkout_order");
-    define('WIDGET_SCRIPT_STAGING_URL', 'https://res.cloudinary.com/dlkxxfbi9/raw/upload/v1680081376/latest/simpl-checkout-woocommerce-widget.iife_ccd59l.js');
-    define('WIDGET_SCRIPT_PRODUCTION_URL', 'https://res.cloudinary.com/dlkxxfbi9/raw/upload/v1680081376/latest/simpl-checkout-woocommerce-widget.iife_ccd59l.js');
+    define('WIDGET_SCRIPT_STAGING_URL', 'https://s3.ap-southeast-1.amazonaws.com/staging-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
+    define('WIDGET_SCRIPT_PRODUCTION_URL', 'https://s3.ap-southeast-1.amazonaws.com/staging-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
     include_once 'includes/admin/index.php';
     include_once 'includes/endpoints/index.php';
     include_once 'includes/widget/index.php';
