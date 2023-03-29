@@ -7,3 +7,17 @@ div#wc_settings_tab_simpl_button_visibility-description + table + h2 {
     border-top: 1px solid #ccc;
     padding-top: 20px;
 }
+
+#wc_settings_tab_simpl_api_key-description + table.form-table th.titledesc {
+    font-weight: normal;
+}
+#wc_settings_tab_simpl_api_key-description + table + table.form-table th.titledesc {
+    font-weight: normal;
+}
+#wc_settings_tab_simpl_button_visibility-description + table.form-table th.titledesc {
+    font-weight: normal;
+}
+
+#wc_settings_tab_simpl_button_section_configuration-description + table.form-table th.titledesc {
+    font-weight: normal;
+}
