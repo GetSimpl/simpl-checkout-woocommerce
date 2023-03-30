@@ -49,7 +49,7 @@ class SimplIntegration {
     function cart_common_payload($cart) {
 
         $cart_payload = array();
-        $cart_payload["total_price"] = wc_format_decimal($cart->get_total('float'), 2);
+        $cart_payload["total_price"] = wc_format_decimal($cart->get_cart_contents_total());
         $cart_payload["applied_discounts"] = $this->formatted_coupons($cart->get_coupons());
         $discount_amount = 0;
         if($cart->get_discount_total()) {
@@ -94,7 +94,7 @@ class SimplIntegration {
         $response["taxes"] = $order->get_tax_totals();
         $response["shipping_address"] = $order->get_address('shipping');
         $response["billing_address"] = $order->get_address('billing');
-        $response["applied_discounts"] = $this->formatted_coupons($order->get_coupons());
+        $response["applied_discounts"] = $this->formatted_order_coupons($order->get_coupons());
         $discount_amount = 0;
         if($order->get_discount_total()) {
             $discount_amount = $order->get_discount_total();
@@ -119,7 +119,17 @@ class SimplIntegration {
         $applied_discounts = array();
         $applied_discount_count = 0;
         foreach($coupons as $coupon_code => $coupon) {
-            $applied_discounts[$applied_discount_count] = array("code" => $coupon_code, "amount" => $coupon->get_amount(), "free_shipping" => $coupon->enable_free_shipping());
+            $applied_discounts[$applied_discount_count] = array("code" => $coupon_code, "amount" => wc_format_decimal($coupon->get_amount(), 2), "free_shipping" => $coupon->enable_free_shipping());
+            $applied_discount_count += 1;
+        }
+        return $applied_discounts;
+    }
+
+    protected function formatted_order_coupons($coupons) {
+        $applied_discounts = array();
+        $applied_discount_count = 0;
+        foreach($coupons as $coupon_code => $coupon) {
+            $applied_discounts[$applied_discount_count] = array("code" => $coupon_code, "amount" => wc_format_decimal($coupon->get_discount(), 2));
             $applied_discount_count += 1;
         }
         return $applied_discounts;

@@ -296,16 +296,17 @@ class WC_Simpl_Settings {
     }
 
     protected static function is_valid_credentials() {
-        return true;
-        $simplHttpResponse = wp_remote_get( "https://".$simpl_host."/api/v1/wc/app/verify", array(
+        // return true;
+        $client_credentials = self::merchant_credentials();
+        $simplHttpResponse = wp_remote_get( "https://".self::simpl_host()."/api/v1/wc/app/verify", array(
             "headers" => array(
-                    "shop_domain" => $store_url,
-                    "merchant_client_id" => $client_credentials["client_id"],
-                    "merchant_client_secret" => $client_credentials["client_secret"],                
+                    "shop_domain" => self::store_url(),
+                    "client_id" => $client_credentials["client_id"],
+                    "client_secret" => $client_credentials["client_secret"],                
                     "content-type" => "application/json"
                 ),
         ));
-    
+
         if ( ! is_wp_error( $simplHttpResponse ) ) {
             $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
             if($body["success"]) {

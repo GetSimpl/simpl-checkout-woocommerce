@@ -47,7 +47,6 @@ function save_abandoned_cart_support($cart, $simpl_checkout_data)
             $wpdb->prepare('SELECT * FROM `' . $cartAbandonmentTable . '` WHERE session_id = %s and order_status IN (%s, %s)', $sessionId, 'normal', 'abandoned')
         );
 
-        var_dump($result);
 
         if (isset($result)) {
             $wpdb->update(
@@ -89,6 +88,8 @@ function save_abandoned_cart_support($cart, $simpl_checkout_data)
             }
         }
     }
+
+    // do_action("woocommerce_order_status_changed");
 
     return $response;
 }
