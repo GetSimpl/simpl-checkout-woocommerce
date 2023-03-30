@@ -19,6 +19,8 @@ function simpl_checkout_int() {
     define('SIMPL_CONFIG_STAGING_URL', 'checkout-3pp.stagingsimpl.com');
     define('SIMPL_CONFIG_PRODUCTION_URL', 'checkout-3pp.getsimpl.com');
     define("SIMPL_ENV", getenv("SIMPL_ENV"));
+    define("SIMPL_PRE_QA_QUERY_PARAM_KEY", "simpl-qa");
+    define("SIMPL_PRE_QA_QUERY_PARAM_VALUE", "ce50e3b0-641b-4b26-8bbb-8a240f03811b");
     define('WIDGET_SCRIPT_LOCALHOST', 'http://localhost:4300/');
     define("SIMPL_ORDER_STATUS_CHECKOUT", "checkout-draft");
     define("SIMPL_ORDER_METADATA", "is_simpl_checkout_order");
