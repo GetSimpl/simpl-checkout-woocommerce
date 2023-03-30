@@ -26,6 +26,11 @@ class WC_Simpl_Settings {
         return SIMPL_CONFIG_PRODUCTION_URL;
     }
 
+    public static function test_mode_enabled() {
+        $staging_env = get_option("wc_settings_tab_simpl_test_env");        
+        return $staging_env == "yes";
+    }
+
     public static function widget_script_url() {
         if(SIMPL_ENV == "localhost") {
             return WIDGET_SCRIPT_LOCALHOST;
@@ -48,11 +53,6 @@ class WC_Simpl_Settings {
 
     //Disable button for users when test mode is enabled
     public static function is_simpl_button_enabled() {
-        $staging_env = get_option("wc_settings_tab_simpl_test_env");
-        if($staging_env == "yes") {
-            return false;
-        }
-        
         return get_option("wc_settings_tab_simpl_button_activated") == 'yes';
     }
 

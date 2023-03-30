@@ -5,6 +5,7 @@ include_once SIMPL_PLUGIN_DIR . "/includes/helpers/cart_helper.php";
 
 function create_cart(WP_REST_Request $request)
 {
+    var_dump($_SERVER['HTTP_REFERER']);
     if (isset($request->get_params()["is_pdp"]) && $request->get_params()["is_pdp"]) {
         $productID = $request->get_params()["product_id"];
         $variantID = $request->get_params()["variant_id"];

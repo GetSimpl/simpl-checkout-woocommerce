@@ -6,6 +6,7 @@ function save_abandoned_cart_support($cart, $simpl_checkout_data)
 {
     global $wpdb;
     $currentTime = current_time('Y-m-d H:i:s');
+    $simpl_checkout_data = $simpl_checkout_data['cart'];
 
     $otherFields = array(
         'wcf_billing_company'     => "",
@@ -33,6 +34,7 @@ function save_abandoned_cart_support($cart, $simpl_checkout_data)
         'cart_contents' => serialize($cart_content),
         'cart_total'    => sanitize_text_field($simpl_checkout_data['total_price']),
         'time'          => $currentTime,
+        'order_status' => 'normal',
         'other_fields'  => serialize($otherFields),
         'checkout_id'   => wc_get_page_id('cart'),
     );
@@ -88,7 +90,7 @@ function save_abandoned_cart_support($cart, $simpl_checkout_data)
         }
     }
 
-    return $logObj;
+    return $response;
 }
 
 
