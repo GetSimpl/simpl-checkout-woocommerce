@@ -225,7 +225,8 @@ class WC_Simpl_Settings {
                 'type' => 'hidden',
                 'desc' => __( 'Show simpl checkout button in Collections page', 'woocommerce-settings-tab-simpl' ),
                 'id'   => 'wc_settings_tab_simpl_button_collections_activated',
-                'class'=>'hide'
+                'default'=>'no',
+                'value'=>'no'
             );
 
             $settings['simpl_button_cart_activated'] = array(
@@ -299,7 +300,8 @@ class WC_Simpl_Settings {
                 'type' => 'hidden',
                 'desc' => __( 'Enter button background color', 'woocommerce-settings-tab-simpl' ),
                 'id' => 'wc_settings_tab_simpl_button_bg',
-                'default' => ''
+                'default' => '',
+                'value' => ''
             );
 
             $settings['simpl_button_activated'] = array(
