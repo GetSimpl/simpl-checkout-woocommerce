@@ -8,7 +8,7 @@ class WC_Simpl_Settings {
         
         // add css to admin panel
         function register_simpl_admin_style(){
-            wp_register_style('simpl-admin-style', plugins_url( '/simpl-checkout-woocommerce/css/simpl-admin.css' ), false, '1.0.0', 'all');
+            wp_register_style('simpl-admin-style', plugins_url( 'css/simpl-admin.css',__FILE__ ), false, '1.0.0', 'all');
         }
         add_action('admin_init','register_simpl_admin_style');
         function enqueue_simpl_style(){
