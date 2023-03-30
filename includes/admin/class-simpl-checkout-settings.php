@@ -8,7 +8,7 @@ class WC_Simpl_Settings {
     }
     
     public static function add_settings_tab( $settings_tabs ) {
-        $settings_tabs['settings_tab_simpl'] = __( 'Simpl checkout', 'woocommerce-settings-tab-simpl' );
+        $settings_tabs['settings_tab_simpl'] = __( 'Simpl Checkout', 'woocommerce-settings-tab-simpl' );
         return $settings_tabs;
     }
 
@@ -205,14 +205,14 @@ class WC_Simpl_Settings {
             $settings['simpl_button_pdp_activated'] = array(
                 'name' => __( 'Product Page', 'woocommerce-settings-tab-simpl' ),
                 'type' => 'checkbox',
-                'desc' => __( 'show simpl checkout button in Product page', 'woocommerce-settings-tab-simpl' ),
+                'desc' => __( 'Show simpl checkout button in Product page', 'woocommerce-settings-tab-simpl' ),
                 'id'   => 'wc_settings_tab_simpl_button_pdp_activated'
             );
 
             $settings['simpl_button_collections_activated'] = array(
                 'name' => __( 'Collections Pages', 'woocommerce-settings-tab-simpl' ),
                 'type' => 'hidden',
-                'desc' => __( 'show simpl checkout button in Collections page', 'woocommerce-settings-tab-simpl' ),
+                'desc' => __( 'Show simpl checkout button in Collections page', 'woocommerce-settings-tab-simpl' ),
                 'id'   => 'wc_settings_tab_simpl_button_collections_activated',
                 'class'=>'hide'
             );
@@ -220,7 +220,7 @@ class WC_Simpl_Settings {
             $settings['simpl_button_cart_activated'] = array(
                 'name' => __( 'Cart Page', 'woocommerce-settings-tab-simpl' ),
                 'type' => 'checkbox',
-                'desc' => __( 'show simpl checkout button in Cart page', 'woocommerce-settings-tab-simpl' ),
+                'desc' => __( 'Show simpl checkout button in Cart page', 'woocommerce-settings-tab-simpl' ),
                 'id'   => 'wc_settings_tab_simpl_button_cart_activated'
             );
 
@@ -230,7 +230,7 @@ class WC_Simpl_Settings {
             );
 
             $settings['section_title_2'] = array(
-                'name'     => __( 'Button configurations', 'woocommerce-settings-tab-simpl' ),
+                'name'     => __( 'Button Position', 'woocommerce-settings-tab-simpl' ),
                 'type'     => 'title',
                 'desc'     => 'Display button above/below the add to cart',
                 'id'       => 'wc_settings_tab_simpl_button_section_configuration'
@@ -245,7 +245,7 @@ class WC_Simpl_Settings {
                     'woocommerce_before_add_to_cart_button' => 'Before add to cart button'
                 ),
                 'value' => 'woocommerce_before_add_to_cart_button',
-                'desc'=>'Button Position in Product Page',
+                'desc'=>"This position will be relative to the 'Add to Cart' button",
                 'desc_tip' => true,
                 'default' => 'woocommerce_before_add_to_cart_button'
             );
@@ -259,7 +259,7 @@ class WC_Simpl_Settings {
                     'woocommerce_after_cart_totals' => 'After Proceed to checkout'
                 ),
                 'default' => 'woocommerce_proceed_to_checkout',
-                'desc'=>'Button Position in Cart Page',
+                'desc'=>"This position will be relative to the 'Proceed to Checkout' button",
                 'desc_tip' => true,
             );
 
@@ -294,7 +294,7 @@ class WC_Simpl_Settings {
             $settings['simpl_button_activated'] = array(
                 'name' => __( 'Activate', 'woocommerce-settings-tab-simpl' ),
                 'type' => 'checkbox',
-                'desc' => __( 'activate simpl checkout button', 'woocommerce-settings-tab-simpl' ),
+                'desc' => __( 'Activate simpl checkout button', 'woocommerce-settings-tab-simpl' ),
                 'id'   => 'wc_settings_tab_simpl_button_activated'
             );
             
