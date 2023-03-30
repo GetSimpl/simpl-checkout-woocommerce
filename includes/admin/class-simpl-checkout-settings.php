@@ -5,6 +5,17 @@ class WC_Simpl_Settings {
         add_filter( 'woocommerce_settings_tabs_array', __CLASS__ . '::add_settings_tab', 50 );
         add_action( 'woocommerce_settings_tabs_settings_tab_simpl', __CLASS__ . '::settings_tab' );
         add_action( 'woocommerce_update_options_settings_tab_simpl', __CLASS__ . '::update_settings' );
+        
+        // add css to admin panel
+        function register_simpl_admin_style(){
+            wp_register_style('simpl-admin-style', plugins_url( '/simpl-checkout-woocommerce/css/simpl-admin.css' ), false, '1.0.0', 'all');
+        }
+        add_action('admin_init','register_simpl_admin_style');
+        function enqueue_simpl_style(){
+            wp_enqueue_style( 'simpl-admin-style' );
+        }
+        add_action('admin_enqueue_scripts', 'enqueue_simpl_style');
+    
     }
     
     public static function add_settings_tab( $settings_tabs ) {

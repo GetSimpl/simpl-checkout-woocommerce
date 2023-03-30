@@ -32,15 +32,4 @@ function simpl_checkout_int() {
     register_activation_hook( __FILE__, 'my_plugin_activate' );
     register_deactivation_hook( __FILE__, 'my_plugin_deactivate' );
 }
-
-// add css to admin panel
-function register_simpl_admin_style(){
-    wp_register_style('simpl-admin-style',plugins_url('css/simpl-admin.css',__FILE__), false, '1.0.0', 'all');
-}
-add_action('admin_init','register_simpl_admin_style');
-
-function enqueue_simpl_style(){
-    wp_enqueue_style( 'simpl-admin-style' );
-}
-add_action('admin_enqueue_scripts', 'enqueue_simpl_style');
 ?>
