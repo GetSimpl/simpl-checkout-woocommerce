@@ -7,7 +7,7 @@ if(WC_Simpl_Settings::can_display_in_pdp_page()){
 }
 if(WC_Simpl_Settings::can_display_in_collections_page()){
   // hook for collections page
-  add_action( 'woocommerce_after_shop_loop_item', 'simpl_add_to_cart_btn');
+  //add_action( 'woocommerce_after_shop_loop_item', 'simpl_add_to_cart_btn');
 }
 if(WC_Simpl_Settings::can_display_in_cart_page()){
   // hook for cart page

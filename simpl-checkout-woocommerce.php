@@ -35,5 +35,4 @@ function simpl_checkout_int() {
     register_activation_hook( __FILE__, 'my_plugin_activate' );
     register_deactivation_hook( __FILE__, 'my_plugin_deactivate' );
 }
-
 ?>
