@@ -49,7 +49,7 @@ class SimplIntegration {
     function cart_common_payload($cart) {
 
         $cart_payload = array();
-        $cart_payload["total_price"] = wc_format_decimal($cart->get_cart_contents_total());
+        $cart_payload["total_price"] = wc_format_decimal($cart->get_total('float'), 2);
         $cart_payload["applied_discounts"] = $this->formatted_coupons($cart->get_coupons());
         $discount_amount = 0;
         if($cart->get_discount_total()) {
