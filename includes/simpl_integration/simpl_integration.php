@@ -31,7 +31,7 @@ class SimplIntegration {
     }
 
     public function cart_payload($cart, $order_id=NULL) {
-        $response = array("source" => "cart", "unique_id" => uniqid());
+        $response = array("source" => "cart", "unique_id" => $this->unique_device_id());
         $cart_payload = $this->cart_common_payload($cart);
         $shipping_address = $cart->get_customer()->get_shipping_address();
         $billing_address = $cart->get_customer()->get_billing_address();        
@@ -49,7 +49,7 @@ class SimplIntegration {
     function cart_common_payload($cart) {
 
         $cart_payload = array();
-        $cart_payload["total_price"] = wc_format_decimal($cart->get_total('float'), 2);
+        $cart_payload["total_price"] = wc_format_decimal($cart->get_cart_contents_total());
         $cart_payload["applied_discounts"] = $this->formatted_coupons($cart->get_coupons());
         $discount_amount = 0;
         if($cart->get_discount_total()) {
@@ -78,7 +78,7 @@ class SimplIntegration {
         if($unique_device_id) {
             $unique_device_id = WC()->session->get("simpl:session:id");
         } else {
-            $unique_device_id = uniqid();
+            $unique_device_id = md5(uniqid(wp_rand(), true));
             WC()->session->set("simpl:session:id", $unique_device_id);
         }
 
@@ -94,7 +94,7 @@ class SimplIntegration {
         $response["taxes"] = $order->get_tax_totals();
         $response["shipping_address"] = $order->get_address('shipping');
         $response["billing_address"] = $order->get_address('billing');
-        $response["applied_discounts"] = $this->formatted_coupons($order->get_coupons());
+        $response["applied_discounts"] = $this->formatted_order_coupons($order->get_coupons());
         $discount_amount = 0;
         if($order->get_discount_total()) {
             $discount_amount = $order->get_discount_total();
@@ -119,7 +119,17 @@ class SimplIntegration {
         $applied_discounts = array();
         $applied_discount_count = 0;
         foreach($coupons as $coupon_code => $coupon) {
-            $applied_discounts[$applied_discount_count] = array("code" => $coupon_code, "amount" => $coupon->get_amount(), "free_shipping" => $coupon->enable_free_shipping());
+            $applied_discounts[$applied_discount_count] = array("code" => $coupon_code, "amount" => wc_format_decimal($coupon->get_amount(), 2), "free_shipping" => $coupon->enable_free_shipping());
+            $applied_discount_count += 1;
+        }
+        return $applied_discounts;
+    }
+
+    protected function formatted_order_coupons($coupons) {
+        $applied_discounts = array();
+        $applied_discount_count = 0;
+        foreach($coupons as $coupon_code => $coupon) {
+            $applied_discounts[$applied_discount_count] = array("code" => $coupon_code, "amount" => wc_format_decimal($coupon->get_discount(), 2));
             $applied_discount_count += 1;
         }
         return $applied_discounts;

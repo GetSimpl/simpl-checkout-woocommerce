@@ -21,6 +21,7 @@ function create_checkout( WP_REST_Request $request ) {
         $order = create_order_from_cart();
         $si = new SimplIntegration();
         $cart_payload =  $si->cart_payload(WC()->cart, $order->get_id());
+        do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
         return $cart_payload;
     } catch (Exception $fe) {
         return new WP_Error("user_error", $fe->getMessage());
@@ -77,7 +78,6 @@ function fetch_checkout(WP_REST_Request $request) {
     WC()->cart->empty_cart();
     $order_id = $request->get_params()["checkout_order_id"];
     $order = wc_get_order($order_id);
-    $order = wc_get_order((int)$order_id);
     if($order) {
         convert_wc_order_to_wc_cart($order);
         $si = new SimplIntegration();

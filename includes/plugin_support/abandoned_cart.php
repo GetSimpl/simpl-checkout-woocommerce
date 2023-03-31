@@ -38,7 +38,7 @@ function save_abandoned_cart_support($cart, $simpl_checkout_data)
         'other_fields'  => serialize($otherFields),
         'checkout_id'   => wc_get_page_id('cart'),
     );
-
+    
     $sessionId = WC()->session->get('wcf_session_id');
 
     $cartAbandonmentTable = $wpdb->prefix . "cartflows_ca_cart_abandonment";
@@ -47,7 +47,6 @@ function save_abandoned_cart_support($cart, $simpl_checkout_data)
             $wpdb->prepare('SELECT * FROM `' . $cartAbandonmentTable . '` WHERE session_id = %s and order_status IN (%s, %s)', $sessionId, 'normal', 'abandoned')
         );
 
-        var_dump($result);
 
         if (isset($result)) {
             $wpdb->update(
@@ -66,7 +65,14 @@ function save_abandoned_cart_support($cart, $simpl_checkout_data)
             }
 
         } else {
-            $sessionId                     = md5(uniqid(wp_rand(), true));  // nosemgrep: php.lang.security.weak-crypto.weak-crypto
+            $simpl_session_id = WC()->session->get('simpl_checkout_session_id_'.$simpl_checkout_data['checkout_order_id']);
+            if(isset($simpl_session_id)) {
+                $sessionId = $simpl_session_id;        
+            } else {
+                $sessionId                     = md5(uniqid(wp_rand(), true));
+                WC()->session->set('simpl_checkout_session_id_'.$simpl_checkout_data['checkout_order_id'], $sessionId);
+            }
+
 
             $checkoutDetails['session_id'] = sanitize_text_field($sessionId);
 
@@ -89,6 +95,8 @@ function save_abandoned_cart_support($cart, $simpl_checkout_data)
             }
         }
     }
+
+    // do_action("woocommerce_order_status_changed");
 
     return $response;
 }
