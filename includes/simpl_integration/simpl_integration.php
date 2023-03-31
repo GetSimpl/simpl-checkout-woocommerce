@@ -31,7 +31,7 @@ class SimplIntegration {
     }
 
     public function cart_payload($cart, $order_id=NULL) {
-        $response = array("source" => "cart", "unique_id" => uniqid());
+        $response = array("source" => "cart", "unique_id" => $this->unique_device_id());
         $cart_payload = $this->cart_common_payload($cart);
         $shipping_address = $cart->get_customer()->get_shipping_address();
         $billing_address = $cart->get_customer()->get_billing_address();        
@@ -78,7 +78,7 @@ class SimplIntegration {
         if($unique_device_id) {
             $unique_device_id = WC()->session->get("simpl:session:id");
         } else {
-            $unique_device_id = uniqid();
+            $unique_device_id = md5(uniqid(wp_rand(), true));
             WC()->session->set("simpl:session:id", $unique_device_id);
         }
 
