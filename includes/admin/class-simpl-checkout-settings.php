@@ -186,7 +186,7 @@ class WC_Simpl_Settings {
         $settings['merchant_client_id']   = array(
             'title' => esc_html__( 'Merchant Client ID', 'woocommerce-settings-tab-simpl' ),
             'type'  => 'text',
-            'desc' => 'Merchant Client ID Hint',
+            'desc' => 'This identifies the merchant and is obtained post merchant onboarding',
             'desc_tip' => true,
             'id'       => 'wc_settings_tab_simpl_merchant_client_id'
         );
@@ -194,7 +194,7 @@ class WC_Simpl_Settings {
         $settings['merchant_client_secret'] = array(
             'title' => esc_html__( 'Merchant Client Secret', 'woocommerce-settings-tab-simpl' ),
             'type'  => 'password',
-            'desc' => 'Merchant Client Secret Hint',
+            'desc' => "Confidential code used to verify the client's identity and ensure the security. Not to be shared with anyone",
             'desc_tip' => true,
             'id'       => 'wc_settings_tab_simpl_merchant_client_secret'
         );
@@ -256,7 +256,6 @@ class WC_Simpl_Settings {
                     'woocommerce_after_add_to_cart_button' => 'After add to cart button',
                     'woocommerce_before_add_to_cart_button' => 'Before add to cart button'
                 ),
-                'value' => 'woocommerce_before_add_to_cart_button',
                 'desc'=>"This position will be relative to the 'Add to Cart' button",
                 'desc_tip' => true,
                 'default' => 'woocommerce_before_add_to_cart_button'
