@@ -81,6 +81,7 @@ function load_cart_from_order($order_id) {
 function convert_wc_order_to_wc_cart($order) {
     initCartCommon();
     $variationAttributes = [];
+    WC()->cart->empty_cart();
     if ($order && $order->get_item_count() > 0) {
         foreach ($order->get_items() as $item_id => $item) {
             $productId   = $item->get_product_id();

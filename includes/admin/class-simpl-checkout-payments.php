@@ -71,7 +71,7 @@ function simpl_init_gateway_class() {
             // Reduce stock levels
             $order->reduce_order_stock();
                     
-            $order->update_status('completed');
+            $order->update_status('processing');
             // Remove cart
             WC()->cart->empty_cart();
                     
