@@ -11,7 +11,7 @@ add_action('plugins_loaded', 'simpl_checkout_int', 0);
 add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
 function simpl_checkout_int() {
 
-    if (!class_exists('WC_Payment_Gateway') || class_exists('WC_Razorpay'))
+    if (!class_exists('WC_Payment_Gateway'))
     {
         return;
     }
