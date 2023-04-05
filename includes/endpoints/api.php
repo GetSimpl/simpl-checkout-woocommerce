@@ -19,58 +19,43 @@ add_action( 'rest_api_init', function () {
     register_rest_route( 'wc-simpl/v1', '/checkout', array(
       'methods' => 'GET',
       'callback' => 'fetch_checkout',
-      'permission_callback' => function () {
-        return true;
-      }
+      'permission_callback' => 'internal_authenticate'
     ) );
 
     register_rest_route( 'wc-simpl/v1', '/checkout/coupon', array(
       'methods' => 'POST',
       'callback' => 'apply_coupon',
-      'permission_callback' => function () {
-        return true;
-      }
+      'permission_callback' => 'internal_authenticate'
       ) );
 
     register_rest_route( 'wc-simpl/v1', '/checkout/shipping-method', array(
       'methods' => 'POST',
       'callback' => 'set_shipping_method',
-      'permission_callback' => function () {
-        return true;
-      }
+      'permission_callback' => 'internal_authenticate'
       ) );
 
     register_rest_route( 'wc-simpl/v1', '/checkout/coupon', array(
       'methods' => 'DELETE',
       'callback' => 'remove_coupon',
-      'permission_callback' => function () {
-        return true;
-      }
-      ) );
+      'permission_callback' => 'internal_authenticate'
+      ) );  
 
     register_rest_route( 'wc-simpl/v1', '/checkout/coupons', array(
       'methods' => 'DELETE',
       'callback' => 'remove_coupons',
-      'permission_callback' => function () {
-        return true;
-      }
+      'permission_callback' => 'internal_authenticate'
       ) );  
 
     register_rest_route( 'wc-simpl/v1', '/checkout', array(
       'methods' => 'POST',
       'callback' => 'create_checkout',
-      'permission_callback' => function () {
-        return true;
-      }
+      'permission_callback' => 'internal_authenticate'
       ) );
 
     register_rest_route( 'wc-simpl/v1', '/checkout', array(
       'methods' => 'PUT',
       'callback' => 'update_checkout',
-      'permission_callback' => function () {
-        return true;
-      }
-      // 'permission_callback' => 'internal_authenticate'
+      'permission_callback' => 'internal_authenticate'
     ) );
 
     register_rest_route( 'wc-simpl/v1', '/order', array(
