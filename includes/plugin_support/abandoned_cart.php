@@ -1,14 +1,18 @@
 <?php
 
-add_action("simpl_abandoned_cart", "save_abandoned_cart_support", 10, 2);
+add_action("simpl_abandoned_cart", "cart_flows_abandoned_cart", 10, 2);
 
-function save_abandoned_cart_support($cart, $simpl_checkout_data)
+function cart_flows_abandoned_cart($cart, $simpl_checkout_data)
 {
+    if (!is_plugin_active('woo-cart-abandonment-recovery/woo-cart-abandonment-recovery.php')) {
+        return false;
+    }
+ 
     global $wpdb;
-    $currentTime = current_time('Y-m-d H:i:s');
+    $current_time = current_time('Y-m-d H:i:s');
     $simpl_checkout_data = $simpl_checkout_data['cart'];
 
-    $otherFields = array(
+    $provider_other_data = array(
         'wcf_billing_company'     => "",
         'wcf_billing_address_1'   => $simpl_checkout_data['billing_address']['line1'] ?? '',
         'wcf_billing_address_2'   => $simpl_checkout_data['billing_address']['line2'] ?? '',
@@ -29,39 +33,37 @@ function save_abandoned_cart_support($cart, $simpl_checkout_data)
         'wcf_phone_number'        => $simpl_checkout_data['shipping_address']['phone'] ?? '',
     );
     $cart_content  = $cart->get_cart();
-    $checkoutDetails = array(
+    $checkout_details = array(
         'email'         => $simpl_checkout_data['shipping_address']['email'] ?? '',
         'cart_contents' => serialize($cart_content),
         'cart_total'    => sanitize_text_field($simpl_checkout_data['total_price']),
-        'time'          => $currentTime,
+        'time'          => $current_time,
         'order_status' => 'normal',
-        'other_fields'  => serialize($otherFields),
+        'other_fields'  => serialize($provider_other_data),
         'checkout_id'   => wc_get_page_id('cart'),
     );
     
     $sessionId = WC()->session->get('wcf_session_id');
 
-    $cartAbandonmentTable = $wpdb->prefix . "cartflows_ca_cart_abandonment";
-    if (empty($checkoutDetails) == false) {
+    $cart_abandonment_table = $wpdb->prefix . "cartflows_ca_cart_abandonment";
+    if (empty($checkout_details) == false) {
         $result = $wpdb->get_row(
-            $wpdb->prepare('SELECT * FROM `' . $cartAbandonmentTable . '` WHERE session_id = %s and order_status IN (%s, %s)', $sessionId, 'normal', 'abandoned')
+            $wpdb->prepare('SELECT * FROM `' . $cart_abandonment_table . '` WHERE session_id = %s and order_status IN (%s, %s)', $sessionId, 'normal', 'abandoned')
         );
 
 
         if (isset($result)) {
             $wpdb->update(
-                $cartAbandonmentTable,
-                $checkoutDetails,
+                $cart_abandonment_table,
+                $checkout_details,
                 array('session_id' => $sessionId)
             );
             if ($wpdb->last_error) {
                 $response['status']  = false;
                 $response['message'] = $wpdb->last_error;
-                $statusCode          = 400;
             } else {
                 $response['status']  = true;
                 $response['message'] = 'Data successfully updated for wooCommerce cart abandonment recovery';
-                $statusCode          = 200;
             }
 
         } else {
@@ -74,12 +76,12 @@ function save_abandoned_cart_support($cart, $simpl_checkout_data)
             }
 
 
-            $checkoutDetails['session_id'] = sanitize_text_field($sessionId);
+            $checkout_details['session_id'] = sanitize_text_field($sessionId);
 
             // Inserting row into Database.
             $wpdb->insert(
-                $cartAbandonmentTable,
-                $checkoutDetails
+                $cart_abandonment_table,
+                $checkout_details
             );
 
             if ($wpdb->last_error) {

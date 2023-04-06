@@ -54,6 +54,10 @@ class WC_Simpl_Settings {
         return WIDGET_SCRIPT_PRODUCTION_URL;
     }
 
+    public static function is_localhost() {
+        return SIMPL_ENV == "localhost";
+    }
+
     public static function simpl_authorized_flag_key() {
         $staging_env = get_option("wc_settings_tab_simpl_test_env");
         if($staging_env == "yes") {

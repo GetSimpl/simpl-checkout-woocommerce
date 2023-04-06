@@ -139,7 +139,8 @@ class SimplIntegration {
         $shipping_methods_array = array();
         foreach($shipping_methods as $item_id => $item) {
             $shipping_methods_array["id"] = $item->get_id();
-            $shipping_methods_array["method_id"] = $item->get_method_id();
+            $shipping_methods_array["slug"] = $item->get_method_id();
+            $shipping_methods_array["name"] = $item->get_name();
             $shipping_methods_array["amount"] = wc_format_decimal($item->get_total(), 2);
             $shipping_methods_array["total_tax"] = wc_format_decimal($item->get_total_tax(), 2);
         }

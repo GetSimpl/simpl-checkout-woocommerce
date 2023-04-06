@@ -86,7 +86,11 @@ function fetch_checkout(WP_REST_Request $request) {
     return new WP_REST_Response(array("code"=> "not_found", "message"=> "invalid checkout_order_id"), 404);
 }
 
-function internal_authenticate() {    
+function internal_authenticate() {        
+    if(WC_Simpl_Settings::is_localhost()) {
+        return true;
+    }
+
     $api = new WC_REST_Authentication();
     $authenticated = $api->authenticate("");
     return $authenticated;
