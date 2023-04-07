@@ -9,6 +9,7 @@
  */
 add_action('plugins_loaded', 'simpl_checkout_int', 0);
 add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
+
 function simpl_checkout_int() {
 
     if (!class_exists('WC_Payment_Gateway'))
@@ -32,7 +33,11 @@ function simpl_checkout_int() {
     include_once 'includes/plugin_support/index.php';
     add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
     add_action( 'plugins_loaded', 'simpl_init_gateway_class' );
+    add_shortcode('custom-cta-placement', 'customCTAPlacement'); /* Use this shortcode: <?php echo do_shortcode('[custom-cta-placement]');?> */
     register_activation_hook( __FILE__, 'my_plugin_activate' );
     register_deactivation_hook( __FILE__, 'my_plugin_deactivate' );
+    
 }
+
+
 ?>
