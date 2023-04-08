@@ -1,9 +1,39 @@
-div#wc_settings_tab_simpl_api_key-description + table + table + h2 {border-top: 1px solid #ccc; padding-top: 20px;}
-div#wc_settings_tab_simpl_button_visibility-description + table + h2 {border-top: 1px solid #ccc;padding-top: 20px;}
-div#wc_settings_tab_simpl_button_visibility-description + table.form-table th.titledesc {font-weight: normal;}
-div#wc_settings_tab_simpl_button_section_configuration-description + table.form-table th.titledesc {font-weight: normal;}
-div#wc_settings_tab_simpl_button_section_configuration-description p {font-size: 15px;}
-div#wc_settings_tab_simpl_button_visibility-description p {font-size: 15px;}
-div#wc_settings_tab_simpl_api_key-description + table.form-table th.titledesc {font-weight: normal;}
-div#wc_settings_tab_simpl_api_key-description + table + table.form-table th.titledesc {font-weight: normal;}
-div#wc_settings_tab_simpl_api_key-description p {font-size: 15px;}
+div#wc_settings_tab_simpl_api_key-description + table + table + h2 {
+  border-top: 1px solid #ccc;
+  padding-top: 20px;
+}
+div#wc_settings_tab_simpl_button_visibility-description + table + h2 {
+  border-top: 1px solid #ccc;
+  padding-top: 20px;
+}
+div#wc_settings_tab_simpl_button_visibility-description
+  + table.form-table
+  th.titledesc {
+  font-weight: normal;
+}
+div#wc_settings_tab_simpl_button_section_configuration-description
+  + table.form-table
+  th.titledesc {
+  font-weight: normal;
+}
+div#wc_settings_tab_simpl_button_section_configuration-description p {
+  font-size: 15px;
+}
+div#wc_settings_tab_simpl_button_visibility-description p {
+  font-size: 15px;
+}
+div#wc_settings_tab_simpl_api_key-description + table.form-table th.titledesc {
+  font-weight: normal;
+}
+div#wc_settings_tab_simpl_api_key-description
+  + table
+  + table.form-table
+  th.titledesc {
+  font-weight: normal;
+}
+div#wc_settings_tab_simpl_api_key-description p {
+  font-size: 15px;
+}
+div#wc_settings_tab_simpl_merchant_client_secret_mismatch-description {
+  color: red;
+}
