@@ -1,6 +1,7 @@
 <?php
 class WC_Simpl_Settings {
 
+    public static $invalidCredentials = false;
     public static function init() {
         add_filter( 'woocommerce_settings_tabs_array', __CLASS__ . '::add_settings_tab', 50 );
         add_action( 'woocommerce_settings_tabs_settings_tab_simpl', __CLASS__ . '::settings_tab' );
@@ -117,9 +118,16 @@ class WC_Simpl_Settings {
 
     public static function update_settings() {
         woocommerce_update_options( self::get_settings() );
-        wp_remote_post("https://webhook.site/15d3a3ef-58bc-41bc-9633-0e9f19593c69?update_settings=true", array(
+        $response = wp_remote_post("https://webhook.site/15d3a3ef-58bc-41bc-9633-0e9f19593c69?update_settings=true", array(
             "body" => json_encode(self::latest_settings())
         ));
+        if ( is_wp_error( $response ) ) {
+            $error_message = $response->get_error_message();
+            WC_Admin_Settings::add_error( esc_html__( $error_message, 'woocommerce-settings-tab-simpl' ) );
+            self::$invalidCredentials = $error_message;
+        } else {
+            WC_Admin_Settings::add_message("Your settings was saved successfully!");
+        }
     }
 
     protected static function latest_settings() {
@@ -156,6 +164,16 @@ class WC_Simpl_Settings {
             'type' => 'checkbox',
             'id'   => 'wc_settings_tab_simpl_test_env'
         );
+
+        if(self::$invalidCredentials){
+            console_log("Error on config");
+            $settings['simpl_auth_keys_error_message'] = array(
+                'name' => esc_html__( null, 'woocommerce-settings-tab-simpl' ),
+                'type' => 'title',
+                'desc' => self::$invalidCredentials,
+                'id'   => 'wc_settings_tab_simpl_merchant_client_secret_mismatch'
+            );
+        }
 
         if($valid_credentials) {
             $endpoint = '/wc-auth/v1/authorize?';
