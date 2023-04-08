@@ -123,13 +123,10 @@ class WC_Simpl_Settings {
         ));
         if ( is_wp_error( $response ) ) {
             $error_message = $response->get_error_message();
-            simpl_admin_notice__error($error_message);
+            WC_Admin_Settings::add_error( esc_html__( $error_message, 'woocommerce-settings-tab-simpl' ) );
             self::$invalidCredentials = $error_message;
         } else {
-            echo 'Response:<pre>';
-            print_r( $response );
-            echo '</pre>';
-            simpl_admin_notice__success();
+            WC_Admin_Settings::add_message("Your settings was saved successfully!");
         }
     }
 
