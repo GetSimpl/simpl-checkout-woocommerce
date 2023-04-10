@@ -1,8 +1,8 @@
 <?php
 function create_checkout( WP_REST_Request $request ) {
     try {
-        console_log("Create Checkout Inititated with request ");
-        console_log($request);
+        print("Create Checkout Inititated with request ");
+        print($request);
         $validation_errors = validate_line_items($request);
         if(isset($validation_errors)) {
             return $validation_errors;
@@ -21,8 +21,8 @@ function create_checkout( WP_REST_Request $request ) {
         }
         WC()->cart->calculate_totals();
         $order = create_order_from_cart();
-        console_log("Fetching Order from cart ");
-        console_log($order);
+        print("Fetching Order from cart ");
+        print($order);
         $si = new SimplIntegration();
         $cart_payload =  $si->cart_payload(WC()->cart, $order->get_id());
         do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
@@ -87,14 +87,14 @@ function fetch_checkout(WP_REST_Request $request) {
     initCartCommon();
     WC()->cart->empty_cart();
     $order_id = $request->get_params()["checkout_order_id"];
-    console_log("Fetching checkout :: -> order id ");
-    console_log($order_id);
+    print("Fetching checkout :: -> order id ");
+    print($order_id);
     $order = wc_get_order($order_id);
-    console_log("Fetching checkout :: -> got order ");
-    console_log($order);
+    print("Fetching checkout :: -> got order ");
+    print($order);
     if($order) {
-        console_log("Converting order to WC Cart");
-        console_log($order);
+        print("Converting order to WC Cart");
+        print($order);
         convert_wc_order_to_wc_cart($order);
         $si = new SimplIntegration();
         return $si->cart_payload(WC()->cart, $order_id);
