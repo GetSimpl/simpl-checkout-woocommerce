@@ -67,6 +67,10 @@ function update_shipping_line($order_id) {
 }
 
 function set_address_in_cart($shipping_address, $billing_address) {
+    console_log("Updating Address in the cart ::  SHipping Adress -> ");
+    console_log($shipping_address);
+    console_log("Updating Address in the cart ::  Billing Adress -> ");
+    console_log($billing_address);
     if(isset($shipping_address) && isset($billing_address)) {
         WC()->customer->set_shipping_address($shipping_address);
         WC()->customer->set_billing_address($billing_address);           

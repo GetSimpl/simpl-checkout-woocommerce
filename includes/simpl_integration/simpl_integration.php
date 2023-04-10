@@ -34,7 +34,11 @@ class SimplIntegration {
         $response = array("source" => "cart", "unique_id" => $this->unique_device_id());
         $cart_payload = $this->cart_common_payload($cart);
         $shipping_address = $cart->get_customer()->get_shipping_address();
-        $billing_address = $cart->get_customer()->get_billing_address();        
+        $billing_address = $cart->get_customer()->get_billing_address();     
+        console_log("Cart payload :: Shipping Adress ->");
+        console_log($shipping_address);
+        console_log("Cart payload :: Billing Address Adress ->");
+        console_log($shipping_address);
         if(!is_string($shipping_address) && count($shipping_address) > 0) {
             $cart_payload["shipping_address"] = $shipping_address;
         }
