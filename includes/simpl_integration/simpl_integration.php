@@ -38,7 +38,7 @@ class SimplIntegration {
         console_log("Cart payload :: Shipping Adress ->");
         console_log($shipping_address);
         console_log("Cart payload :: Billing Address Adress ->");
-        console_log($shipping_address);
+        console_log($billing_address);
         if(!is_string($shipping_address) && count($shipping_address) > 0) {
             $cart_payload["shipping_address"] = $shipping_address;
         }
