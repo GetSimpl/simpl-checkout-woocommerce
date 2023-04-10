@@ -35,10 +35,10 @@ class SimplIntegration {
         $cart_payload = $this->cart_common_payload($cart);
         $shipping_address = $cart->get_customer()->get_shipping_address();
         $billing_address = $cart->get_customer()->get_billing_address();     
-        console_log("Cart payload :: Shipping Adress ->");
-        console_log($shipping_address);
-        console_log("Cart payload :: Billing Address Adress ->");
-        console_log($billing_address);
+        print("Cart payload :: Shipping Adress ->");
+        print($shipping_address);
+        print("Cart payload :: Billing Address Adress ->");
+        print($billing_address);
         if(!is_string($shipping_address) && count($shipping_address) > 0) {
             $cart_payload["shipping_address"] = $shipping_address;
         }

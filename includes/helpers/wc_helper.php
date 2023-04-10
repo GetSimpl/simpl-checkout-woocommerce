@@ -22,7 +22,11 @@ function update_order_from_cart($order_id) {
     $order->remove_order_items("line_item");
     WC()->checkout->create_order_line_items( $order, WC()->cart );
     $shipping_address = WC()->checkout->get_value('shipping')["address_1"];
-    $billing_address = WC()->checkout->get_value('billing')["address_1"];          
+    $billing_address = WC()->checkout->get_value('billing')["address_1"];   
+    print("Updating Order from cart :: Shipping Address :: ");
+    print($shipping_address); 
+    print("Updating Order from cart :: Billing Address :: ");
+    print($billing_address);             
     WC()->cart->calculate_shipping();
     // var_dump(WC()->cart->get_shipping_packages());
     if($shipping_address != "" && $billing_address != "") {
@@ -67,10 +71,10 @@ function update_shipping_line($order_id) {
 }
 
 function set_address_in_cart($shipping_address, $billing_address) {
-    console_log("Updating Address in the cart ::  SHipping Adress -> ");
-    console_log($shipping_address);
-    console_log("Updating Address in the cart ::  Billing Adress -> ");
-    console_log($billing_address);
+    print("Updating Address in the cart ::  SHipping Adress -> ");
+    print($shipping_address);
+    print("Updating Address in the cart ::  Billing Adress -> ");
+    print($billing_address);
     if(isset($shipping_address) && isset($billing_address)) {
         WC()->customer->set_shipping_address($shipping_address);
         WC()->customer->set_billing_address($billing_address);           
