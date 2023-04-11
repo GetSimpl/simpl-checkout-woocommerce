@@ -45,6 +45,8 @@ function validate_line_items($request) {
         return new WP_REST_Response(array("code"=> "bad_request", "message"=> "items cannot be empty"), 400);
     }
 
+    //product_id is mandatory
+
     foreach($request->get_params()["items"] as $item_id => $item) {
         if($item["quantity"] <= 0) {
             return new WP_REST_Response(array("code"=> "bad_request", "message"=> "quantity should be greater than 1"), 400);   

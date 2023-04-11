@@ -4,12 +4,7 @@ function create_order_from_cart() {
     initCartCommon();
     $order = new WC_Order();  
     set_data_from_cart( $order);        
-    $shipping_address = WC()->checkout->get_value('shipping')["address_1"];
-    $billing_address = WC()->checkout->get_value('billing')["address_1"];  
-    if($shipping_address != "" && $billing_address != "") {
-        $order->set_address($shipping_address, 'shipping');
-        $order->set_address($billing_address, 'billing');
-    }
+    set_address_in_order($order);
     $order->update_meta_data(SIMPL_ORDER_METADATA, 'yes');
     $order->save();
     updateToSimplDraft($order->get_id());
@@ -21,22 +16,23 @@ function update_order_from_cart($order_id) {
     $order = wc_get_order($order_id);        
     $order->remove_order_items("line_item");
     WC()->checkout->create_order_line_items( $order, WC()->cart );
-    $shipping_address = WC()->checkout->get_value('shipping')["address_1"];
-    $billing_address = WC()->checkout->get_value('billing')["address_1"];          
-    WC()->cart->calculate_shipping();
-    // var_dump(WC()->cart->get_shipping_packages());
-    if($shipping_address != "" && $billing_address != "") {
-        $order->set_address($shipping_address, 'shipping');
-        $order->set_address($billing_address, 'billing');
-    }
+    set_address_in_order($order);
     $order->save();
     return $order;
 }
 
+function set_address_in_order($order) {
+    $shipping_address = WC()->customer->get_shipping('edit');
+    $billing_address = WC()->customer->get_billing('edit');
+    WC()->cart->calculate_shipping();
+    if($shipping_address != "" && $billing_address != "") {
+        $order->set_address($shipping_address, 'shipping');
+        $order->set_address($billing_address, 'billing');
+    }
+}
+
 //Created this method to sup
 function set_data_from_cart( &$order ) {
-    $order_vat_exempt = WC()->cart->get_customer()->get_is_vat_exempt() ? 'yes' : 'no';
-    $order->add_meta_data( 'is_vat_exempt', $order_vat_exempt, true );
     $order->set_shipping_total( WC()->cart->get_shipping_total() );
     $order->set_discount_total( WC()->cart->get_discount_total() );
     $order->set_discount_tax( WC()->cart->get_discount_tax() );
@@ -67,9 +63,17 @@ function update_shipping_line($order_id) {
 }
 
 function set_address_in_cart($shipping_address, $billing_address) {
-    if(isset($shipping_address) && isset($billing_address)) {
-        WC()->customer->set_shipping_address($shipping_address);
-        WC()->customer->set_billing_address($billing_address);           
+    if(isset($shipping_address) && isset($billing_address)) {        
+        foreach($shipping_address as $key => $value) {
+            if(method_exists(WC()->customer, "set_shipping_".$key)) {
+                WC()->customer->{"set_shipping_".$key}($value);    
+            }
+        }
+        foreach($billing_address as $key => $value) {
+            if(method_exists(WC()->customer, "set_billing_".$key)) {
+                WC()->customer->{"set_billing_".$key}($value);    
+            }
+        }
     }
 }
 
