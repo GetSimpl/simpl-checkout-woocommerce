@@ -3,7 +3,7 @@
 function fetch_master_config( ) {
     $simpl_host = WC_Simpl_Settings::simpl_host();
     $store_url = WC_Simpl_Settings::store_url();
-    $simplHttpResponse = wp_remote_get( "https://checkout-3pp.stagingsimpl.com/api/v1/wc/widget/master-config?shop=checkout-staging-v2.myshopify.com/", array(
+    $simplHttpResponse = wp_remote_get( "https://".$simpl_host."/api/v1/wc/widget/master-config?shop=".$store_url, array(
         "headers" => array(
                 "simpl-widget-session-token" => "",
                 "content-type" => "application/json"
