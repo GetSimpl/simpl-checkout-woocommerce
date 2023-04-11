@@ -3,7 +3,7 @@
 function fetch_master_config( ) {
     $simpl_host = WC_Simpl_Settings::simpl_host();
     $store_url = WC_Simpl_Settings::store_url();
-    $unique_device_id = get_unique_device_id();
+    $unique_device_id = get_unique_device_id() ?: "";
     $simplHttpResponse = wp_remote_get( "https://".$simpl_host."/api/v1/wc/widget/master-config?shop=".$store_url, array(
         "headers" => array(
                 "simpl-widget-session-token" => $unique_device_id,
