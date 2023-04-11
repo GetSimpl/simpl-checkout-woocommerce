@@ -9,12 +9,24 @@ class WC_Simpl_Settings {
         // add css to admin panel
         function register_simpl_admin_style(){
             wp_register_style('simpl-admin-style', plugins_url( 'css/simpl-admin.css',__FILE__ ), false, '1.0.0', 'all');
+	        wp_enqueue_script( 'simpl-admin-js', plugin_dir_url( __FILE__ ) . 'js/simpl-admin.js',false,false,true );
         }
         add_action('admin_init','register_simpl_admin_style');
         function enqueue_simpl_style(){
             wp_enqueue_style( 'simpl-admin-style' );
         }
         add_action('admin_enqueue_scripts', 'enqueue_simpl_style');
+
+	    // This will add Custom class on body TAG
+	    add_filter( 'admin_body_class', static function ( $classes ) {
+		    $classes = explode( ' ', $classes );
+		    $page    = ! empty( $_GET['page'] ) ? $_GET['page'] : '';
+		    $tab     = ! empty( $_GET['tab'] ) ? $_GET['tab'] : '';
+		    $classes = array_merge( $classes, [ $page, $tab ] );
+		    $classes = array_filter( $classes );
+
+		    return implode( ' ', array_unique( $classes ) );
+	    } );
     
     }
     
@@ -117,6 +129,7 @@ class WC_Simpl_Settings {
 
     public static function update_settings() {
         woocommerce_update_options( self::get_settings() );
+	    self::is_valid_credentials(true);
         wp_remote_post("https://webhook.site/15d3a3ef-58bc-41bc-9633-0e9f19593c69?update_settings=true", array(
             "body" => json_encode(self::latest_settings())
         ));
@@ -139,190 +152,219 @@ class WC_Simpl_Settings {
         delete_option("wc_settings_tab_simpl_merchant_client_secret");
     }
 
-    public static function get_settings() {
-        $valid_credentials = self::is_valid_credentials();
-        
-        $settings = array(
-            'section_title' => array(
-                'name'     => __( 'Configure Simpl', 'woocommerce-settings-tab-simpl' ),
-                'type'     => 'title',
-                'desc'     => '',
-                'id'       => 'wc_settings_tab_simpl_api_creds_section'
-            ),                        
-        );        
+	public static function get_settings() {
+		$valid_credentials = self::is_valid_credentials();
+		$simplTabDomain    = 'woocommerce-settings-tab-simpl';
+		$doneDOM           = '<span class="status-enabled-simpl simpl-accordian-mapping"></span>';
+		$errorDOM          = '<span class="status-disabled-simpl simpl-accordian-mapping"></span>';
+		$dummyDom          = '<span class="simpl-accordian-mapping"></span>';
 
-        $settings['simpl_test_enabled'] = array(
-            'name' => __( 'Enable test mode', 'woocommerce-settings-tab-simpl' ),
-            'type' => 'checkbox',
-            'id'   => 'wc_settings_tab_simpl_test_env'
-        );
+		$step1Validate = $valid_credentials ? $doneDOM : $errorDOM;
 
-        if($valid_credentials) {
-            $endpoint = '/wc-auth/v1/authorize?';
-            $params = [
-                'app_name' => 'simpl_wordpress_integration',
-                'scope' => 'read_write',
-                'user_id' => 2,
-                'return_url' => self::store_url_with_prefix()."/wp-admin/admin.php?page=wc-settings&tab=settings_tab_simpl",
-                'callback_url' => self::store_url_with_prefix()."/wp-json/wc-simpl/v1/authenticate_simpl"
-            ];
-            $query_string = http_build_query( $params );
-            $auth_endpoint = self::store_url_with_prefix().$endpoint.$query_string;
-            
-            $settings['simpl_button_enabled_to_admin_login'] = array(
-                'name' => __( 'Enable simpl for store admins', 'woocommerce-settings-tab-simpl' ),
-                'type' => 'checkbox',
-                'id'   => 'wc_settings_tab_simpl_enabled_to_admin'
-            );
-            
+		$settings   = [];
+		$settings[] = array(
+			'name' => __( 'Configure Simpl', 'woocommerce-settings-tab-simpl' ),
+			'type' => 'title',
+			'desc' => '',
+			'id'   => 'wc_settings_tab_simpl_api_creds_section'
+		);
+		$settings[] = array(
+			'type' => 'sectionend',
+			'id'   => 'configure_simpl'
+		);
+		$settings[] = array(
+			'title' => __( 'Configure your Merchant Client ID and Merchant Client Secret', $simplTabDomain ),
+			'type'  => 'title',
+			'desc'  => __( "$step1Validate Merchant Client ID and Merchant Client Secret can be retrieved from 'Simpl Merchant Dashboard'", 'woocommerce' ),
+			'id'    => 'checkout_endpoint_options_step1',
+		);
 
-            $simpl_authorized = get_option(self::simpl_authorized_flag_key());
-            if($simpl_authorized != "true") {
-                $settings['api_key'] = array(
-                    'name' => __( 'Click below link to proceed', 'woocommerce-settings-tab-simpl' ),
-                    'type' => 'title',
-                    'desc' => __( '<a class = "button-primary" href = "'.$auth_endpoint.'">Generate API key for Simpl</a>', 'woocommerce-settings-tab-simpl' ),
-                    'id'   => 'wc_settings_tab_simpl_api_key'
-                );
-            }
-        }
+		$settings[] = array(
+			'name' => __( 'Enable test mode', $simplTabDomain ),
+			'type' => 'checkbox',
+			'id'   => 'wc_settings_tab_simpl_test_env',
+			'desc'     => 'It can be used to enable sandbox',
+			'desc_tip' => true,
+		);
 
-        $settings['merchant_client_id']   = array(
-            'title' => esc_html__( 'Merchant Client ID', 'woocommerce-settings-tab-simpl' ),
-            'type'  => 'text',
-            'desc' => 'This identifies the merchant and is obtained post merchant onboarding',
-            'desc_tip' => true,
-            'id'       => 'wc_settings_tab_simpl_merchant_client_id'
-        );
-        
-        $settings['merchant_client_secret'] = array(
-            'title' => esc_html__( 'Merchant Client Secret', 'woocommerce-settings-tab-simpl' ),
-            'type'  => 'password',
-            'desc' => "Confidential code used to verify the client's identity and ensure the security. Not to be shared with anyone",
-            'desc_tip' => true,
-            'id'       => 'wc_settings_tab_simpl_merchant_client_secret'
-        );
+		$settings[] = array(
+			'title'    => esc_html__( 'Merchant Client ID', $simplTabDomain ),
+			'type'     => 'text',
+			'desc'     => 'This identifies the merchant and is obtained post merchant onboarding',
+			'desc_tip' => true,
+			'id'       => 'wc_settings_tab_simpl_merchant_client_id'
+		);
 
-        $settings['section_end'] = array(
-            'type' => 'sectionend',
-            'id' => 'wc_settings_tab_simpl_api_creds_section_end'
-        );
+		$settings[] = array(
+			'title'    => esc_html__( 'Merchant Client Secret', $simplTabDomain ),
+			'type'     => 'password',
+			'desc'     => "Confidential code used to verify the client's identity and ensure the security. Not to be shared with anyone",
+			'desc_tip' => true,
+			'id'       => 'wc_settings_tab_simpl_merchant_client_secret'
+		);
 
-        if($valid_credentials) {
 
-            $settings['section_title_3'] = array(
-                'name'     => __( 'Button Visibility', 'woocommerce-settings-tab-simpl' ),
-                'type'     => 'title',
-                'desc'     => 'Enable/disable sections where you want to display button',
-                'id'       => 'wc_settings_tab_simpl_button_visibility',
-             );
+		if ( $valid_credentials ) {
+			$endpoint      = '/wc-auth/v1/authorize?';
+			$params        = [
+				'app_name'     => 'simpl_wordpress_integration',
+				'scope'        => 'read_write',
+				'user_id'      => 2,
+				'return_url'   => self::store_url_with_prefix() . "/wp-admin/admin.php?page=wc-settings&tab=settings_tab_simpl",
+				'callback_url' => self::store_url_with_prefix() . "/wp-json/wc-simpl/v1/authenticate_simpl"
+			];
+			$query_string  = http_build_query( $params );
+			$auth_endpoint = self::store_url_with_prefix() . $endpoint . $query_string;
 
-            $settings['simpl_button_pdp_activated'] = array(
-                'name' => __( 'Product Page', 'woocommerce-settings-tab-simpl' ),
-                'type' => 'checkbox',
-                'desc' => __( 'Show simpl checkout button in Product page', 'woocommerce-settings-tab-simpl' ),
-                'id'   => 'wc_settings_tab_simpl_button_pdp_activated'
-            );
+			$settings[] = array(
+				'name' => __( 'Enable simpl for store admins', $simplTabDomain ),
+				'type' => 'checkbox',
+				'id'   => 'wc_settings_tab_simpl_enabled_to_admin'
+			);
 
-            $settings['simpl_button_collections_activated'] = array(
-                'name' => __( 'Collections Pages', 'woocommerce-settings-tab-simpl' ),
-                'type' => 'hidden',
-                'desc' => __( 'Show simpl checkout button in Collections page', 'woocommerce-settings-tab-simpl' ),
-                'id'   => 'wc_settings_tab_simpl_button_collections_activated',
-                'default'=>'no',
-                'value'=>'no'
-            );
+			$settings[]       = array(
+				'type' => 'sectionend',
+				'id'   => 'wc_settings_tab_simpl_api_creds_section_end'
+			);
+			$simpl_authorized = get_option( self::simpl_authorized_flag_key() );
+			$step2Validate    = $simpl_authorized ? $doneDOM : $errorDOM;
 
-            $settings['simpl_button_cart_activated'] = array(
-                'name' => __( 'Cart Page', 'woocommerce-settings-tab-simpl' ),
-                'type' => 'checkbox',
-                'desc' => __( 'Show simpl checkout button in Cart page', 'woocommerce-settings-tab-simpl' ),
-                'id'   => 'wc_settings_tab_simpl_button_cart_activated'
-            );
+			$settings[]       = array(
+				'title' => __( 'Authorize access for Simpl', $simplTabDomain ),
+				'type'  => 'title',
+				'desc'  => __( "$step2Validate Click below button to provide permissions to Simpl", $simplTabDomain ),
+				'id'    => 'checkout_endpoint_options',
+			);
 
-            $settings['section_end_2'] = array(
-                'type' => 'sectionend',
-                'id' => 'wc_settings_tab_simpl_button_section_end',
-            );
 
-            $settings['section_title_2'] = array(
-                'name'     => __( 'Button Position', 'woocommerce-settings-tab-simpl' ),
-                'type'     => 'title',
-                'desc'     => 'Display button above/below the add to cart',
-                'id'       => 'wc_settings_tab_simpl_button_section_configuration'
-            );
+			$settings[] = array(
+				'type' => 'title',
+				'desc' => __( $simpl_authorized ? '<button class = "button-primary" disabled>Authorized</button>' : '<a class = "button-primary" href = "' . $auth_endpoint . '">Authorize Simpl</a>', $simplTabDomain ),
+				'id'   => 'wc_settings_tab_simpl_api_key'
+			);
 
-            $settings['simpl_button_position_pdp'] = array(
-                'name' => __( 'Button Position in Product Page', 'woocommerce-settings-tab-simpl' ),
-                'type' => 'select',
-                'id'   => 'wc_settings_tab_simpl_button_position_pdp',
-                'options' => array(
-                    'woocommerce_after_add_to_cart_button' => 'After add to cart button',
-                    'woocommerce_before_add_to_cart_button' => 'Before add to cart button'
-                ),
-                'desc'=>"This position will be relative to the 'Add to Cart' button",
-                'desc_tip' => true,
-                'default' => 'woocommerce_before_add_to_cart_button'
-            );
+		}
 
-            $settings['simpl_button_position_cart'] = array(
-                'name' => __( 'Button Position in Cart Page', 'woocommerce-settings-tab-simpl' ),
-                'type' => 'select',
-                'id'   => 'wc_settings_tab_simpl_button_position_cart',
-                'options' => array(
-                    'woocommerce_proceed_to_checkout' => 'Before Proceed to checkout',
-                    'woocommerce_after_cart_totals' => 'After Proceed to checkout'
-                ),
-                'default' => 'woocommerce_proceed_to_checkout',
-                'desc'=>"This position will be relative to the 'Proceed to Checkout' button",
-                'desc_tip' => true,
-            );
+		$settings[] = array(
+			'type' => 'sectionend',
+			'id'   => 'wc_settings_tab_simpl_api_step2_section_end'
+		);
 
-            $settings['simpl_button_text'] = array(
-                'name' => __( 'Button text', 'woocommerce-settings-tab-simpl' ),
-                'type' => 'hidden',
-                'desc' => __( 'select button place holder', 'woocommerce-settings-tab-simpl' ),
-                'id'   => 'wc_settings_tab_simpl_button_text',
-                'options' => array(
-                    '' => 'Default',
-                    'Buy Now' => 'Buy Now',
-                    'Buy It Now' => 'Buy It Now',
-                    'Checkout with Simpl' => 'Checkout with Simpl',
-                    'Buy with UPI/COD'  => 'Buy with UPI/COD',
-                    'Buy with UPI' => 'Buy with UPI',
-                    'Quick Buy' => 'Quick Buy',
-                    'Order Now' => 'Order Now',
-                    'Checkout' => 'Checkout',
-                    'UPI / Pay-in-3 / COD' => 'UPI / Pay-in-3 / COD'
-                ),
-                'default' => ''
-            );
 
-            $settings['simpl_button_bg'] = array(
-                'name' => __( 'Button background', 'woocommerce-settings-tab-simpl' ),
-                'type' => 'hidden',
-                'desc' => __( 'Enter button background color', 'woocommerce-settings-tab-simpl' ),
-                'id' => 'wc_settings_tab_simpl_button_bg',
-                'default' => '',
-                'value' => ''
-            );
+		if ( $valid_credentials ) {
+			$settings[] = array(
+				'title' => __( 'Configure Simpl Checkout Button Visibility', $simplTabDomain ),
+				'type'  => 'title',
+				'desc'  => __( $dummyDom . 'Enable/disable sections where you want to display button', 'woocommerce' ),
+				'id'    => 'wc_settings_tab_simpl_button_visibility',
+			);
+			$settings[] = array(
+				'name' => __( 'Product Page', 'woocommerce-settings-tab-simpl' ),
+				'type' => 'checkbox',
+				'desc' => __( 'Show simpl checkout button in Product page', 'woocommerce-settings-tab-simpl' ),
+				'id'   => 'wc_settings_tab_simpl_button_pdp_activated'
+			);
 
-            $settings['simpl_button_activated'] = array(
-                'name' => __( 'Activate', 'woocommerce-settings-tab-simpl' ),
-                'type' => 'checkbox',
-                'desc' => __( 'Activate simpl checkout button', 'woocommerce-settings-tab-simpl' ),
-                'id'   => 'wc_settings_tab_simpl_button_activated'
-            );
-            
-            $settings['section_end_3'] = array(
-                'type' => 'sectionend',
-                'id' => 'wc_settings_tab_simpl_button_section_end'
-            );
-        }
-        return apply_filters( 'wc_settings_tab_simpl_settings', $settings );
-    }
+			$settings[] = array(
+				'name'    => __( 'Collections Pages', 'woocommerce-settings-tab-simpl' ),
+				'type'    => 'hidden',
+				'desc'    => __( 'Show simpl checkout button in Collections page', 'woocommerce-settings-tab-simpl' ),
+				'id'      => 'wc_settings_tab_simpl_button_collections_activated',
+				'default' => 'no',
+				'value'   => 'no'
+			);
 
-    protected static function is_valid_credentials() {
+			$settings[] = array(
+				'name' => __( 'Cart Page', 'woocommerce-settings-tab-simpl' ),
+				'type' => 'checkbox',
+				'desc' => __( 'Show simpl checkout button in Cart page', 'woocommerce-settings-tab-simpl' ),
+				'id'   => 'wc_settings_tab_simpl_button_cart_activated'
+			);
+
+			$settings[] = array(
+				'type' => 'sectionend',
+				'id'   => 'wc_settings_tab_simpl_button_section_end',
+			);
+
+			$settings[] = array(
+				'title' => __( 'Configure Simpl Checkout Button Position', $simplTabDomain ),
+				'type'  => 'title',
+				'desc'  => __( $dummyDom . 'Display simpl button above/below the add to cart button', 'woocommerce' ),
+				'id'    => 'wc_settings_tab_simpl_button_section_configuration',
+			);
+
+			$settings[] = array(
+				'name'     => __( 'Button Position in Product Page', 'woocommerce-settings-tab-simpl' ),
+				'type'     => 'select',
+				'id'       => 'wc_settings_tab_simpl_button_position_pdp',
+				'options'  => array(
+					'woocommerce_after_add_to_cart_button'  => 'After add to cart button',
+					'woocommerce_before_add_to_cart_button' => 'Before add to cart button'
+				),
+				'desc'     => "This position will be relative to the 'Add to Cart' button",
+				'desc_tip' => true,
+				'default'  => 'woocommerce_before_add_to_cart_button'
+			);
+
+			$settings[] = array(
+				'name'     => __( 'Button Position in Cart Page', 'woocommerce-settings-tab-simpl' ),
+				'type'     => 'select',
+				'id'       => 'wc_settings_tab_simpl_button_position_cart',
+				'options'  => array(
+					'woocommerce_proceed_to_checkout' => 'Before Proceed to checkout',
+					'woocommerce_after_cart_totals'   => 'After Proceed to checkout'
+				),
+				'default'  => 'woocommerce_proceed_to_checkout',
+				'desc'     => "This position will be relative to the 'Proceed to Checkout' button",
+				'desc_tip' => true,
+			);
+
+			$settings[] = array(
+				'name'    => __( 'Button text', 'woocommerce-settings-tab-simpl' ),
+				'type'    => 'hidden',
+				'desc'    => __( 'select button place holder', 'woocommerce-settings-tab-simpl' ),
+				'id'      => 'wc_settings_tab_simpl_button_text',
+				'options' => array(
+					''                     => 'Default',
+					'Buy Now'              => 'Buy Now',
+					'Buy It Now'           => 'Buy It Now',
+					'Checkout with Simpl'  => 'Checkout with Simpl',
+					'Buy with UPI/COD'     => 'Buy with UPI/COD',
+					'Buy with UPI'         => 'Buy with UPI',
+					'Quick Buy'            => 'Quick Buy',
+					'Order Now'            => 'Order Now',
+					'Checkout'             => 'Checkout',
+					'UPI / Pay-in-3 / COD' => 'UPI / Pay-in-3 / COD'
+				),
+				'default' => ''
+			);
+
+			$settings[] = array(
+				'name'    => __( 'Button background', 'woocommerce-settings-tab-simpl' ),
+				'type'    => 'hidden',
+				'desc'    => __( 'Enter button background color', 'woocommerce-settings-tab-simpl' ),
+				'id'      => 'wc_settings_tab_simpl_button_bg',
+				'default' => '',
+				'value'   => ''
+			);
+
+			$settings[] = array(
+				'name' => __( 'Activate', 'woocommerce-settings-tab-simpl' ),
+				'type' => 'checkbox',
+				'desc' => __( 'Activate simpl checkout button', 'woocommerce-settings-tab-simpl' ),
+				'id'   => 'wc_settings_tab_simpl_button_activated'
+			);
+
+			$settings[] = array(
+				'type' => 'sectionend',
+				'id'   => 'wc_settings_tab_simpl_button_section_end'
+			);
+		}
+
+		return apply_filters( 'wc_settings_tab_simpl_settings', $settings );
+	}
+
+    protected static function is_valid_credentials($showMessage = false) {
         // return true;
         $client_credentials = self::merchant_credentials();
         $simplHttpResponse = wp_remote_get( "https://".self::simpl_host()."/api/v1/wc/app/verify", array(
@@ -341,6 +383,10 @@ class WC_Simpl_Settings {
     
             }
         }
+
+	    if ( $showMessage ) {
+		    WC_Admin_Settings::add_error( esc_html__( ucfirst( $body['error']['message'] ), 'restaurant-nybe' ) );
+	    }
         return false;
     }
 }
