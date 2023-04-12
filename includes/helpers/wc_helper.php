@@ -63,6 +63,13 @@ function update_shipping_line($order_id) {
 }
 
 function set_address_in_cart($shipping_address, $billing_address) {
+    try {
+        $shipping_address = convert_address_payload($shipping_address);
+        $billing_address = convert_address_payload($billing_address);   
+    } catch (Exception $fe) {
+        throw $fe;
+    }
+
     if(isset($shipping_address) && isset($billing_address)) {        
         foreach($shipping_address as $key => $value) {
             if(method_exists(WC()->customer, "set_shipping_".$key)) {
@@ -142,6 +149,6 @@ function add_to_cart($items) {
         WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"]);
     }
     if(WC()->cart->is_empty()) {
-        return new WP_REST_Response(array("code"=> "bad_request", "message"=> "invalid line items"), 400);
+        throw new CartCreationError("error in creating cart");
     }
 }

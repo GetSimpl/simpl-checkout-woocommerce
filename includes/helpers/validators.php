@@ -58,8 +58,26 @@ function validate_line_items($request) {
 function validate_shipping_address_or_items($request_params) {
     $items = $request_params->get_params()["items"];
     $shipping_address = $request_params->get_params()["shipping_address"];
+    
     if(!isset($items) && !isset($shipping_address)) {
         return new WP_REST_Response(array("code"=> "bad_request", "message"=> "update request requires 'items' or 'shipping_address'"), 400);   
     }
     return NULL;        
+}
+
+function convert_address_payload($address) {
+    $supported_cc = SimplUtil::country_code_for_country($address["country"]);
+    if(!isset($supported_cc)) {
+        throw new Exception("country is not supported");
+    }
+
+    $supported_state = SimplUtil::state_code_for_state($address["state"]);
+    if(!isset($supported_state)) {
+        throw new Exception("state is not supported");
+    }
+
+    $address["country"] = $supported_cc;
+    $address["state"] = $supported_state;
+
+    return  $address;
 }
