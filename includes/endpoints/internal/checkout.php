@@ -17,9 +17,10 @@ function create_checkout(WP_REST_Request $request)
     } catch (HttpBadRequest $fe) {
         return new WP_REST_Response(array("code" => "bad_request", "message" => $fe->getMessage()), 400);
     } catch (Exception $fe) {
-        return new WP_Error("user_error", $fe->getMessage());
+	    return new WP_REST_Response(array("code" => "user_error", "message" => $fe->getMessage()), $fe->getCode());
+
     } catch (Error $fe) {
-        return new WP_Error("user_error", "error in creating checkout", array("error_mesage" => $fe->getMessage(), "backtrace" => $fe->getTraceAsString()));
+	    return new WP_REST_Response(array("code" => "user_error", "message" => 'error in creating checkout'), $fe->getCode());
     }
 }
 
@@ -47,9 +48,9 @@ function update_checkout(WP_REST_Request $request)
     } catch (HttpBadRequest $fe) {
         return new WP_REST_Response(array("code" => "bad_request", "message" => $fe->getMessage()), 400);
     } catch (Exception $fe) {
-        return new WP_Error("user_error", $fe->getMessage());
+	    return new WP_REST_Response(array("code" => "user_error", "message" => $fe->getMessage()), $fe->getCode());
     } catch (Error $fe) {
-        return new WP_Error("user_error", "error in creating checkout", array("error_mesage" => $fe->getMessage(), "backtrace" => $fe->getTraceAsString()));
+	    return new WP_REST_Response(array("code" => "user_error", "message" => 'error in creating checkout'), $fe->getCode());
     }
 }
 
@@ -69,9 +70,9 @@ function fetch_checkout(WP_REST_Request $request)
     } catch (HttpBadRequest $fe) {
         return new WP_REST_Response(array("code" => "bad_request", "message" => $fe->getMessage()), 400);
     } catch (Exception $fe) {
-        return new WP_Error("user_error", $fe->getMessage());
+	    return new WP_REST_Response(array("code" => "user_error", "message" => $fe->getMessage()), $fe->getCode());
     } catch (Error $fe) {
-        return new WP_Error("user_error", "error in creating checkout", array("error_mesage" => $fe->getMessage(), "backtrace" => $fe->getTraceAsString()));
+	    return new WP_REST_Response(array("code" => "user_error", "message" => 'error in creating checkout'), $fe->getCode());
     }
 }
 

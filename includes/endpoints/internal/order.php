@@ -27,15 +27,15 @@ function create_order(WP_REST_Request $request)
         WC()->session->set("simpl_order_id", null);
         WC()->session->set("simpl:session:id", null);
 
-        if ($result["result"] != "success") return new WP_Error("user_error", "order is not successful");
+        if ($result["result"] != "success") return new WP_REST_Response(array("code" => "user_error", "message" => 'order is not successful'), 400);
 
         $si = new SimplIntegration();
         $order_payload = $si->order_payload($order);
         $order_payload["order_status_url"] = $result["redirect"];
         return $order_payload;
     } catch (Exception $fe) {
-        return new WP_Error("user_error", $fe->getMessage());
+	    return new WP_REST_Response(array("code" => "user_error", "message" => $fe->getMessage()), $fe->getCode());
     } catch (Error $fe) {
-        return new WP_Error("user_error", "error in creating order", array("error_mesage" => $fe->getMessage(), "backtrace" => $fe->getTraceAsString()));
+	    return new WP_REST_Response(array("code" => "user_error", "message" => 'error in creating order'), $fe->getCode());
     }
 }
