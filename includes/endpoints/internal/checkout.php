@@ -24,9 +24,9 @@ function create_checkout( WP_REST_Request $request ) {
         do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
         return $cart_payload;
     } catch (Exception $fe) {
-        return new WP_Error("user_error", $fe->getMessage());
+	    return new WP_REST_Response(array("code"=> "user_error", "message"=> 'error in creating checkout'), $fe->getCode());
     } catch (Error $fe) {
-        return new WP_Error("user_error", "error in creating checkout", array("error_mesage" => $fe->getMessage(), "backtrace" => $fe->getTraceAsString()));
+	    return new WP_REST_Response(array("code"=> "user_error", "message"=> 'error in creating checkout'), $fe->getCode());
     }    
 }
 
@@ -58,13 +58,13 @@ function update_checkout( WP_REST_Request $request ) {
         set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
         $order = update_order_from_cart($request->get_params()["checkout_order_id"]);
         $si = new SimplIntegration();
-        $cart_payload = $si->cart_payload(WC()->cart, $order->id);
+        $cart_payload = $si->cart_payload(WC()->cart, $order->get_id());
         do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
         return $cart_payload;
     } catch (Exception $fe) {
-        return new WP_Error("user_error", $e->getMessage());
+	    return new WP_REST_Response(array("code"=> "user_error", "message"=> 'error in creating checkout'), $fe->getCode());
     } catch (Error $fe) {
-        return new WP_Error("user_error", "error in creating checkout", array("error_mesage" => $fe->getMessage(), "backtrace" => $fe->getTraceAsString()));
+	    return new WP_REST_Response(array("code"=> "user_error", "message"=> 'error in creating checkout'), $fe->getCode());
     }    
 }
 

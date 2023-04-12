@@ -20,7 +20,7 @@ function apply_coupon(WP_REST_Request $request) {
     $cart->apply_coupon($coupon_code);
     $notice_message = $_SESSION["simpl_session_message"];
     if($notice_message["type"] == "error") {
-        return new WP_Error("user_error", $notice_message["message"]);
+	    return new WP_REST_Response(array("code"=> "user_error", "message"=> $notice_message["message"]), 400);
     }
     $order->apply_coupon($coupon_code);
     $order->save();
@@ -44,12 +44,12 @@ function remove_coupon(WP_REST_Request $request) {
     $cart->remove_coupon($coupon_code);
     $notice_message = $_SESSION["simpl_session_message"];
     if($notice_message["type"] == "error") {
-        return new WP_Error("user_error", $notice_message["message"]);
+	    return new WP_REST_Response(array("code"=> "user_error", "message"=> $notice_message["message"]), 400);
     }
     $order->remove_coupon($coupon_code);
     $order->save();
     $si = new SimplIntegration();
-    return $si->cart_payload(WC()->cart, $order_id);
+    return $si->cart_payload(WC()->cart, $order->get_id());
 }
 
 
@@ -63,7 +63,7 @@ function remove_coupons(WP_REST_Request $request) {
     $cart->remove_coupons();
     $notice_message = $_SESSION["simpl_session_message"];
     if($notice_message["type"] == "error") {
-        return new WP_Error("user_error", $notice_message["message"]);
+	    return new WP_REST_Response(array("code"=> "user_error", "message"=> $notice_message["message"]), 400);
     }
     $coupon_codes  = $order->get_coupon_codes();
     foreach($coupon_codes as $index => $code) {
@@ -71,5 +71,5 @@ function remove_coupons(WP_REST_Request $request) {
     }
     $order->save();
     $si = new SimplIntegration();
-    return $si->cart_payload(WC()->cart, $order_id);
+    return $si->cart_payload(WC()->cart, $order->get_id());
 }
