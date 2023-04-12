@@ -2,7 +2,7 @@
 
 class CodShippingRate {
     function cod_shipping_modes() {
-        if (!is_plugin_active('wc-smart-cod/wc-smart-cod.php')) {
+        if (!is_plugin_active(PLUGIN_SUPPORTED['cod::smart_cod'])) {
             return false;
         }        
         $_POST['payment_method'] = "cod";
