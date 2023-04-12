@@ -1,11 +1,16 @@
 <?php
 
 function fetch_master_config() {
-	$simpl_host        = WC_Simpl_Settings::simpl_host();
-	$store_url         = WC_Simpl_Settings::store_url();
-	$unique_device_id  = get_unique_device_id() ?: "";
+	$simpl_host = WC_Simpl_Settings::simpl_host();
+	$store_url  = WC_Simpl_Settings::store_url();
+
+	$unique_device_id = '';
+	if ( function_exists( 'get_unique_device_id' ) ) {
+		$unique_device_id = get_unique_device_id();
+	}
 	$apiUrl            = "https://" . $simpl_host . "/api/v1/wc/widget/master-config?shop=" . $store_url;
-	$simplHttpResponse = wp_remote_get( $apiUrl, array(
+	$simplHttpResponse = wp_remote_get( $apiUrl,
+		array(
 			"headers" => array(
 				"simpl-widget-session-token" => $unique_device_id,
 				"content-type"               => "application/json"
