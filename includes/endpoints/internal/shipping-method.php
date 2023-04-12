@@ -5,15 +5,16 @@ include_once SIMPL_PLUGIN_DIR . "/includes/helpers/cart_helper.php";
 include_once SIMPL_PLUGIN_DIR . "/includes/helpers/wc_helper.php";
 
 
-function set_shipping_method( WP_REST_Request $request ) {
+function set_shipping_method(WP_REST_Request $request)
+{
     initCartCommon();
     WC()->cart->empty_cart();
+    validate_shipping_method_request($request);
     $order_id = $request->get_params()["checkout_order_id"];
-    $shipping_method = $request->get_params()["shipping_method_id"];
     $order = wc_get_order((int)$order_id);
-    if($order) {
+    if ($order) {
         $cart = convert_wc_order_to_wc_cart($order);
-        WC()->session->set('chosen_shipping_methods', array( $shipping_method ));        
+        WC()->session->set('chosen_shipping_methods', array($shipping_method));
         update_shipping_line($order_id);
         WC()->cart->calculate_shipping();
         WC()->cart->calculate_totals();
