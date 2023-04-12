@@ -1,3 +1,2 @@
 <?php
-    fetch_master_config();
-?>
+add_action('wp_footer', 'fetch_master_config'); ?>
