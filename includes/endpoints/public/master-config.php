@@ -6,7 +6,7 @@ function fetch_master_config() {
 
 	$unique_device_id = '';
 	if ( function_exists( 'get_unique_device_id' ) ) {
-		$unique_device_id = get_unique_device_id();
+		$unique_device_id = get_unique_device_id() ?: "";
 	}
 	$apiUrl            = "https://" . $simpl_host . "/api/v1/wc/widget/master-config?shop=" . $store_url;
 	$simplHttpResponse = wp_remote_get( $apiUrl,
@@ -25,7 +25,7 @@ function fetch_master_config() {
 			set_unique_device_id( $headers["simpl-widget-session-token"] );
 		}
 		$masterConfigData = isset( $body["success"] ) && isset( $body["data"] ) ? json_encode( $body["data"] ) : '{}';
-		echo( '<script type="text/javascript">var getSimplMasterConfig = ' . $masterConfigData . '</script>' );
+		echo( '<script type="text/javascript">var SimplMasterConfig = ' . $masterConfigData . '</script>' );
 	} else {
 		$error_message = $simplHttpResponse->get_error_message();
 		console_log( $error_message );
