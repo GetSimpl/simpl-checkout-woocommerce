@@ -15,6 +15,7 @@ function create_order( WP_REST_Request $request ) {
 
         $order = wc_get_order((int)$request->get_params()["checkout_order_id"]);
         WC()->session->order_awaiting_payment = $order->get_id();
+        $order_id = $order->get_id();
         WC()->session->set("simpl_order_id", $order_id);
         $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
         if(!$available_gateways["simpl"]) {
