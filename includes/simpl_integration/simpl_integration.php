@@ -13,11 +13,7 @@ class SimplIntegration {
         
         if ( ! is_wp_error( $simplHttpResponse ) ) {
             $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
-    
             return $body["redirection_url"];
-        } else {
-            $error_message = $simplHttpResponse->get_error_message();
-            throw new Exception( $error_message );
         }
         
         return "";
