@@ -202,7 +202,7 @@ class SimplIntegration {
     
         foreach($cart as $item_id => $item) { 
            $product =  wc_get_product( $item['product_id']); 
-           $price = round((float)$item['line_subtotal'] + (float)$item['line_subtotal_tax']);
+           $price = (float)$item['line_subtotal'] + (float)$item['line_subtotal_tax'];
            $data[$i]['id'] = (string)$item['product_id'] . (string)$item['variation_id'];
            $data[$i]['sku'] = $product->get_sku();
            $data[$i]['quantity'] = (int)$item['quantity'];
