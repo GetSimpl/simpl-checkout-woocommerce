@@ -14,7 +14,7 @@ function set_shipping_method(WP_REST_Request $request)
     $order = wc_get_order((int)$order_id);
     if ($order) {
         $cart = convert_wc_order_to_wc_cart($order);
-        WC()->session->set('chosen_shipping_methods', array($shipping_method));
+        WC()->session->set('chosen_shipping_methods', array($request->get_params()["shipping_method_id"]));
         update_shipping_line($order_id);
         WC()->cart->calculate_shipping();
         WC()->cart->calculate_totals();

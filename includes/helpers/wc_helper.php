@@ -164,6 +164,6 @@ function add_to_cart($items) {
         WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"]);
     }
     if(WC()->cart->is_empty()) {
-        throw new HttpBadRequest("invalid cart items");
+    throw new HttpBadRequest("invalid cart items");
     }
 }
