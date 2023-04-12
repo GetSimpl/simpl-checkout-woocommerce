@@ -72,12 +72,12 @@ function convert_address_payload($address) {
     }
 
     $supported_state = SimplUtil::state_code_for_state($address["state"]);
-    if(!isset($supported_state)) {
-        throw new Exception("state is not supported");
-    }
+    // if(!isset($supported_state)) {
+    //     throw new Exception("state is not supported");
+    // }
 
     $address["country"] = $supported_cc;
-    $address["state"] = $supported_state;
+    // $address["state"] = $supported_state;
 
     return  $address;
 }

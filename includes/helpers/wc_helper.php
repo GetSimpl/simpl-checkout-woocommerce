@@ -84,6 +84,21 @@ function set_address_in_cart($shipping_address, $billing_address) {
     }
 }
 
+function set_order_address_in_cart($shipping_address, $billing_address) {
+    if(isset($shipping_address) && isset($billing_address)) {        
+        foreach($shipping_address as $key => $value) {
+            if(method_exists(WC()->customer, "set_shipping_".$key)) {
+                WC()->customer->{"set_shipping_".$key}($value);    
+            }
+        }
+        foreach($billing_address as $key => $value) {
+            if(method_exists(WC()->customer, "set_billing_".$key)) {
+                WC()->customer->{"set_billing_".$key}($value);    
+            }
+        }
+    }
+}
+
 function load_cart_from_order($order_id) {
     $order = wc_get_order((int)$order_id);
     convert_wc_order_to_wc_cart($order);
@@ -118,7 +133,7 @@ function convert_wc_order_to_wc_cart($order) {
                 WC()->cart->add_discount($coupon_code);
             }
         }
-        set_address_in_cart($order->get_address('shipping'), $order->get_address('billing'));
+        set_order_address_in_cart($order->get_address('shipping'), $order->get_address('billing'));
     }
     
     return WC()->cart;
