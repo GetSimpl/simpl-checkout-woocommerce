@@ -77,7 +77,7 @@ function remove_coupons(WP_REST_Request $request)
         $cart->remove_coupons();
         $notice_message = $_SESSION["simpl_session_message"];
         if ($notice_message["type"] == "error") {
-	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $notice_message["message"]), 400);
+	        return new WP_Error(SIMPL_HTTP_ERROR_USER_NOTICE, $notice_message["message"]);
         }
         $coupon_codes  = $order->get_coupon_codes();
         foreach ($coupon_codes as $index => $code) {
