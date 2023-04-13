@@ -7,6 +7,7 @@ class SimplIntegration {
 
         $simplHttpResponse = wp_remote_post( "https://".$simpl_host."/api/v1/wc/cart", array(
             "body" => json_encode($cart_request),
+            //TODO: merchantClientID
             "headers" => array("Shopify-Shop-Domain" => "checkout-staging-v2.myshopify.com", "content-type" => "application/json"),
         ));
         
@@ -33,8 +34,8 @@ class SimplIntegration {
     public function cart_payload($cart, $order_id=NULL) {
         $response = array("source" => "cart", "unique_id" => $this->unique_device_id());
         $cart_payload = $this->cart_common_payload($cart);
-        $shipping_address = $cart->get_customer()->get_shipping_address();
-        $billing_address = $cart->get_customer()->get_billing_address();        
+        $shipping_address = WC()->customer->get_shipping('edit');
+        $billing_address = WC()->customer->get_billing('edit');        
         if(!is_string($shipping_address) && count($shipping_address) > 0) {
             $cart_payload["shipping_address"] = $shipping_address;
         }
@@ -201,7 +202,7 @@ class SimplIntegration {
     
         foreach($cart as $item_id => $item) { 
            $product =  wc_get_product( $item['product_id']); 
-           $price = round((float)$item['line_subtotal'] + (float)$item['line_subtotal_tax']);
+           $price = (float)$item['line_subtotal'] + (float)$item['line_subtotal_tax'];
            $data[$i]['id'] = (string)$item['product_id'] . (string)$item['variation_id'];
            $data[$i]['sku'] = $product->get_sku();
            $data[$i]['quantity'] = (int)$item['quantity'];
