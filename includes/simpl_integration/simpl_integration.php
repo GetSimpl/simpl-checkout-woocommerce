@@ -8,7 +8,7 @@ class SimplIntegration {
         $simplHttpResponse = wp_remote_post( "https://".$simpl_host."/api/v1/wc/cart", array(
             "body" => json_encode($cart_request),
             //TODO: merchantClientID
-            "headers" => array("Shopify-Shop-Domain" => "checkout-staging-v2.myshopify.com", "content-type" => "application/json"),
+            "headers" => array("shop-domain" => WC_Simpl_Settings::store_url(), "content-type" => "application/json"),
         ));
         
         if ( ! is_wp_error( $simplHttpResponse ) ) {

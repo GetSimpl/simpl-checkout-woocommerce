@@ -7,7 +7,7 @@ include_once SIMPL_PLUGIN_DIR . "/includes/helpers/wc_helper.php";
 
 function set_shipping_method(WP_REST_Request $request)
 {
-    initCartCommon();
+    simpl_cart_init_common();
     WC()->cart->empty_cart();
     validate_shipping_method_request($request);
     $order_id = $request->get_params()["checkout_order_id"];

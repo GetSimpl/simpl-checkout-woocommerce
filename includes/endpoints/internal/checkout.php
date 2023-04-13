@@ -4,7 +4,7 @@ function create_checkout(WP_REST_Request $request)
     try {
         validate_line_items($request);
         $items = $request->get_params()["items"];
-        initCartCommon();
+        simpl_cart_init_common();
         add_to_cart($items);
         if (isset($request->get_params()["shipping_address"]) && isset($request->get_params()["billing_address"])) {
             set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
@@ -27,7 +27,7 @@ function update_checkout(WP_REST_Request $request)
 {
     try {
         $items = $request->get_params()["items"];
-        initCartCommon();
+        simpl_cart_init_common();
         validate_shipping_address_or_items($request);
         validate_checkout_order_id($request);
         if (isset($items) && count($items) > 0) {
@@ -57,7 +57,7 @@ function fetch_checkout(WP_REST_Request $request)
 {
     try {
         validate_checkout_order_id($request);
-        initCartCommon();
+        simpl_cart_init_common();
         WC()->cart->empty_cart();
         $order_id = $request->get_params()["checkout_order_id"];
         $order = wc_get_order($order_id);

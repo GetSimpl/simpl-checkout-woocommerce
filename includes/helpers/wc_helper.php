@@ -1,7 +1,7 @@
 <?php        
 
 function create_order_from_cart() {
-    initCartCommon();
+    simpl_cart_init_common();
     $order = new WC_Order();  
     set_data_from_cart( $order);        
     set_address_in_order($order);
@@ -12,7 +12,7 @@ function create_order_from_cart() {
 }    
 
 function update_order_from_cart($order_id) {
-    initCartCommon();
+    simpl_cart_init_common();
     $order = wc_get_order($order_id);        
     $order->remove_order_items("line_item");
     WC()->checkout->create_order_line_items( $order, WC()->cart );
@@ -105,7 +105,7 @@ function load_cart_from_order($order_id) {
 }
 
 function convert_wc_order_to_wc_cart($order) {
-    initCartCommon();
+    simpl_cart_init_common();
     $variationAttributes = [];
     WC()->cart->empty_cart();
     if ($order && $order->get_item_count() > 0) {

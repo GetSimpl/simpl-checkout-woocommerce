@@ -25,5 +25,5 @@ function create_cart(WP_REST_Request $request)
 
 function getCart()
 {
-    initCartCommon();
+    simpl_cart_init_common();
 }
