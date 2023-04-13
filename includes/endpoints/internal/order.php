@@ -17,7 +17,7 @@ function create_order(WP_REST_Request $request)
         WC()->session->set("simpl_order_id", $order_id);
         $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
         if (!$available_gateways["simpl"]) {
-            return new WP_REST_Response(array("code" => BAD_REQUEST, "message" => "order already confirmed"), 400);
+            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => "order already confirmed"), 400);
         }
 
         $order->update_meta_data("simpl_cart_token", $request->get_params()["simpl_cart_token"]);
@@ -27,15 +27,15 @@ function create_order(WP_REST_Request $request)
         WC()->session->set("simpl_order_id", null);
         WC()->session->set("simpl:session:id", null);
 
-        if ($result["result"] != "success") return new WP_REST_Response(array("code" => USER_ERROR, "message" => 'order is not successful'), 400);
+        if ($result["result"] != "success") return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'order is not successful'), 400);
 
         $si = new SimplIntegration();
         $order_payload = $si->order_payload($order);
         $order_payload["order_status_url"] = $result["redirect"];
         return $order_payload;
     } catch (Exception $fe) {
-	    return new WP_REST_Response(array("code" => USER_ERROR, "message" => $fe->getMessage()), 500);
+	    return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
     } catch (Error $fe) {
-	    return new WP_REST_Response(array("code" => USER_ERROR, "message" => 'error in creating order'), 500);
+	    return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating order'), 500);
     }
 }

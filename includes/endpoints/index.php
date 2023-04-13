@@ -9,9 +9,9 @@
     include_once "internal/order.php";
 
 	// Defined error CODE for API
-	define('USER_ERROR','user_error');
-	define('BAD_REQUEST','bad_request');
-	define('CART_CREATE_ERROR','cart_creation_error');
+	define('SIMPL_HTTP_ERROR_USER_NOTICE','user_error');
+	define('SIMPL_HTTP_ERROR_BAD_REQUEST','bad_request');
+	define('SIMPL_HTTP_ERROR_CART_CREATE','cart_creation_error');
 
 
     include_once SIMPL_PLUGIN_DIR . "/includes/simpl_integration/simpl_integration.php";

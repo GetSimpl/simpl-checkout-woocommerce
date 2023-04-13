@@ -15,11 +15,11 @@ function create_checkout(WP_REST_Request $request)
         do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
         return $cart_payload;
     } catch (HttpBadRequest $fe) {
-        return new WP_REST_Response(array("code" => BAD_REQUEST, "message" => $fe->getMessage()), 400);
+        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
     } catch (Exception $fe) {
-	    return new WP_REST_Response(array("code" => USER_ERROR, "message" => $fe->getMessage()), 500);
+	    return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
     } catch (Error $fe) {
-	    return new WP_REST_Response(array("code" => USER_ERROR, "message" => 'error in creating checkout'), 500);
+	    return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating checkout'), 500);
     }
 }
 
@@ -45,11 +45,11 @@ function update_checkout(WP_REST_Request $request)
         do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
         return $cart_payload;
     } catch (HttpBadRequest $fe) {
-        return new WP_REST_Response(array("code" => BAD_REQUEST, "message" => $fe->getMessage()), 400);
+        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
     } catch (Exception $fe) {
-	    return new WP_REST_Response(array("code" => USER_ERROR, "message" => $fe->getMessage()), 500);
+	    return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
     } catch (Error $fe) {
-	    return new WP_REST_Response(array("code" => USER_ERROR, "message" => 'error in creating checkout'), 500);
+	    return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating checkout'), 500);
     }
 }
 
@@ -67,11 +67,11 @@ function fetch_checkout(WP_REST_Request $request)
             return $si->cart_payload(WC()->cart, $order_id);
         }
     } catch (HttpBadRequest $fe) {
-        return new WP_REST_Response(array("code" => BAD_REQUEST, "message" => $fe->getMessage()), 400);
+        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
     } catch (Exception $fe) {
-	    return new WP_REST_Response(array("code" => USER_ERROR, "message" => $fe->getMessage()), 500);
+	    return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
     } catch (Error $fe) {
-	    return new WP_REST_Response(array("code" => USER_ERROR, "message" => 'error in creating checkout'), 500);
+	    return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating checkout'), 500);
     }
 }
 
