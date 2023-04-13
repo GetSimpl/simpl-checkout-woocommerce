@@ -3,6 +3,7 @@
 function fetch_master_config() {
 	$simpl_host = WC_Simpl_Settings::simpl_host();
 	$store_url  = WC_Simpl_Settings::store_url();
+	$simplTokenHeader = "simpl-widget-session-token";
 
 	$unique_device_id = '';
 	if ( function_exists( 'get_unique_device_id' ) ) {
@@ -12,7 +13,7 @@ function fetch_master_config() {
 	$simplHttpResponse = wp_remote_get( $apiUrl,
 		array(
 			"headers" => array(
-				"simpl-widget-session-token" => $unique_device_id,
+				$simplTokenHeader => $unique_device_id,
 				"content-type"               => "application/json"
 			),
 		)
@@ -21,8 +22,8 @@ function fetch_master_config() {
 
 	if ( ! is_wp_error( $simplHttpResponse ) ) {
 		$headers = wp_remote_retrieve_headers( $simplHttpResponse );
-		if ( isset( $headers["simpl-widget-session-token"] ) ) {
-			set_unique_device_id( $headers["simpl-widget-session-token"] );
+		if ( isset( $headers[$simplTokenHeader] ) ) {
+			set_unique_device_id( $headers[$simplTokenHeader] );
 		}
 		$masterConfigData = isset( $body["success"] ) && isset( $body["data"] ) ? json_encode( $body["data"] ) : '{}';
 		echo( '<script type="text/javascript">var SimplMasterConfig = ' . $masterConfigData . '</script>' );
