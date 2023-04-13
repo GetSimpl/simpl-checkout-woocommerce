@@ -168,6 +168,10 @@ class SimplIntegration {
                     }
                 }
             }
+            $cod_shipping_rate = (new CodShippingRate())->cod_shipping_modes();
+            if (isset($cod_shipping_rate) && $cod_shipping_rate) {
+                array_push($shipping_methods_array, $cod_shipping_rate);
+            }
             return $shipping_methods_array;
     }
 

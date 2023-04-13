@@ -4,10 +4,10 @@
 add_action("simpl_abandoned_cart", "cart_flows_abandoned_cart", 10, 2);
 function cart_flows_abandoned_cart($cart, $simpl_checkout_data)
 {
-    if (!is_plugin_active('woo-cart-abandonment-recovery/woo-cart-abandonment-recovery.php')) {
+    if (!is_plugin_active(PLUGIN_SUPPORTED['abandoned_cart::cart_flow'])) {
         return false;
     }
- 
+
     global $wpdb;
     $current_time = current_time('Y-m-d H:i:s');
     $simpl_checkout_data = $simpl_checkout_data['cart'];
@@ -42,7 +42,7 @@ function cart_flows_abandoned_cart($cart, $simpl_checkout_data)
         'other_fields'  => serialize($provider_other_data),
         'checkout_id'   => wc_get_page_id('cart'),
     );
-    
+
     $sessionId = WC()->session->get('wcf_session_id');
 
     $cart_abandonment_table = $wpdb->prefix . "cartflows_ca_cart_abandonment";
@@ -65,14 +65,13 @@ function cart_flows_abandoned_cart($cart, $simpl_checkout_data)
                 $response['status']  = true;
                 $response['message'] = 'Data successfully updated for wooCommerce cart abandonment recovery';
             }
-
         } else {
-            $simpl_session_id = WC()->session->get('simpl_checkout_session_id_'.$simpl_checkout_data['checkout_order_id']);
-            if(isset($simpl_session_id)) {
-                $sessionId = $simpl_session_id;        
+            $simpl_session_id = WC()->session->get('simpl_checkout_session_id_' . $simpl_checkout_data['checkout_order_id']);
+            if (isset($simpl_session_id)) {
+                $sessionId = $simpl_session_id;
             } else {
                 $sessionId                     = md5(uniqid(wp_rand(), true));
-                WC()->session->set('simpl_checkout_session_id_'.$simpl_checkout_data['checkout_order_id'], $sessionId);
+                WC()->session->set('simpl_checkout_session_id_' . $simpl_checkout_data['checkout_order_id'], $sessionId);
             }
 
 
@@ -87,13 +86,11 @@ function cart_flows_abandoned_cart($cart, $simpl_checkout_data)
             if ($wpdb->last_error) {
                 $response['status']  = false;
                 $response['message'] = $wpdb->last_error;
-                $statusCode          = 400;
             } else {
                 // Storing session_id in WooCommerce session.
                 WC()->session->set('wcf_session_id', $sessionId);
                 $response['status']  = true;
                 $response['message'] = 'Data successfully inserted for wooCommerce cart abandonment recovery';
-                $statusCode          = 200;
             }
         }
     }
@@ -102,6 +99,3 @@ function cart_flows_abandoned_cart($cart, $simpl_checkout_data)
 
     return $response;
 }
-
-
-?>

@@ -10,7 +10,6 @@ function create_order(WP_REST_Request $request)
     try {
         initCartCommon();
         validate_order_request($request);
-
         $order = wc_get_order((int)$request->get_params()["checkout_order_id"]);
         WC()->session->order_awaiting_payment = $order->get_id();
         $order_id = $order->get_id();
