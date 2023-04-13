@@ -19,7 +19,7 @@ function create_cart(WP_REST_Request $request)
         $si = new SimplIntegration();
         return $si->cart_redirection_url(WC()->cart);
     } catch (Exception $fe) {
-	    return new WP_REST_Response(array("code" => "cart_creation_error", "message" => 'error in creating checkout'), $fe->getCode());
+	    return new WP_REST_Response(array("code" => CART_CREATE_ERROR, "message" => 'error in creating checkout'), 500);
 
     }
 }

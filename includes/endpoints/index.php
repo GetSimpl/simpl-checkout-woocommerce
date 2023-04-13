@@ -8,6 +8,12 @@
     include_once "internal/shipping-method.php";
     include_once "internal/order.php";
 
+	// Defined error CODE for API
+	define('USER_ERROR','user_error');
+	define('BAD_REQUEST','bad_request');
+	define('CART_CREATE_ERROR','cart_creation_error');
+
+
     include_once SIMPL_PLUGIN_DIR . "/includes/simpl_integration/simpl_integration.php";
     include_once SIMPL_PLUGIN_DIR . "/includes/helpers/cart_helper.php";
     include_once SIMPL_PLUGIN_DIR . "/includes/helpers/wc_helper.php";
