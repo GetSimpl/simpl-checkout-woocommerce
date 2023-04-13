@@ -8,7 +8,7 @@ include_once SIMPL_PLUGIN_DIR . "/includes/helpers/wc_helper.php";
 function create_order(WP_REST_Request $request)
 {
     try {
-        initCartCommon();
+        simpl_cart_init_common();
         validate_order_request($request);
 
         $order = wc_get_order((int)$request->get_params()["checkout_order_id"]);

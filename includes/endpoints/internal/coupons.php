@@ -8,7 +8,7 @@ function apply_coupon(WP_REST_Request $request)
 {
     try {
         global $notice_message;
-        initCartCommon();
+        simpl_cart_init_common();
 
         validate_coupon_request($request);
 
@@ -38,7 +38,7 @@ function remove_coupon(WP_REST_Request $request)
 {
     try {
         global $notice_message;
-        initCartCommon();
+        simpl_cart_init_common();
 
         validate_coupon_request($request);
 
@@ -69,7 +69,7 @@ function remove_coupons(WP_REST_Request $request)
 {
     try {
         global $notice_message;
-        initCartCommon();
+        simpl_cart_init_common();
         validate_checkout_order_id($request);
         $order = wc_get_order((int)$request->get_params()["checkout_order_id"]);
 
