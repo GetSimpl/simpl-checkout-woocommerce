@@ -20,6 +20,9 @@ class SimplCheckoutOrderController {
             $order->update_meta_data("simpl_payment_id", $request->get_params()["simpl_payment_id"]);
             $order->save();
             $result = $available_gateways["simpl"]->process_payment($order_id);
+
+	        WC()->mailer()->customer_invoice( $order ); // Sending Invoice to Customer
+
             WC()->session->set("simpl_order_id", null);
             WC()->session->set("simpl:session:id", null);
     
