@@ -26,11 +26,16 @@ function simpl_checkout_int() {
     define("SIMPL_ORDER_METADATA", "is_simpl_checkout_order");
     define('WIDGET_SCRIPT_STAGING_URL', 'https://s3.ap-southeast-1.amazonaws.com/staging-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
     define('WIDGET_SCRIPT_PRODUCTION_URL', 'https://s3.ap-southeast-1.amazonaws.com/staging-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
-    include_once 'includes/utils/index.php';
-    include_once 'includes/admin/index.php';
-    include_once 'includes/endpoints/index.php';
-    include_once 'includes/widget/index.php';
-    include_once 'includes/plugin_support/index.php';
+
+    include_once 'includes/utils/load.php';
+    include_once 'includes/admin/load.php';
+
+    include_once "includes/helpers/load.php";
+
+    include_once 'includes/simpl_integration/load.php';
+    include_once 'includes/endpoints/load.php';
+    include_once 'includes/widget/load.php';
+    include_once 'includes/plugin_support/load.php';
     add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
     add_action( 'plugins_loaded', 'simpl_init_gateway_class' );
     register_activation_hook( __FILE__, 'my_plugin_activate' );

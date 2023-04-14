@@ -1,6 +1,6 @@
 <?php
 
-class SimplIntegration {
+class SimplCartResponse {
     public function cart_redirection_url($cart) {
         $cart_request = self::static_cart_payload($cart);
         $simpl_host = WC_Simpl_Settings::simpl_host();    
@@ -8,7 +8,7 @@ class SimplIntegration {
         $simplHttpResponse = wp_remote_post( "https://".$simpl_host."/api/v1/wc/cart", array(
             "body" => json_encode($cart_request),
             //TODO: merchantClientID
-            "headers" => array("Shopify-Shop-Domain" => "checkout-staging-v2.myshopify.com", "content-type" => "application/json"),
+            "headers" => array("shop-domain" => WC_Simpl_Settings::store_url(), "content-type" => "application/json"),
         ));
         
         if ( ! is_wp_error( $simplHttpResponse ) ) {
@@ -202,7 +202,7 @@ class SimplIntegration {
     
         foreach($cart as $item_id => $item) { 
            $product =  wc_get_product( $item['product_id']); 
-           $price = round((float)$item['line_subtotal'] + (float)$item['line_subtotal_tax']);
+           $price = (float)$item['line_subtotal'] + (float)$item['line_subtotal_tax'];
            $data[$i]['id'] = (string)$item['product_id'] . (string)$item['variation_id'];
            $data[$i]['sku'] = $product->get_sku();
            $data[$i]['quantity'] = (int)$item['quantity'];
