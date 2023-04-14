@@ -29,7 +29,7 @@ class SimplEventsController {
         $req_body1 = $request->get_params()["event_payload"];
         $req_body["event_data"]["Simpl-Widget-Session-Token"] = "1234567890"; //use the function once other pr gets merged
         $req_body["event_data"]["Simpl-CTR-Unique-ID"] = get_ctr_unique_id($req_body);
-        $req_bodyy["event_data"]["merchant_id"] = $simpl_host;
+        $req_body["event_data"]["merchant_id"] = $simpl_host;
         $simplHttpResponse = wp_remote_post("https://".$simpl_host."/api/v1/wc/publish/events", array(
             "body" => json_encode($req_body),
             "headers" => array(            
@@ -42,8 +42,6 @@ class SimplEventsController {
             $error_message = $simplHttpResponse->get_error_message();
             throw new Exception( $error_message );
         }
-
-        return new WP_REST_Response($request->get_params("event_payload"));
     }
 
     function get_ctr_unique_id($req_body) {
