@@ -15,7 +15,7 @@ class SimplCheckoutCartController {
     
         try {
             $si = new SimplCartResponse();
-            return array('redirection_url'=>$si->cart_redirection_url(WC()->cart));
+            return $si->cart_redirection_url(WC()->cart);
         } catch (Exception $fe) {
             return new WP_Error("cart_creation_error", "error in creating checkout", array("error_mesage" => $fe->getMessage(), "backtrace" => $fe->getTraceAsString()));
         }
