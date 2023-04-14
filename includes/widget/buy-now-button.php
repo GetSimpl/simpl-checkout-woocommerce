@@ -35,7 +35,6 @@ function simpl_add_to_cart_btn(){
         $page = 'product';
     }
 
-
     echo '<div class="simpl-checkout-cta-container simpl-button-container" data-background="' . $color . '" page=' . $page . ' data-product-id=' . $productID . ' data-text="' . $buttonText . '"></div>';
   }
 }
@@ -43,4 +42,8 @@ function simpl_add_to_cart_btn(){
 function load_widget_script(){
   $script_url = WC_Simpl_Settings::widget_script_url();
   echo '<script type="text/javascript" src=' .$script_url. '></script>';
+}
+
+function customCTAPlacement(){
+  return simpl_add_to_cart_btn();
 }
