@@ -1,9 +1,100 @@
-div#wc_settings_tab_simpl_api_key-description + table + table + h2 {border-top: 1px solid #ccc; padding-top: 20px;}
-div#wc_settings_tab_simpl_button_visibility-description + table + h2 {border-top: 1px solid #ccc;padding-top: 20px;}
+/*div#wc_settings_tab_simpl_api_key-description + table + table + h2 {border-top: 1px solid #ccc; padding-top: 20px;}*/
+/*div#wc_settings_tab_simpl_button_visibility-description + table + h2 {border-top: 1px solid #ccc;padding-top: 20px;}*/
 div#wc_settings_tab_simpl_button_visibility-description + table.form-table th.titledesc {font-weight: normal;}
 div#wc_settings_tab_simpl_button_section_configuration-description + table.form-table th.titledesc {font-weight: normal;}
-div#wc_settings_tab_simpl_button_section_configuration-description p {font-size: 15px;}
-div#wc_settings_tab_simpl_button_visibility-description p {font-size: 15px;}
+div#wc_settings_tab_simpl_button_section_configuration-description p {font-size: 13px;}
+div#wc_settings_tab_simpl_button_visibility-description p {font-size: 13px;}
 div#wc_settings_tab_simpl_api_key-description + table.form-table th.titledesc {font-weight: normal;}
 div#wc_settings_tab_simpl_api_key-description + table + table.form-table th.titledesc {font-weight: normal;}
-div#wc_settings_tab_simpl_api_key-description p {font-size: 15px;}
+div#wc_settings_tab_simpl_api_key-description p {font-size: 13px;}
+
+.wc-settings.settings_tab_simpl nav.nav-tab-wrapper.woo-nav-tab-wrapper a.nav-tab.nav-tab-active {
+    background:#28c9c9;
+    color:#FFF;
+    border-bottom: 1px solid #28c9c9;
+}
+
+.wc-settings.settings_tab_simpl span.status-enabled ,.wc-settings.settings_tab_simpl .status-disabled{
+    display: inline-block;
+    clear: both;
+    float: left;
+    padding-right: 10px;
+}
+
+.wc-settings.settings_tab_simpl .status-disabled::before{
+    color: #d63638;
+}
+.wc-settings.settings_tab_simpl .status-enabled::before {
+    color: #29c9ca;
+}
+.wc-settings.settings_tab_simpl h2 + div
+{
+    background: white;
+}
+
+.wc-settings.settings_tab_simpl form#mainform h2 {
+    color: #3c434a;
+    font-size: 15px;
+}
+.wc-settings.settings_tab_simpl form#mainform h2:not(:first-of-type),
+.wc-settings.settings_tab_simpl form#mainform h2:not(:first-of-type) ~ div,
+.wc-settings.settings_tab_simpl form#mainform #checkout_endpoint_options-description + div#wc_settings_tab_simpl_api_key-description
+{
+    cursor: pointer;
+    background:#fff;
+    margin: 0;
+    padding: 6px 6px;
+    display: block;
+
+}
+.wc-settings.settings_tab_simpl form#mainform #checkout_endpoint_options-description + div#wc_settings_tab_simpl_api_key-description,
+.wc-settings.settings_tab_simpl form#mainform h2+ div + table.form-table >tbody
+{
+    margin-bottom: 25px;
+}
+.wc-settings.settings_tab_simpl form#mainform h2+ div > p {
+    margin:0;
+    color: #3c434a!important;
+}
+
+.wc-settings.settings_tab_simpl form#mainform h2+ div + table.form-table >tbody {
+    background: #fff;
+    padding: 6px 6px;
+    display: block;
+}
+
+.wc-settings.settings_tab_simpl form#mainform h2+ div {
+    border-bottom: 2px solid #f0f0f1;
+}
+.wc-settings.settings_tab_simpl form#mainform
+{
+    counter-reset: simplstepcounter;
+    position:relative;
+}
+
+.wc-settings.settings_tab_simpl form#mainform h2:not(:first-of-type):before {
+    counter-increment: simplstepcounter;
+    content: "Step " counter(simplstepcounter) " of 4 : ";
+}
+
+
+div.accordian-heading p:after {
+    content: "\25bc";
+    position: absolute;
+    right: 10px;
+    top: -15px;
+    font-size: 20px;
+    content: "\f140";
+    font: normal 20px/1 dashicons;
+}
+
+.accordian-heading {
+    position: relative;
+}
+
+div.accordian-heading p.clicked:after
+{
+    transform: rotate(180deg);
+}
+
+/*<span class="status-enabled tips">Yes</span>*/
