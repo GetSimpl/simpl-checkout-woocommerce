@@ -54,7 +54,7 @@ function maybe_load_cart() {
 	}
 }
 
-function initCartCommon()
+function simpl_cart_init_common()
 { 
     if (defined('WC_ABSPATH')) {
         // WC 3.6+ - Cart and other frontend functions are not included for REST requests.
