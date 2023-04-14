@@ -2,7 +2,7 @@
 add_action('rest_api_init', function () {
   register_rest_route('simpl/v1', '/cart', array(
     'methods' => 'POST',
-    'callback' => 'create_cart',
+    'callback' => array(new SimplCheckoutCartController, 'create'),
     'permission_callback' => function () {
       return true;
     }
@@ -11,7 +11,7 @@ add_action('rest_api_init', function () {
 
   register_rest_route('wc-simpl/v1', '/checkout', array(
     'methods' => 'POST',
-    'callback' => 'create_checkout',
+    'callback' => array(new SimplCheckoutController, 'create'),
     'permission_callback' => 'internal_authenticate'
   ));
 
@@ -25,43 +25,44 @@ add_action('rest_api_init', function () {
 
   register_rest_route('wc-simpl/v1', '/checkout', array(
     'methods' => 'PUT',
-    'callback' => 'update_checkout',
+    'callback' => array(new SimplCheckoutController, 'update'),
     'permission_callback' => 'internal_authenticate'
   ));
 
   register_rest_route('wc-simpl/v1', '/checkout', array(
     'methods' => 'GET',
-    'callback' => 'fetch_checkout',
+    'callback' => array(new SimplCheckoutController, 'fetch'),
     'permission_callback' => 'internal_authenticate'
   ));
 
   register_rest_route('wc-simpl/v1', '/checkout/coupon', array(
     'methods' => 'POST',
-    'callback' => 'apply_coupon',
-    'permission_callback' => 'internal_authenticate'
-  ));
-
-  register_rest_route('wc-simpl/v1', '/checkout/shipping-method', array(
-    'methods' => 'POST',
-    'callback' => 'set_shipping_method',
+    'callback' => array(new SimplCheckoutCouponController, 'apply'),
     'permission_callback' => 'internal_authenticate'
   ));
 
   register_rest_route('wc-simpl/v1', '/checkout/coupon', array(
     'methods' => 'DELETE',
-    'callback' => 'remove_coupon',
+    'callback' => array(new SimplCheckoutCouponController, 'remove'),
     'permission_callback' => 'internal_authenticate'
   ));
 
   register_rest_route('wc-simpl/v1', '/checkout/coupons', array(
     'methods' => 'DELETE',
-    'callback' => 'remove_coupons',
+    'callback' => array(new SimplCheckoutCouponController, 'remove_all'),
     'permission_callback' => 'internal_authenticate'
   ));
 
+  register_rest_route('wc-simpl/v1', '/checkout/shipping-method', array(
+    'methods' => 'POST',
+    'callback' => array(new SimplCheckoutShippingController, 'set_shipping_method'),
+    'permission_callback' => 'internal_authenticate'
+  ));
+
+
   register_rest_route('wc-simpl/v1', '/order', array(
     'methods' => 'POST',
-    'callback' => 'create_order',
+    'callback' => array(new SimplCheckoutOrderController, 'create'),
     'permission_callback' => function () {
       return true;
     }

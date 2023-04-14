@@ -1,6 +1,6 @@
 <?php
 
-class SimplIntegration {
+class SimplCartResponse {
     public function cart_redirection_url($cart) {
         $cart_request = self::static_cart_payload($cart);
         $simpl_host = WC_Simpl_Settings::simpl_host();    
