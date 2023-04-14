@@ -42,7 +42,7 @@ class SimplCheckoutCouponController {
             $order = wc_get_order((int)$request->get_params()["checkout_order_id"]);
             $coupon_code = $request->get_params()["coupon_code"];
     
-            $cart = SimplWcCartHelper::load_cart_from_order($order_id);
+            $cart = SimplWcCartHelper::load_cart_from_order($order->get_id());
             $cart->remove_coupon($coupon_code);
             $notice_message = $_SESSION["simpl_session_message"];
             if ($notice_message["type"] == "error") {
@@ -51,7 +51,7 @@ class SimplCheckoutCouponController {
             $order->remove_coupon($coupon_code);
             $order->save();
             $si = new SimplCartResponse();
-            return $si->cart_payload(WC()->cart, $order_id);
+            return $si->cart_payload(WC()->cart, $order->get_id());
         } catch (HttpBadRequest $fe) {
             return new WP_REST_Response(array("code" => "bad_request", "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
@@ -70,7 +70,7 @@ class SimplCheckoutCouponController {
             SimplRequestValidator::validate_checkout_order_id($request);
             $order = wc_get_order((int)$request->get_params()["checkout_order_id"]);
     
-            $cart = SimplWcCartHelper::load_cart_from_order($order_id);
+            $cart = SimplWcCartHelper::load_cart_from_order($order->get_id());
             $cart->remove_coupons();
             $notice_message = $_SESSION["simpl_session_message"];
             if ($notice_message["type"] == "error") {
@@ -82,7 +82,7 @@ class SimplCheckoutCouponController {
             }
             $order->save();
             $si = new SimplCartResponse();
-            return $si->cart_payload(WC()->cart, $order_id);
+            return $si->cart_payload(WC()->cart, $order->get_id());
         } catch (HttpBadRequest $fe) {
             return new WP_REST_Response(array("code" => "bad_request", "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
