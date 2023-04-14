@@ -132,9 +132,6 @@ class WC_Simpl_Settings {
         self::is_valid_credentials(true);
         $event_data = array(
             "merchant_id" => WC_Simpl_Settings::simpl_host(),
-            "source" => "sticky",
-            "entity" => "AdminSettingsPage",
-            "platform" => "mweb",
         );
         $event_payload = array(
             "trigger_timestamp" => time(),
