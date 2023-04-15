@@ -13,7 +13,7 @@ class SimplCheckoutOrderController {
             WC()->session->set("simpl_order_id", $order_id);
             $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
             if (!$available_gateways["simpl"]) {
-                return new WP_REST_Response(array("code" => "bad_request", "message" => "order already confirmed"), 400);
+                return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => "order already confirmed"), 400);
             }
     
             $order->update_meta_data("simpl_cart_token", $request->get_params()["simpl_cart_token"]);
@@ -32,7 +32,7 @@ class SimplCheckoutOrderController {
         } catch (Exception $fe) {
 	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
-	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating order'), 400);
+	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating order'), 500);
         }
     }
 }
