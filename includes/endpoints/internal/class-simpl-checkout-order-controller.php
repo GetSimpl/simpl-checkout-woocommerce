@@ -23,16 +23,16 @@ class SimplCheckoutOrderController {
             WC()->session->set("simpl_order_id", null);
             WC()->session->set("simpl:session:id", null);
     
-            if ($result["result"] != "success") return new WP_Error("user_error", "order is not successful");
+            if ($result["result"] != "success") return new WP_Error(SIMPL_HTTP_ERROR_USER_NOTICE, "order is not successful");
     
             $si = new SimplCartResponse();
             $order_payload = $si->order_payload($order);
             $order_payload["order_status_url"] = $result["redirect"];
             return $order_payload;
         } catch (Exception $fe) {
-            return new WP_Error("user_error", $fe->getMessage());
+	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
-            return new WP_Error("user_error", "error in creating order", array("error_mesage" => $fe->getMessage(), "backtrace" => $fe->getTraceAsString()));
+	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating order'), 400);
         }
     }
 }
