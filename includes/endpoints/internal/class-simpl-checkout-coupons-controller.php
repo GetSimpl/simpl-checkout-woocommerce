@@ -16,18 +16,18 @@ class SimplCheckoutCouponController {
             $cart->apply_coupon($coupon_code);
             $notice_message = $_SESSION["simpl_session_message"];
             if ($notice_message["type"] == "error") {
-                return new WP_Error("user_error", $notice_message["message"]);
+                return new WP_Error(SIMPL_HTTP_ERROR_USER_NOTICE, $notice_message["message"]);
             }
             $order->apply_coupon($coupon_code);
             $order->save();
             $si = new SimplCartResponse();
             return $si->cart_payload(WC()->cart, $order_id);
         } catch (HttpBadRequest $fe) {
-            return new WP_REST_Response(array("code" => "bad_request", "message" => $fe->getMessage()), 400);
+            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
-            return new WP_Error("user_error", $fe->getMessage());
+	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
-            return new WP_Error("user_error", "error in creating checkout", array("error_mesage" => $fe->getMessage(), "backtrace" => $fe->getTraceAsString()));
+	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating checkout'), 500);
         }
     }
     
@@ -46,18 +46,18 @@ class SimplCheckoutCouponController {
             $cart->remove_coupon($coupon_code);
             $notice_message = $_SESSION["simpl_session_message"];
             if ($notice_message["type"] == "error") {
-                return new WP_Error("user_error", $notice_message["message"]);
+                return new WP_Error(SIMPL_HTTP_ERROR_USER_NOTICE, $notice_message["message"]);
             }
             $order->remove_coupon($coupon_code);
             $order->save();
             $si = new SimplCartResponse();
             return $si->cart_payload(WC()->cart, $order->get_id());
         } catch (HttpBadRequest $fe) {
-            return new WP_REST_Response(array("code" => "bad_request", "message" => $fe->getMessage()), 400);
+            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
-            return new WP_Error("user_error", $fe->getMessage());
+	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
-            return new WP_Error("user_error", "error in creating checkout", array("error_mesage" => $fe->getMessage(), "backtrace" => $fe->getTraceAsString()));
+	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating checkout'), 500);
         }
     }
     
@@ -74,7 +74,7 @@ class SimplCheckoutCouponController {
             $cart->remove_coupons();
             $notice_message = $_SESSION["simpl_session_message"];
             if ($notice_message["type"] == "error") {
-                return new WP_Error("user_error", $notice_message["message"]);
+                return new WP_Error(SIMPL_HTTP_ERROR_USER_NOTICE, $notice_message["message"]);
             }
             $coupon_codes  = $order->get_coupon_codes();
             foreach ($coupon_codes as $index => $code) {
@@ -84,11 +84,11 @@ class SimplCheckoutCouponController {
             $si = new SimplCartResponse();
             return $si->cart_payload(WC()->cart, $order->get_id());
         } catch (HttpBadRequest $fe) {
-            return new WP_REST_Response(array("code" => "bad_request", "message" => $fe->getMessage()), 400);
+            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
-            return new WP_Error("user_error", $fe->getMessage());
+	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
-            return new WP_Error("user_error", "error in creating checkout", array("error_mesage" => $fe->getMessage(), "backtrace" => $fe->getTraceAsString()));
+	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating checkout'), 500);
         }
     }    
 }

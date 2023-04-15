@@ -27,6 +27,11 @@ function simpl_checkout_int() {
     define('WIDGET_SCRIPT_STAGING_URL', 'https://s3.ap-southeast-1.amazonaws.com/staging-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
     define('WIDGET_SCRIPT_PRODUCTION_URL', 'https://s3.ap-southeast-1.amazonaws.com/staging-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
 
+    // Defined error CODE for API
+    define('SIMPL_HTTP_ERROR_USER_NOTICE','user_error');
+    define('SIMPL_HTTP_ERROR_BAD_REQUEST','bad_request');
+    define('SIMPL_HTTP_ERROR_CART_CREATE','cart_creation_error');
+
     include_once 'includes/utils/load.php';
     include_once 'includes/admin/load.php';
 
