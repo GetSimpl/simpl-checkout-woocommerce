@@ -18,4 +18,12 @@ class SimplUtil
         $supported_countries = array("india" => "IN");
         return $supported_countries[strtolower($country_name)];
     }
+
+    static function get_ctr_unique_id($req_body) {
+        if(NULL == $req_body["trigger_timestamp"]) {
+            return new WP_REST_Response(array("code"=> "bad_request", "message"=> "trigger_timestamp is required"), 400);
+        }
+        
+        return $req_body["event_data"]["merchant_id"]."-".$req_body["event_data"]["Simpl-Widget-Session-Token"]."-".$req_body["trigger_timestamp"];
+    }
 }
