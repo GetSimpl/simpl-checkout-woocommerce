@@ -40,8 +40,7 @@ jobs:
       - name: Create artifact
         uses: montudor/action-zip@v1
         with:
-          args: zip -r build/simpl-checkout-plugin.zip .
-          working-directory: $GITHUB_WORKSPACE/simpl-checkout-woocommerce
+          args: zip -r build/simpl-checkout-plugin.zip simpl-checkout-woocommerce
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
