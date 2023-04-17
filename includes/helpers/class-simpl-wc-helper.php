@@ -142,6 +142,7 @@ class SimplWcCartHelper {
                 }
             }
             set_order_address_in_cart($order->get_address('shipping'), $order->get_address('billing'));
+            WC()->session->set('chosen_shipping_methods', $order->get_shipping_method());
         }
         
         return WC()->cart;
