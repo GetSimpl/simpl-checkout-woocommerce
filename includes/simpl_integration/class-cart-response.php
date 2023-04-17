@@ -10,7 +10,8 @@ class SimplCartResponse {
             //TODO: merchantClientID
             "headers" => array("shop-domain" => WC_Simpl_Settings::store_url(), "content-type" => "application/json"),
         ));
-        
+
+	    simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
         if ( ! is_wp_error( $simplHttpResponse ) ) {
             $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
     
@@ -44,6 +45,7 @@ class SimplCartResponse {
         }
         $cart_payload['checkout_order_id'] = $order_id;
         $response["cart"] = $cart_payload;
+	    simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
         return $response;
     }
 
@@ -105,6 +107,7 @@ class SimplCartResponse {
         $response["total_tax"] = wc_format_decimal($order->get_total_tax(), 2); 
         $response["total_shipping"] = wc_format_decimal($order->get_shipping_total(), 2);
         $response["shipping_methods"] = $this->formatted_shipping_methods($order->get_shipping_methods());
+	    simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
         return $response;
     }
 
