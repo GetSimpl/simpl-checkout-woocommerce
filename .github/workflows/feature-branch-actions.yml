@@ -31,9 +31,6 @@ jobs:
     name: Build and publish artifact
     runs-on: ubuntu-latest
     needs: [test]
-    defaults:
-      run:
-        working-directory: ./app
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
