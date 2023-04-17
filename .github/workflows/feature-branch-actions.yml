@@ -41,5 +41,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-            name: simpl-checkout-plugin
-            path: ../build/simpl-checkout-plugin.zip
+          name: simpl-checkout-plugin
+          path: /home/runner/work/simpl-checkout-woocommerce/build/simpl-checkout-plugin.zip
