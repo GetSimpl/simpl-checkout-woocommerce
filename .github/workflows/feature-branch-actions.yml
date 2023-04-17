@@ -37,14 +37,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Build project
-        run: |
-          mkdir build && ls -lrth
-        working-directory: 
-      - name: Create artifact
+      - name: Install zip
         uses: montudor/action-zip@v1
-        with:
-          args: zip -r build/simpl-checkout-plugin.zip simpl-checkout-woocommerce/*
+      - name: Zip artifact
+        working-directory: path/to/work-dir
+        run: cd .. && mkdir build && ls -lrth && pwd && zip -r build/simpl-checkout-plugin.zip simpl-checkout-woocommerce/*
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
