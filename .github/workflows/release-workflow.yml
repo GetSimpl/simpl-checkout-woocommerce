@@ -1,6 +1,6 @@
-name: Build and run tests
-run-name: Running feature branch workflow
-on: [push]
+name: Release workflow
+run-name: Running release workflow
+on: [release]
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -26,3 +26,19 @@ jobs:
       - run: composer install
       - run: composer wp-install
       - run: ./vendor/phpunit/phpunit/phpunit
+
+  build-and-publish-artifact:
+    name: Build and publish artifact
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: simpl-checkout-plugin
+          path: |
+            /home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/*.php
+            /home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/includes/*
+            /home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/composer.*
