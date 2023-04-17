@@ -34,12 +34,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Install zip
-        uses: montudor/action-zip@v1
-      - name: Zip artifact
-        run: cd .. && mkdir build && ls -lrth && pwd && zip -r build/simpl-checkout-plugin.zip simpl-checkout-woocommerce/*
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: simpl-checkout-plugin
-          path: /home/runner/work/simpl-checkout-woocommerce/build/simpl-checkout-plugin.zip
+          path: /home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/*
