@@ -31,6 +31,7 @@ function simpl_checkout_int() {
     define('SIMPL_HTTP_ERROR_USER_NOTICE','user_error');
     define('SIMPL_HTTP_ERROR_BAD_REQUEST','bad_request');
     define('SIMPL_HTTP_ERROR_CART_CREATE','cart_creation_error');
+    define('SIMPL_HTTP_ERROR_EVENT_PAYLOAD','event_payload_creation_error');
 
     include_once 'includes/utils/load.php';
     include_once 'includes/admin/load.php';

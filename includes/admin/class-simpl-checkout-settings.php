@@ -130,8 +130,9 @@ class WC_Simpl_Settings {
     public static function update_settings() {
         woocommerce_update_options(self::get_settings());
         self::is_valid_credentials(true);
+        $simpl_host = WC_Simpl_Settings::simpl_host();
         $event_data = array(
-            "merchant_id" => WC_Simpl_Settings::simpl_host(),
+            "merchant_id" => $simpl_host,
         );
         $event_payload = array(
             "trigger_timestamp" => time(),
@@ -141,7 +142,7 @@ class WC_Simpl_Settings {
             "flow" => "Merchant admin page"
         );
 
-        $simpl_host = WC_Simpl_Settings::simpl_host();
+
         $simplHttpResponse = wp_remote_post("https://".$simpl_host."/api/v1/wc/publish/events", array(
             "body" => json_encode($event_payload),
             "headers" => array(            

@@ -21,7 +21,16 @@ class SimplUtil
 
     static function get_ctr_unique_id($req_body) {
         if(NULL == $req_body["trigger_timestamp"]) {
-            return new WP_REST_Response(array("code"=> "bad_request", "message"=> "trigger_timestamp is required"), 400);
+            return new WP_REST_Response(array("code"=> SIMPL_HTTP_ERROR_BAD_REQUEST, "message"=> "trigger_timestamp is required"), 400);
+        }
+        if(NULL == $req_body["event_data"]) {
+            return new WP_REST_Response(array("code"=> SIMPL_HTTP_ERROR_EVENT_PAYLOAD, "message"=> "event_data is required"), 400);
+        }
+        if(NULL == $req_body["event_data"]["merchant_id"]) {
+            return new WP_REST_Response(array("code"=> SIMPL_HTTP_ERROR_EVENT_PAYLOAD, "message"=> "merchant_id is required"), 500);
+        }
+        if(NULL == $req_body["event_data"]["Simpl-Widget-Session-Token"]) {
+            return new WP_REST_Response(array("code"=> SIMPL_HTTP_ERROR_EVENT_PAYLOAD, "message"=> "Simpl-Widget-Session-Token is required"), 500);
         }
         
         return $req_body["event_data"]["merchant_id"]."-".$req_body["event_data"]["Simpl-Widget-Session-Token"]."-".$req_body["trigger_timestamp"];
