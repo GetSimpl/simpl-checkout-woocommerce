@@ -139,7 +139,7 @@ class WC_Simpl_Settings {
             "event_name" => "Update settings",
             "event_data" => array_merge($event_data, self::latest_settings()),
             "entity" =>  "Manage settings",
-            "flow" => "Merchant admin page"
+            "flow" => "Merchant woocommerce-admin page"
         );
 
 
