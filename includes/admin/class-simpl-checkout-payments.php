@@ -43,13 +43,14 @@ function simpl_init_gateway_class() {
             if(WC()->session) {
                 $simpl_order_id = WC()->session->get("simpl_order_id");
                 $order = wc_get_order((int)$simpl_order_id);
+                
                 if(!$order) {
-                    unset( $available_gateways['simpl'] );                                    
+                    unset( $available_gateways['simpl_checkout_payment'] );                                    
                 }
                 if($order) {
                     $status = $order->get_status();
                     if($status != "checkout-draft") {
-                        unset( $available_gateways['simpl'] );                
+                        unset( $available_gateways['simpl_checkout_payment'] );                
                     }
                 }         
             }
@@ -79,7 +80,3 @@ function simpl_init_gateway_class() {
         }        
     }
 }
-
-
-
-?>
