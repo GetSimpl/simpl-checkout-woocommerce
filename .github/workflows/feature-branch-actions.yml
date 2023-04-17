@@ -36,11 +36,11 @@ jobs:
         uses: actions/checkout@v3
       - name: Build project
         run: |
-          mkdir build
+          mkdir build && pwd
       - name: Create artifact
         uses: montudor/action-zip@v1
         with:
-          args: zip -r build/simpl-checkout-plugin.zip simpl-checkout-woocommerce
+          args: zip -r build/simpl-checkout-plugin.zip . -i simpl-checkout-woocommerce
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
