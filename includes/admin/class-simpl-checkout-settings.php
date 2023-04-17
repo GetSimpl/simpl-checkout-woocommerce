@@ -143,7 +143,7 @@ class WC_Simpl_Settings {
 
         $simpl_host = WC_Simpl_Settings::simpl_host();
         $simplHttpResponse = wp_remote_post("https://".$simpl_host."/api/v1/wc/publish/events", array(
-            "body" => json_encode($req_body),
+            "body" => json_encode($event_payload),
             "headers" => array(            
                     "content-type" => "application/json"
                 ),
