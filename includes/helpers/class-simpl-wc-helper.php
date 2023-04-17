@@ -18,7 +18,7 @@ class SimplWcCartHelper {
             WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"]);
         }
         if(WC()->cart->is_empty()) {
-        throw new HttpBadRequest("invalid cart items");
+        throw new SimplCustomHttpBadRequest("invalid cart items");
         }
     }
 
@@ -59,12 +59,8 @@ class SimplWcCartHelper {
     }
 
     static function set_address_in_cart($shipping_address, $billing_address) {
-        try {
-            $shipping_address = self::convert_address_payload($shipping_address);
-            $billing_address = self::convert_address_payload($billing_address);   
-        } catch (Exception $fe) {
-            throw $fe;
-        }
+        $shipping_address = self::convert_address_payload($shipping_address);
+        $billing_address = self::convert_address_payload($billing_address);  
     
         if(isset($shipping_address) && isset($billing_address)) {        
             foreach($shipping_address as $key => $value) {
@@ -83,7 +79,7 @@ class SimplWcCartHelper {
     static protected function convert_address_payload($address) {
         $supported_cc = SimplUtil::country_code_for_country($address["country"]);
         if(!isset($supported_cc)) {
-            throw new HttpBadRequest("country is not supported");
+            throw new SimplCustomHttpBadRequest("country is not supported");
         }
         $address["country"] = $supported_cc;
     

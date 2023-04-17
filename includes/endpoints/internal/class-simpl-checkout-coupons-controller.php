@@ -22,7 +22,7 @@ class SimplCheckoutCouponController {
             $order->save();
             $si = new SimplCartResponse();
             return $si->cart_payload(WC()->cart, $order_id);
-        } catch (HttpBadRequest $fe) {
+        } catch (SimplCustomHttpBadRequest $fe) {
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
 	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
@@ -52,7 +52,7 @@ class SimplCheckoutCouponController {
             $order->save();
             $si = new SimplCartResponse();
             return $si->cart_payload(WC()->cart, $order->get_id());
-        } catch (HttpBadRequest $fe) {
+        } catch (SimplCustomHttpBadRequest $fe) {
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
 	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
@@ -83,7 +83,7 @@ class SimplCheckoutCouponController {
             $order->save();
             $si = new SimplCartResponse();
             return $si->cart_payload(WC()->cart, $order->get_id());
-        } catch (HttpBadRequest $fe) {
+        } catch (SimplCustomHttpBadRequest $fe) {
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
 	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
