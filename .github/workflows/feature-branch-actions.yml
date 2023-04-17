@@ -42,4 +42,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
             name: simpl-checkout-plugin
-            path: build/simpl-checkout-plugin.zip
+            path: ../build/simpl-checkout-plugin.zip
