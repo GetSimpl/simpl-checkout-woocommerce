@@ -38,4 +38,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: simpl-checkout-plugin
-          path: /home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/*
+          path: |
+            /home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/*.php
+            /home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/includes/*
+            /home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/composer.*
