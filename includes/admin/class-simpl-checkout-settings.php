@@ -153,31 +153,33 @@ class WC_Simpl_Settings {
 
 		woocommerce_update_options( self::get_settings() );
 		self::is_valid_credentials( true );
-		$simpl_host = WC_Simpl_Settings::simpl_host();
-        $event_data = array(
-            "merchant_id" => $simpl_host,
-        );
-        $event_payload = array(
-            "trigger_timestamp" => time(),
-            "event_name" => "Update settings",
-            "event_data" => array_merge($event_data, self::latest_settings()),
-            "entity" =>  "Manage settings",
-            "flow" => "Merchant woocommerce-admin page"
-        );
+		if ( serialize($existingSetting) != serialize($simplSettingsField)) {
+			$simpl_host = WC_Simpl_Settings::simpl_host();
+			$event_data = array(
+				"merchant_id" => $simpl_host,
+			);
+			$event_payload = array(
+				"trigger_timestamp" => time(),
+				"event_name" => "Update settings",
+				"event_data" => array_merge($event_data, self::latest_settings()),
+				"entity" =>  "Manage settings",
+				"flow" => "Merchant woocommerce-admin page"
+			);
 
 
-        $simplHttpResponse = wp_remote_post("https://".$simpl_host."/api/v1/wc/publish/events", array(
-            "body" => json_encode($event_payload),
-            "headers" => array(            
-                    "content-type" => "application/json"
-                ),
-        )); 
-        if (!is_wp_error($simplHttpResponse)) {
-            $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
-        } else {
-            $error_message = $simplHttpResponse->get_error_message();
-            throw new Exception( $error_message );
-        }
+			$simplHttpResponse = wp_remote_post("https://".$simpl_host."/api/v1/wc/publish/events", array(
+				"body" => json_encode($event_payload),
+				"headers" => array(            
+						"content-type" => "application/json"
+					),
+			)); 
+			if (!is_wp_error($simplHttpResponse)) {
+				$body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
+			} else {
+				$error_message = $simplHttpResponse->get_error_message();
+				throw new Exception( $error_message );
+			}
+		}
 	}
 
 	// its for fetch all Config of simpl checkout
