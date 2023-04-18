@@ -2,8 +2,8 @@ name: Build and run tests
 run-name: Running feature branch workflow
 on:
   push:
-    branches:
-      - '!main'
+    branches-ignore:
+      - main
 jobs:
   test:
     runs-on: ubuntu-latest
