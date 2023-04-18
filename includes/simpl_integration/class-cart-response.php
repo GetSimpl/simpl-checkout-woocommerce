@@ -11,7 +11,7 @@ class SimplCartResponse {
             "headers" => array("shop-domain" => WC_Simpl_Settings::store_url(), "content-type" => "application/json"),
         ));
 
-	    SimplWcCartHelper::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
+	    self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
         if ( ! is_wp_error( $simplHttpResponse ) ) {
             $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
     
@@ -43,7 +43,7 @@ class SimplCartResponse {
         }
         $cart_payload['checkout_order_id'] = $order_id;
         $response["cart"] = $cart_payload;
-	    SimplWcCartHelper::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
+	    self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
         return $response;
     }
 
@@ -109,7 +109,7 @@ class SimplCartResponse {
         $response["total_tax"] = wc_format_decimal($order->get_total_tax(), 2); 
         $response["total_shipping"] = wc_format_decimal($order->get_shipping_total(), 2);
         $response["shipping_methods"] = $this->formatted_shipping_methods($order->get_shipping_methods());
-	    SimplWcCartHelper::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
+	    self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
         return $response;
     }
 
@@ -226,4 +226,16 @@ class SimplCartResponse {
     
         return $data;
     }
+	//This function will clear all type of notice or success
+	public function simpl_hide_error_messages()
+	{
+
+		$_SESSION["simpl_session_message"] = [];
+		WC()->session->set('wc_notices', null);
+		add_filter( 'woocommerce_notice_types', '__return_empty_array' );
+		add_filter( 'wc_add_to_cart_message_html', '__return_false' );
+		add_filter( 'woocommerce_cart_item_removed_notice_type', '__return_false' );
+		add_filter( 'woocommerce_coupon_message', '' );
+		wc_clear_notices();
+	}
 }

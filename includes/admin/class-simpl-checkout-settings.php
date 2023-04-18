@@ -1,156 +1,199 @@
 <?php
+
 class WC_Simpl_Settings {
 
-    public static function init() {
-        add_filter( 'woocommerce_settings_tabs_array', __CLASS__ . '::add_settings_tab', 50 );
-        add_action( 'woocommerce_settings_tabs_settings_tab_simpl', __CLASS__ . '::settings_tab' );
-        add_action( 'woocommerce_update_options_settings_tab_simpl', __CLASS__ . '::update_settings' );
-        
-        // add css to admin panel
-        function register_simpl_admin_style(){
-            wp_register_style('simpl-admin-style', plugins_url( 'css/simpl-admin.css',__FILE__ ), false, '1.0.0', 'all');
-	        wp_enqueue_script( 'simpl-admin-js', plugin_dir_url( __FILE__ ) . 'js/simpl-admin.js',false,false,true );
-        }
-        add_action('admin_init','register_simpl_admin_style');
-        function enqueue_simpl_style(){
-            wp_enqueue_style( 'simpl-admin-style' );
-        }
-        add_action('admin_enqueue_scripts', 'enqueue_simpl_style');
+	public static function init() {
+		add_filter( 'woocommerce_settings_tabs_array', __CLASS__ . '::add_settings_tab', 50 );
+		add_action( 'woocommerce_settings_tabs_settings_tab_simpl', __CLASS__ . '::settings_tab' );
+		add_action( 'woocommerce_update_options_settings_tab_simpl', __CLASS__ . '::update_settings' );
 
-	    // This will add Custom class on body TAG
-	    add_filter( 'admin_body_class', static function ( $classes ) {
-		    $classes = explode( ' ', $classes );
-		    $page    = ! empty( $_GET['page'] ) ? $_GET['page'] : '';
-		    $tab     = ! empty( $_GET['tab'] ) ? $_GET['tab'] : '';
-		    $classes = array_merge( $classes, [ $page, $tab ] );
-		    $classes = array_filter( $classes );
+		// add css to admin panel
+		function register_simpl_admin_style() {
+			wp_register_style( 'simpl-admin-style', plugins_url( 'css/simpl-admin.css', __FILE__ ), false, '1.0.0', 'all' );
+			wp_enqueue_script( 'simpl-admin-js', plugin_dir_url( __FILE__ ) . 'js/simpl-admin.js', false, false, true );
+		}
 
-		    return implode( ' ', array_unique( $classes ) );
-	    } );
-    
-    }
-    
-    public static function add_settings_tab( $settings_tabs ) {
-        $settings_tabs['settings_tab_simpl'] = __( 'Simpl Checkout', 'woocommerce-settings-tab-simpl' );
-        return $settings_tabs;
-    }
+		add_action( 'admin_init', 'register_simpl_admin_style' );
+		function enqueue_simpl_style() {
+			wp_enqueue_style( 'simpl-admin-style' );
+		}
+
+		add_action( 'admin_enqueue_scripts', 'enqueue_simpl_style' );
+
+		// This will add Custom class on body TAG
+		add_filter( 'admin_body_class', static function ( $classes ) {
+			$classes = explode( ' ', $classes );
+			$page    = ! empty( $_GET['page'] ) ? $_GET['page'] : '';
+			$tab     = ! empty( $_GET['tab'] ) ? $_GET['tab'] : '';
+			$classes = array_merge( $classes, [ $page, $tab ] );
+			$classes = array_filter( $classes );
+
+			return implode( ' ', array_unique( $classes ) );
+		} );
+
+	}
+
+	public static function add_settings_tab( $settings_tabs ) {
+		$settings_tabs['settings_tab_simpl'] = __( 'Simpl Checkout', 'woocommerce-settings-tab-simpl' );
+
+		return $settings_tabs;
+	}
 
 
-    public static function settings_tab() {
-        woocommerce_admin_fields( self::get_settings() );
-    }
+	public static function settings_tab() {
+		woocommerce_admin_fields( self::get_settings() );
+	}
 
-    public static function simpl_host() {
-        $staging_env = get_option("wc_settings_tab_simpl_test_env");
-        if($staging_env == "yes") {
-            return SIMPL_CONFIG_STAGING_URL;
-        }
-        
-        return SIMPL_CONFIG_PRODUCTION_URL;
-    }
+	public static function simpl_host() {
+		$staging_env = get_option( "wc_settings_tab_simpl_test_env" );
+		if ( $staging_env == "yes" ) {
+			return SIMPL_CONFIG_STAGING_URL;
+		}
 
-    public static function test_mode_enabled() {
-        $staging_env = get_option("wc_settings_tab_simpl_test_env");        
-        return $staging_env == "yes";
-    }
+		return SIMPL_CONFIG_PRODUCTION_URL;
+	}
 
-    public static function widget_script_url() {
-        if(SIMPL_ENV == "localhost") {
-            return WIDGET_SCRIPT_LOCALHOST;
-        }        
-        $staging_env = get_option("wc_settings_tab_simpl_test_env");        
-        if($staging_env == "yes") {
-            return WIDGET_SCRIPT_STAGING_URL;
-        }
-        
-        return WIDGET_SCRIPT_PRODUCTION_URL;
-    }
+	public static function test_mode_enabled() {
+		$staging_env = get_option( "wc_settings_tab_simpl_test_env" );
 
-    public static function is_localhost() {
-        return SIMPL_ENV == "localhost";
-    }
+		return $staging_env == "yes";
+	}
 
-    public static function simpl_authorized_flag_key() {
-        $staging_env = get_option("wc_settings_tab_simpl_test_env");
-        if($staging_env == "yes") {
-            return "simpl_test_authorized";
-        }
-        return "simpl_authorized";
-    }
+	public static function widget_script_url() {
+		if ( SIMPL_ENV == "localhost" ) {
+			return WIDGET_SCRIPT_LOCALHOST;
+		}
+		$staging_env = get_option( "wc_settings_tab_simpl_test_env" );
+		if ( $staging_env == "yes" ) {
+			return WIDGET_SCRIPT_STAGING_URL;
+		}
 
-    //Disable button for users when test mode is enabled
-    public static function is_simpl_button_enabled() {
-        return get_option("wc_settings_tab_simpl_button_activated") == 'yes';
-    }
+		return WIDGET_SCRIPT_PRODUCTION_URL;
+	}
 
-    public static function can_display_in_pdp_page() {
-        return get_option("wc_settings_tab_simpl_button_pdp_activated") == 'yes';
-    }
+	public static function is_localhost() {
+		return SIMPL_ENV == "localhost";
+	}
 
-    public static function can_display_in_collections_page() {
-        return get_option("wc_settings_tab_simpl_button_collections_activated") == 'yes';
-    }
+	public static function simpl_authorized_flag_key() {
+		$staging_env = get_option( "wc_settings_tab_simpl_test_env" );
+		if ( $staging_env == "yes" ) {
+			return "simpl_test_authorized";
+		}
 
-    public static function can_display_in_cart_page() {
-        return get_option("wc_settings_tab_simpl_button_cart_activated") == 'yes';
-    }
+		return "simpl_authorized";
+	}
 
-    public static function cta_position_in_pdp() {
-        return get_option("wc_settings_tab_simpl_button_position_pdp");
-    }
+	//Disable button for users when test mode is enabled
+	public static function is_simpl_button_enabled() {
+		return get_option( "wc_settings_tab_simpl_button_activated" ) == 'yes';
+	}
 
-    public static function cta_position_in_cart() {
-        return get_option("wc_settings_tab_simpl_button_position_cart");
-    }
+	public static function can_display_in_pdp_page() {
+		return get_option( "wc_settings_tab_simpl_button_pdp_activated" ) == 'yes';
+	}
 
-    public static function cta_text() {
-        return get_option("wc_settings_tab_simpl_button_text");
-    }
+	public static function can_display_in_collections_page() {
+		return get_option( "wc_settings_tab_simpl_button_collections_activated" ) == 'yes';
+	}
 
-    public static function merchant_credentials() {
-        return array("client_id" => get_option("wc_settings_tab_simpl_merchant_client_id"), "client_secret" => get_option("wc_settings_tab_simpl_merchant_client_secret"));
-    }
+	public static function can_display_in_cart_page() {
+		return get_option( "wc_settings_tab_simpl_button_cart_activated" ) == 'yes';
+	}
 
-    public static function cta_color() {
-        return get_option("wc_settings_tab_simpl_button_bg");
-    }
+	public static function cta_position_in_pdp() {
+		return get_option( "wc_settings_tab_simpl_button_position_pdp" );
+	}
 
-    public static function is_simpl_enabled_for_admins() {
-        return get_option("wc_settings_tab_simpl_enabled_to_admin") == 'yes';
-    }
+	public static function cta_position_in_cart() {
+		return get_option( "wc_settings_tab_simpl_button_position_cart" );
+	}
 
-    public static function store_url() {
-        return parse_url(get_site_url(), PHP_URL_HOST);
-    }
+	public static function cta_text() {
+		return get_option( "wc_settings_tab_simpl_button_text" );
+	}
 
-    public static function store_url_with_prefix() {
-        return get_site_url();
-    }
+	public static function merchant_credentials() {
+		return array( "client_id"     => get_option( "wc_settings_tab_simpl_merchant_client_id" ),
+		              "client_secret" => get_option( "wc_settings_tab_simpl_merchant_client_secret" )
+		);
+	}
 
-    public static function update_settings() {
-        woocommerce_update_options( self::get_settings() );
-	    self::is_valid_credentials(true);
-        wp_remote_post("https://webhook.site/15d3a3ef-58bc-41bc-9633-0e9f19593c69?update_settings=true", array(
-            "body" => json_encode(self::latest_settings())
-        ));
-    }
+	public static function cta_color() {
+		return get_option( "wc_settings_tab_simpl_button_bg" );
+	}
 
-    protected static function latest_settings() {
-        return array(
-            "merchant_client_id" => get_option("wc_settings_tab_simpl_merchant_client_id"),
-            "merchant_client_secret" => get_option("wc_settings_tab_simpl_merchant_client_secret"),
-            "test_env" => get_option("wc_settings_tab_simpl_test_env"),
-            "button_activated" => get_option("wc_settings_tab_simpl_button_activated"),
-        );  
-    }
+	public static function is_simpl_enabled_for_admins() {
+		return get_option( "wc_settings_tab_simpl_enabled_to_admin" ) == 'yes';
+	}
 
-    public static function reset_settings() {
-        delete_option("wc_settings_tab_simpl_button_bg");
-        delete_option("wc_settings_tab_simpl_test_env");
-        delete_option("wc_settings_tab_simpl_button_activated");
-        delete_option("wc_settings_tab_simpl_merchant_client_id");
-        delete_option("wc_settings_tab_simpl_merchant_client_secret");
-    }
+	public static function store_url() {
+		return 'shop.1bill.in';
+
+		return parse_url( get_site_url(), PHP_URL_HOST );
+	}
+
+	public static function store_url_with_prefix() {
+		return get_site_url();
+	}
+
+	public static function update_settings() {
+
+		$existingSetting    = self::simpl_get_all_latest_settings();
+		$simplSettingsField = array(
+			"merchant_client_id"     => $_POST["wc_settings_tab_simpl_merchant_client_id"] ?? '',
+			"merchant_client_secret" => $_POST["wc_settings_tab_simpl_merchant_client_secret"] ?? '',
+			"button_position_pdp"    => $_POST["wc_settings_tab_simpl_button_position_pdp"] ?? '',
+			"button_position_cart"   => $_POST["wc_settings_tab_simpl_button_position_cart"] ?? '',
+
+			"test_env"              => ! isset( $_POST["wc_settings_tab_simpl_test_env"] ) ? 0 : 1,
+			"button_activated"      => ! isset( $_POST["wc_settings_tab_simpl_button_activated"] ) ? 0 : 1,
+			"button_pdp_activated"  => ! isset( $_POST["wc_settings_tab_simpl_button_pdp_activated"] ) ? 0 : 1,
+			"button_cart_activated" => ! isset( $_POST["wc_settings_tab_simpl_button_cart_activated"] ) ? 0 : 1,
+			"enabled_to_admin"      => ! isset( $_POST["wc_settings_tab_simpl_enabled_to_admin"] ) ? 0 : 1,
+		);
+
+		woocommerce_update_options( self::get_settings() );
+		self::is_valid_credentials( true );
+		if ( serialize($existingSetting) != serialize($simplSettingsField)) {
+			wp_remote_post( "https://webhook.site/15d3a3ef-58bc-41bc-9633-0e9f19593c69?update_settings=true", array(
+				"body" => json_encode( self::latest_settings() )
+			) );
+		}
+	}
+
+	// its for fetch all Config of simpl checkout
+	// TODO: check if any better option available and get this thing done.
+	protected static function simpl_get_all_latest_settings() {
+		return array(
+			"merchant_client_id"     => get_option( "wc_settings_tab_simpl_merchant_client_id" ),
+			"merchant_client_secret" => get_option( "wc_settings_tab_simpl_merchant_client_secret" ),
+			"button_position_pdp"    => get_option( "wc_settings_tab_simpl_button_position_pdp" ),
+			"button_position_cart"   => get_option( "wc_settings_tab_simpl_button_position_cart" ),
+			"test_env"               => get_option( "wc_settings_tab_simpl_test_env" ) == 'yes' ? 1 : 0,
+			"button_activated"       => get_option( "wc_settings_tab_simpl_button_activated" ) == 'yes' ? 1 : 0,
+			"button_pdp_activated"   => get_option( "wc_settings_tab_simpl_button_pdp_activated" ) == 'yes' ? 1 : 0,
+			"button_cart_activated"  => get_option( "wc_settings_tab_simpl_button_cart_activated" ) == 'yes' ? 1 : 0,
+			"enabled_to_admin"       => get_option( "wc_settings_tab_simpl_enabled_to_admin" ) == 'yes' ? 1 : 0,
+		);
+	}
+
+	protected static function latest_settings() {
+		return array(
+			"merchant_client_id"     => get_option( "wc_settings_tab_simpl_merchant_client_id" ),
+			"merchant_client_secret" => get_option( "wc_settings_tab_simpl_merchant_client_secret" ),
+			"test_env"               => get_option( "wc_settings_tab_simpl_test_env" ),
+			"button_activated"       => get_option( "wc_settings_tab_simpl_button_activated" ),
+		);
+	}
+
+	public static function reset_settings() {
+		delete_option( "wc_settings_tab_simpl_button_bg" );
+		delete_option( "wc_settings_tab_simpl_test_env" );
+		delete_option( "wc_settings_tab_simpl_button_activated" );
+		delete_option( "wc_settings_tab_simpl_merchant_client_id" );
+		delete_option( "wc_settings_tab_simpl_merchant_client_secret" );
+	}
 
 	public static function get_settings() {
 		$valid_credentials = self::is_valid_credentials();
@@ -180,9 +223,9 @@ class WC_Simpl_Settings {
 		);
 
 		$settings[] = array(
-			'name' => __( 'Enable test mode', $simplTabDomain ),
-			'type' => 'checkbox',
-			'id'   => 'wc_settings_tab_simpl_test_env',
+			'name'     => __( 'Enable test mode', $simplTabDomain ),
+			'type'     => 'checkbox',
+			'id'       => 'wc_settings_tab_simpl_test_env',
 			'desc'     => 'It can be used to enable sandbox',
 			'desc_tip' => true,
 		);
@@ -229,7 +272,7 @@ class WC_Simpl_Settings {
 			$simpl_authorized = get_option( self::simpl_authorized_flag_key() );
 			$step2Validate    = $simpl_authorized ? $doneDOM : $errorDOM;
 
-			$settings[]       = array(
+			$settings[] = array(
 				'title' => __( 'Authorize access for Simpl', $simplTabDomain ),
 				'type'  => 'title',
 				'desc'  => __( "$step2Validate Click below button to provide permissions to Simpl", $simplTabDomain ),
@@ -364,31 +407,32 @@ class WC_Simpl_Settings {
 		return apply_filters( 'wc_settings_tab_simpl_settings', $settings );
 	}
 
-    protected static function is_valid_credentials($showMessage = false) {
-        // return true;
-        $client_credentials = self::merchant_credentials();
-        $simplHttpResponse = wp_remote_get( "https://".self::simpl_host()."/api/v1/wc/app/verify", array(
-            "headers" => array(
-                    "shop_domain" => self::store_url(),
-                    "client_id" => $client_credentials["client_id"],
-                    "client_secret" => $client_credentials["client_secret"],                
-                    "content-type" => "application/json"
-                ),
-        ));
+	protected static function is_valid_credentials( $showMessage = false ) {
+		// return true;
+		$client_credentials = self::merchant_credentials();
+		$simplHttpResponse  = wp_remote_get( "https://" . self::simpl_host() . "/api/v1/wc/app/verify", array(
+			"headers" => array(
+				"shop_domain"   => self::store_url(),
+				"client_id"     => $client_credentials["client_id"],
+				"client_secret" => $client_credentials["client_secret"],
+				"content-type"  => "application/json"
+			),
+		) );
 
-        if ( ! is_wp_error( $simplHttpResponse ) ) {
-            $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
-            if($body["success"]) {
-                return true;
-    
-            }
-        }
+		if ( ! is_wp_error( $simplHttpResponse ) ) {
+			$body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
+			if ( $body["success"] ) {
+				return true;
 
-	    if ( $showMessage ) {
-		    WC_Admin_Settings::add_error( esc_html__( ucfirst( $body['error']['message'] ), 'restaurant-nybe' ) );
-	    }
-        return false;
-    }
+			}
+		}
+
+		if ( $showMessage ) {
+			WC_Admin_Settings::add_error( esc_html__( ucfirst( $body['error']['message'] ), 'woocommerce-settings-tab-simpl' ) );
+		}
+
+		return false;
+	}
 }
 
 WC_Simpl_Settings::init();
