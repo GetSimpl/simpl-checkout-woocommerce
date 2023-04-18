@@ -113,7 +113,7 @@ class SimplRequestValidator {
             throw new HttpBadRequest("event_data is required");
         }
 
-        if(NULL == $req_body["event_payload"]["trigger_timestamp"]) {
+        if(NULL == $request["event_payload"]["trigger_timestamp"]) {
             throw new HttpBadRequest("trigger_timestamp is required");
         }
 
