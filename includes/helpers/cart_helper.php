@@ -63,20 +63,11 @@ function simpl_cart_init_common()
         include_once WC_ABSPATH . 'includes/wc-template-hooks.php'; // nosemgrep: file-inclusion
         // include_once SIMPL_PLUGIN_DIR . "/includes/helpers/notice_helper.php";
     }
-
-    if (null === WC()->session) {
-        $session_class = apply_filters('woocommerce_session_handler', 'WC_Session_Handler');
-        WC()->session  = new $session_class();
-        WC()->session->init();        
-    }
-
-    if ( is_null( WC()->customer ) ) {
-        WC()->customer = new WC_Customer( get_current_user_id() );
-    }
-
-    // Load Cart.
-    if ( null === WC()->cart ) {
-        WC()->cart = new WC_Cart();
-        WC()->cart->empty_cart();
-    }
+    
+	$session_class = apply_filters('woocommerce_session_handler', 'WC_Session_Handler');
+	WC()->session  = new $session_class();
+    WC()->session->init();
+	WC()->customer = new WC_Customer();        
+	WC()->cart = new WC_Cart();
+	WC()->cart->empty_cart();
 }

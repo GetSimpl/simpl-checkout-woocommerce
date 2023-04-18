@@ -6,8 +6,7 @@ add_action('rest_api_init', function () {
     'permission_callback' => function () {
       return true;
     }
-  ));
-
+  ));  
 
   register_rest_route('wc-simpl/v1', '/checkout', array(
     'methods' => 'POST',

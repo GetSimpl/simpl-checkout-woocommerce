@@ -2,7 +2,6 @@
 
 class SimplWcCartHelper {
     static function create_order_from_cart() {
-        simpl_cart_init_common();
         $order = new WC_Order();  
         self::set_data_from_cart( $order);        
         self::set_address_in_order($order);
@@ -18,13 +17,12 @@ class SimplWcCartHelper {
             WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"]);
         }
         if(WC()->cart->is_empty()) {
-        throw new HttpBadRequest("invalid cart items");
+        throw new SimplCustomHttpBadRequest("invalid cart items");
         }
     }
 
 
     static function update_order_from_cart($order_id) {
-        simpl_cart_init_common();
         $order = wc_get_order($order_id);        
         $order->remove_order_items("line_item");
         WC()->checkout->create_order_line_items( $order, WC()->cart );
@@ -59,12 +57,8 @@ class SimplWcCartHelper {
     }
 
     static function set_address_in_cart($shipping_address, $billing_address) {
-        try {
-            $shipping_address = self::convert_address_payload($shipping_address);
-            $billing_address = self::convert_address_payload($billing_address);   
-        } catch (Exception $fe) {
-            throw $fe;
-        }
+        $shipping_address = self::convert_address_payload($shipping_address);
+        $billing_address = self::convert_address_payload($billing_address);  
     
         if(isset($shipping_address) && isset($billing_address)) {        
             foreach($shipping_address as $key => $value) {
@@ -83,7 +77,7 @@ class SimplWcCartHelper {
     static protected function convert_address_payload($address) {
         $supported_cc = SimplUtil::country_code_for_country($address["country"]);
         if(!isset($supported_cc)) {
-            throw new HttpBadRequest("country is not supported");
+            throw new SimplCustomHttpBadRequest("country is not supported");
         }
         $address["country"] = $supported_cc;
     
@@ -113,7 +107,6 @@ class SimplWcCartHelper {
     }
 
     static protected function convert_wc_order_to_wc_cart($order) {
-        simpl_cart_init_common();
         $variationAttributes = [];
         WC()->cart->empty_cart();
         if ($order && $order->get_item_count() > 0) {
@@ -146,6 +139,7 @@ class SimplWcCartHelper {
         
         return WC()->cart;
     }
+
 }
 
 
@@ -185,3 +179,4 @@ function updateToSimplDraft($orderId) {
         'post_status' => 'checkout-draft',
     ));
 }
+

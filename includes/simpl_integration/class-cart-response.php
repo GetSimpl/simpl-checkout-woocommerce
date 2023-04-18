@@ -10,7 +10,8 @@ class SimplCartResponse {
             //TODO: merchantClientID
             "headers" => array("shop-domain" => WC_Simpl_Settings::store_url(), "content-type" => "application/json"),
         ));
-        
+
+	    self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
         if ( ! is_wp_error( $simplHttpResponse ) ) {
             $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
     
@@ -35,16 +36,19 @@ class SimplCartResponse {
         $response = array("source" => "cart", "unique_id" => $this->unique_device_id());
         $cart_payload = $this->cart_common_payload($cart);
         $shipping_address = WC()->customer->get_shipping('edit');
-        $billing_address = WC()->customer->get_billing('edit');        
-        if(!is_string($shipping_address) && count($shipping_address) > 0) {
+        $billing_address = WC()->customer->get_billing('edit');
+        if($this->is_address_present($shipping_address, $billing_address)) {
             $cart_payload["shipping_address"] = $shipping_address;
-        }
-        if(!is_string($billing_address) && count($billing_address) > 0) {
             $cart_payload["billing_address"] = $billing_address;
         }
         $cart_payload['checkout_order_id'] = $order_id;
         $response["cart"] = $cart_payload;
+	    self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
         return $response;
+    }
+
+    protected function is_address_present($shipping_address, $billing_address) {
+        return (isset($shipping_address) && isset($billing_address) && count($shipping_address) > 0 && count($billing_address) > 0) && $shipping_address["country"] != "";
     }
 
     function cart_common_payload($cart) {
@@ -105,6 +109,7 @@ class SimplCartResponse {
         $response["total_tax"] = wc_format_decimal($order->get_total_tax(), 2); 
         $response["total_shipping"] = wc_format_decimal($order->get_shipping_total(), 2);
         $response["shipping_methods"] = $this->formatted_shipping_methods($order->get_shipping_methods());
+	    self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
         return $response;
     }
 
@@ -149,7 +154,7 @@ class SimplCartResponse {
     }
 
     function get_shipping_methods($cart) {
-    
+        $cart->calculate_shipping();
         $shipping_methods_count = 0;
             $shipping_methods_array = array();
             foreach ( $cart->get_shipping_packages() as $package_id => $package ) {
@@ -199,7 +204,7 @@ class SimplCartResponse {
 
     protected function getCartLineItem($cart) {
         $i = 0;
-    
+
         foreach($cart as $item_id => $item) { 
            $product =  wc_get_product( $item['product_id']); 
            $price = (float)$item['line_subtotal'] + (float)$item['line_subtotal_tax'];
@@ -214,11 +219,23 @@ class SimplCartResponse {
            $data[$i]['price'] = wc_format_decimal((empty($product->get_price())=== false) ? $price/$item['quantity'] : 0, 2);
            $data[$i]['variant_id'] = $item['variation_id'];
            $data[$i]['product_id'] = $item['product_id'];
-           $data[$i]['attributes'] = wc_get_product_variation_attributes( $item['variation_id'] );
+	        $data[$i]['attributes'] = empty($item['variation_id']) ? null : wc_get_product_variation_attributes( $item['variation_id'] );
            $data[$i]['offer_price'] = wc_format_decimal((empty($productDetails['sale_price'])=== false) ? (float) $productDetails['sale_price'] : $price/$item['quantity'], 2);
            $i++;
         } 
     
         return $data;
     }
+	//This function will clear all type of notice or success
+	protected function simpl_hide_error_messages()
+	{
+
+		$_SESSION["simpl_session_message"] = [];
+		WC()->session->set('wc_notices', null);
+		add_filter( 'woocommerce_notice_types', '__return_empty_array' );
+		add_filter( 'wc_add_to_cart_message_html', '__return_false' );
+		add_filter( 'woocommerce_cart_item_removed_notice_type', '__return_false' );
+		add_filter( 'woocommerce_coupon_message', '' );
+		wc_clear_notices();
+	}
 }
