@@ -40,7 +40,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: simpl-checkout-plugin
+          name: simpl-checkout-woocommerce
           path: |
             /home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/*
             !/home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/tests
