@@ -15,6 +15,7 @@ function simpl_checkout_int() {
     {
         return;
     }
+    $pluginBaseName = plugin_basename(__FILE__);
     define('SIMPL_PLUGIN_DIR', plugin_dir_path( __FILE__ ));
     define('SIMPL_CONFIG_STAGING_URL', 'checkout-3pp.stagingsimpl.com');
     define('SIMPL_CONFIG_PRODUCTION_URL', 'checkout-3pp.getsimpl.com');
@@ -43,6 +44,7 @@ function simpl_checkout_int() {
     include_once 'includes/plugin_support/load.php';
     add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
     add_action( 'plugins_loaded', 'simpl_init_gateway_class' );
+    add_filter( 'plugin_action_links_' . $pluginBaseName, 'simpl_checkout_configuration');
     register_activation_hook( __FILE__, 'my_plugin_activate' );
     register_deactivation_hook( __FILE__, 'my_plugin_deactivate' );
 }
