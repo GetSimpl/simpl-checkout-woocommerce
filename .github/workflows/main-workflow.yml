@@ -1,6 +1,9 @@
-name: Release workflow
-run-name: Running release workflow
-on: [release]
+name: Main workflow
+run-name: Running main workflow
+on:
+  push:
+    branches:
+      - main
 jobs:
   test:
     runs-on: ubuntu-latest
