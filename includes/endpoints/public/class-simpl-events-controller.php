@@ -6,7 +6,11 @@ class SimplEventsController {
             $simpl_host = WC_Simpl_Settings::simpl_host();
             $req_body = $request->get_params()["event_payload"];
             $req_body["event_data"]["merchant_id"] = $simpl_host;
-            $req_body["event_data"]["Simpl-Widget-Session-Token"] = get_unique_device_id();
+            $unique_id = get_unique_device_id();
+            if($unique_id == "") {
+                return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_UNAUTHORIZED, "message" => "session id can not be empty"), 401);
+            }
+            $req_body["event_data"]["Simpl-Widget-Session-Token"] = $unique_id;
             $req_body["event_data"]["Simpl-CTR-Unique-ID"] = $req_body["event_data"]["merchant_id"]."-".$req_body["event_data"]["Simpl-Widget-Session-Token"]."-".$req_body["trigger_timestamp"];
             $simplHttpResponse = wp_remote_post("https://".$simpl_host."/api/v1/wc/publish/events", array(
                 "body" => json_encode($req_body),
