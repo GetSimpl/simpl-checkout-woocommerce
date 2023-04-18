@@ -42,6 +42,6 @@ jobs:
         with:
           name: simpl-checkout-plugin
           path: |
+            /home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/*
             !/home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/[tests|bin|scripts|vendor]/
             !/home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/.*
-            /home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/*
