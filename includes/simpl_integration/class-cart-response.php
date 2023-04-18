@@ -146,6 +146,7 @@ class SimplCartResponse
 
         $order_items = $order->get_items('coupon');
         $applied_discount_count = 0;
+        $applied_discounts = array();
         foreach ($order_items as $item_id => $item) {
             $coupon_post_obj = get_page_by_title($item->get_name(), OBJECT, 'shop_coupon');
             $coupon_id = $coupon_post_obj->ID;
