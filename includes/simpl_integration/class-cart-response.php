@@ -154,7 +154,7 @@ class SimplCartResponse {
     }
 
     function get_shipping_methods($cart) {
-    
+        $cart->calculate_shipping();
         $shipping_methods_count = 0;
             $shipping_methods_array = array();
             foreach ( $cart->get_shipping_packages() as $package_id => $package ) {
