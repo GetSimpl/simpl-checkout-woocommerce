@@ -35,16 +35,18 @@ class SimplCartResponse {
         $response = array("source" => "cart", "unique_id" => $this->unique_device_id());
         $cart_payload = $this->cart_common_payload($cart);
         $shipping_address = WC()->customer->get_shipping('edit');
-        $billing_address = WC()->customer->get_billing('edit');        
-        if(!is_string($shipping_address) && count($shipping_address) > 0) {
+        $billing_address = WC()->customer->get_billing('edit');
+        if($this->is_address_present($shipping_address, $billing_address)) {
             $cart_payload["shipping_address"] = $shipping_address;
-        }
-        if(!is_string($billing_address) && count($billing_address) > 0) {
             $cart_payload["billing_address"] = $billing_address;
         }
         $cart_payload['checkout_order_id'] = $order_id;
         $response["cart"] = $cart_payload;
         return $response;
+    }
+
+    protected function is_address_present($shipping_address, $billing_address) {
+        return (isset($shipping_address) && isset($billing_address) && count($shipping_address) > 0 && count($billing_address) > 0) && $shipping_address["country"] != "";
     }
 
     function cart_common_payload($cart) {

@@ -2,7 +2,6 @@
 
 class SimplWcCartHelper {
     static function create_order_from_cart() {
-        simpl_cart_init_common();
         $order = new WC_Order();  
         self::set_data_from_cart( $order);        
         self::set_address_in_order($order);
@@ -24,7 +23,6 @@ class SimplWcCartHelper {
 
 
     static function update_order_from_cart($order_id) {
-        simpl_cart_init_common();
         $order = wc_get_order($order_id);        
         $order->remove_order_items("line_item");
         WC()->checkout->create_order_line_items( $order, WC()->cart );
@@ -109,7 +107,6 @@ class SimplWcCartHelper {
     }
 
     static protected function convert_wc_order_to_wc_cart($order) {
-        simpl_cart_init_common();
         $variationAttributes = [];
         WC()->cart->empty_cart();
         if ($order && $order->get_item_count() > 0) {
