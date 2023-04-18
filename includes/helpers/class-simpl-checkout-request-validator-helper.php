@@ -89,34 +89,19 @@ class SimplRequestValidator {
     }
     
     static function validate_events_payload($request) {
-        if(NULL == $request->get_params()["event_payload"]) {
+        $event_payload = $request->get_params()["event_payload"] ?? null;
+        
+        if (NULL == $event_payload) {
             throw new HttpBadRequest("event_payload is required");
         }
-
-        if(NULL == $request->get_params()["event_payload"]["entity"]) {
-            throw new HttpBadRequest("entity is required");
+    
+        $required_fields = ["entity", "event_name", "flow", "event_data", "trigger_timestamp"];
+    
+        foreach ($required_fields as $field) {
+            if (!isset($event_payload[$field]) || NULL == $event_payload[$field]) {
+                throw new HttpBadRequest("$field is required");
+            }
         }
-
-        if(NULL == $request->get_params()["event_payload"]["event_name"]) {
-            throw new HttpBadRequest("event_name is required");
-        }
-
-        if(NULL == $request->get_params()["event_payload"]["flow"]) {
-            throw new HttpBadRequest("flow is required");
-        }
-
-        if(NULL == $request->get_params()["event_payload"]["flow"]) {
-            throw new HttpBadRequest("flow is required");
-        }
-
-        if(NULL == $request->get_params()["event_payload"]["event_data"]) {
-            throw new HttpBadRequest("event_data is required");
-        }
-
-        if(NULL == $request["event_payload"]["trigger_timestamp"]) {
-            throw new HttpBadRequest("trigger_timestamp is required");
-        }
-
     }
 }
 
