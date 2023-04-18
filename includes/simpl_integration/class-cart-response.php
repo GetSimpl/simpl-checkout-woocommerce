@@ -204,7 +204,7 @@ class SimplCartResponse {
 
     protected function getCartLineItem($cart) {
         $i = 0;
-    
+
         foreach($cart as $item_id => $item) { 
            $product =  wc_get_product( $item['product_id']); 
            $price = (float)$item['line_subtotal'] + (float)$item['line_subtotal_tax'];
@@ -219,7 +219,7 @@ class SimplCartResponse {
            $data[$i]['price'] = wc_format_decimal((empty($product->get_price())=== false) ? $price/$item['quantity'] : 0, 2);
            $data[$i]['variant_id'] = $item['variation_id'];
            $data[$i]['product_id'] = $item['product_id'];
-           $data[$i]['attributes'] = wc_get_product_variation_attributes( $item['variation_id'] );
+	        $data[$i]['attributes'] = empty($item['variation_id']) ? null : wc_get_product_variation_attributes( $item['variation_id'] );
            $data[$i]['offer_price'] = wc_format_decimal((empty($productDetails['sale_price'])=== false) ? (float) $productDetails['sale_price'] : $price/$item['quantity'], 2);
            $i++;
         } 
