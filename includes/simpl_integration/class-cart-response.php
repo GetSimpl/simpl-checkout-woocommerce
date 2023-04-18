@@ -227,7 +227,7 @@ class SimplCartResponse {
         return $data;
     }
 	//This function will clear all type of notice or success
-	public function simpl_hide_error_messages()
+	protected function simpl_hide_error_messages()
 	{
 
 		$_SESSION["simpl_session_message"] = [];
