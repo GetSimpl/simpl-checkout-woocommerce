@@ -80,3 +80,9 @@ function simpl_init_gateway_class() {
         }        
     }
 }
+
+function simpl_checkout_configuration($links) {
+	$settings_link = '<a href="admin.php?page=wc-settings&tab=settings_tab_simpl">Settings</a>';
+	array_unshift($links, $settings_link);
+	return $links;
+}
