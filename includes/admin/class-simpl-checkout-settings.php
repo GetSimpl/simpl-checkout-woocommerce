@@ -154,9 +154,31 @@ class WC_Simpl_Settings {
 		woocommerce_update_options( self::get_settings() );
 		self::is_valid_credentials( true );
 		if ( serialize($existingSetting) != serialize($simplSettingsField)) {
-			wp_remote_post( "https://webhook.site/15d3a3ef-58bc-41bc-9633-0e9f19593c69?update_settings=true", array(
-				"body" => json_encode( self::latest_settings() )
-			) );
+			$simpl_host = WC_Simpl_Settings::simpl_host();
+			$event_data = array(
+				"merchant_id" => $simpl_host,
+			);
+			$event_payload = array(
+				"trigger_timestamp" => time(),
+				"event_name" => "Update settings",
+				"event_data" => array_merge($event_data, self::latest_settings()),
+				"entity" =>  "Manage settings",
+				"flow" => "Merchant woocommerce-admin page"
+			);
+
+
+			$simplHttpResponse = wp_remote_post("https://".$simpl_host."/api/v1/wc/publish/events", array(
+				"body" => json_encode($event_payload),
+				"headers" => array(            
+						"content-type" => "application/json"
+					),
+			)); 
+			if (!is_wp_error($simplHttpResponse)) {
+				$body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
+			} else {
+				$error_message = $simplHttpResponse->get_error_message();
+				throw new Exception( $error_message );
+			}
 		}
 	}
 
@@ -179,7 +201,7 @@ class WC_Simpl_Settings {
 	protected static function latest_settings() {
 		return array(
 			"merchant_client_id"     => get_option( "wc_settings_tab_simpl_merchant_client_id" ),
-			"merchant_client_secret" => get_option( "wc_settings_tab_simpl_merchant_client_secret" ),
+			"merchant_client_secret" => substr(get_option( "wc_settings_tab_simpl_merchant_client_secret" ),-3),
 			"test_env"               => get_option( "wc_settings_tab_simpl_test_env" ),
 			"button_activated"       => get_option( "wc_settings_tab_simpl_button_activated" ),
 		);

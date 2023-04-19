@@ -16,7 +16,7 @@ add_action('rest_api_init', function () {
 
   register_rest_route('simpl/v1', '/events', array(
     'methods' => 'POST',
-    'callback' => 'create_events',
+    'callback' => array(new SimplEventsController, 'publish_events'),
     'permission_callback' => function () {
       return true;
     }
@@ -83,4 +83,5 @@ add_action('rest_api_init', function () {
       return true;
     }
   ));
+
 });
