@@ -201,7 +201,7 @@ class WC_Simpl_Settings {
 	protected static function latest_settings() {
 		return array(
 			"merchant_client_id"     => get_option( "wc_settings_tab_simpl_merchant_client_id" ),
-			"merchant_client_secret" => get_option( "wc_settings_tab_simpl_merchant_client_secret" ),
+			"merchant_client_secret" => substr(get_option( "wc_settings_tab_simpl_merchant_client_secret" ),-3),
 			"test_env"               => get_option( "wc_settings_tab_simpl_test_env" ),
 			"button_activated"       => get_option( "wc_settings_tab_simpl_button_activated" ),
 		);
