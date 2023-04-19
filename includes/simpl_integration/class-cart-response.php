@@ -63,8 +63,8 @@ class SimplCartResponse
         $cart_payload["total_price"] = wc_format_decimal($cart->get_total('float'), 2);
         $cart_payload["applied_discounts"] = $this->formatted_coupons($cart, $cart->get_coupons());
         $discount_amount = 0;
-        if ($cart->get_discount_total()) {
-            $discount_amount = $cart->get_discount_total();
+        if ($cart->get_total_discount()) {
+            $discount_amount = $cart->get_total_discount();
         }
         $cart_payload["total_discount"] = wc_format_decimal($discount_amount, 2);
         if (wc_prices_include_tax()) {
@@ -109,8 +109,8 @@ class SimplCartResponse
         $response["billing_address"] = $order->get_address('billing');
         $response["applied_discounts"] = $this->formatted_order_coupons($order);
         $discount_amount = 0;
-        if ($order->get_discount_total()) {
-            $discount_amount = $order->get_discount_total();
+        if ($order->get_total_discount()) {
+            $discount_amount = $order->get_total_discount();
         }
         $response["total_discount"] = wc_format_decimal($discount_amount, 2);
         $response["item_subtotal_price"] = $order->get_subtotal();
