@@ -144,7 +144,7 @@ class SimplCartResponse
 
     protected function formatted_order_coupons($order)
     {
-
+        $applied_discounts = array();
         $order_items = $order->get_items('coupon');
         $applied_discount_count = 0;
         foreach ($order_items as $item_id => $item) {
