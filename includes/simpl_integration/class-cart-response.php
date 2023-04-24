@@ -110,7 +110,7 @@ class SimplCartResponse
         $response["applied_discounts"] = $this->formatted_order_coupons($order);
         $discount_amount = 0;
         if ($order->get_total_discount()) {
-            $discount_amount = $order->get_total_discount();
+            $discount_amount = $order->get_total_discount(false);
         }
         $response["total_discount"] = wc_format_decimal($discount_amount, 2);
         $response["item_subtotal_price"] = wc_format_decimal($order->get_subtotal(), 2);
