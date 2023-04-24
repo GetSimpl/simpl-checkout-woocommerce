@@ -100,7 +100,6 @@ class SimplCartResponse
 
     public function order_payload($order)
     {
-        print_r($order);
         $response = array();
         $response["id"] = $order->get_id();
         $response["total_price"] = wc_format_decimal($order->get_total(), 2);
