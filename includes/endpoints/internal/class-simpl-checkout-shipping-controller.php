@@ -9,10 +9,12 @@ class SimplCheckoutShippingController {
             SimplRequestValidator::validate_shipping_method_request($request);
             $order_id = $request->get_params()["checkout_order_id"];
             SimplWcCartHelper::load_cart_from_order($order_id);
+
             WC()->session->set('chosen_shipping_methods', array($request->get_params()["shipping_method_id"]));
-            SimplWcCartHelper::update_shipping_line($order_id);
             WC()->cart->calculate_shipping();
             WC()->cart->calculate_totals();
+
+            SimplWcCartHelper::update_shipping_line($order_id);
             $si = new SimplCartResponse();
             return $si->cart_payload(WC()->cart, $order_id);
         } catch (SimplCustomHttpBadRequest $fe) {

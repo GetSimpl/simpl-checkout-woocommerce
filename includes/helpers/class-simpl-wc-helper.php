@@ -57,6 +57,15 @@ class SimplWcCartHelper {
         WC()->checkout->create_order_coupon_lines( $order, WC()->cart );
     }
 
+    static protected function update_data_from_cart( &$order ) {
+        $order->set_shipping_total( WC()->cart->get_shipping_total() );
+        $order->set_discount_total( WC()->cart->get_discount_total() );
+        $order->set_discount_tax( WC()->cart->get_discount_tax() );
+        $order->set_cart_tax( WC()->cart->get_cart_contents_tax() + WC()->cart->get_fee_tax() );
+        $order->set_shipping_tax( WC()->cart->get_shipping_tax() );
+        $order->set_total( WC()->cart->get_total( 'edit' ) );
+    }
+
     static function set_address_in_cart($shipping_address, $billing_address) {
         $shipping_address = self::convert_address_payload($shipping_address);
         $billing_address = self::convert_address_payload($billing_address);  
@@ -105,6 +114,7 @@ class SimplWcCartHelper {
             $item->calculate_taxes($shipping_methods[0]->get_taxes());
             $order->add_item($item);        
         }
+        self::update_data_from_cart($order);
         $order->save();
         return $order;
     }
@@ -138,14 +148,11 @@ class SimplWcCartHelper {
                 }
             }
             set_order_address_in_cart($order->get_address('shipping'), $order->get_address('billing'));
+            set_order_shipping_method_in_cart($order);
         }
-        
         return WC()->cart;
     }
-
 }
-
-
 
 
 function set_order_address_in_cart($shipping_address, $billing_address) {
@@ -165,6 +172,17 @@ function set_order_address_in_cart($shipping_address, $billing_address) {
     }
 }
 
+
+function set_order_shipping_method_in_cart($order) {
+    $order_shipping_methods = $order->get_shipping_methods();
+    foreach ($order_shipping_methods as $key => $method) {
+        $id = $method->get_method_id() . ':' . $method->get_instance_id();
+        WC()->session->set('chosen_shipping_methods', array($id));
+        WC()->cart->calculate_shipping();
+        WC()->cart->calculate_totals();
+        break;
+    }
+}
 
 function get_order_coupon_codes($order) {
 	$coupon_codes = array();
