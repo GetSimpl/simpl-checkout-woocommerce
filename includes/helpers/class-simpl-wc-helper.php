@@ -159,9 +159,7 @@ function set_order_address_in_cart($shipping_address, $billing_address) {
     if(isset($shipping_address) && isset($billing_address)) {        
         foreach($shipping_address as $key => $value) {
             if(method_exists(WC()->customer, "set_shipping_".$key)) {
-                WC()->customer->{"set_shipping_".$key}($value);
-                WC()->cart->calculate_shipping();
-                WC()->cart->calculate_totals();    
+                WC()->customer->{"set_shipping_".$key}($value);   
             }
         }
         foreach($billing_address as $key => $value) {
@@ -169,6 +167,9 @@ function set_order_address_in_cart($shipping_address, $billing_address) {
                 WC()->customer->{"set_billing_".$key}($value);    
             }
         }
+
+        WC()->cart->calculate_shipping();
+        WC()->cart->calculate_totals(); 
     }
 }
 
