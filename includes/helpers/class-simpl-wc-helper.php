@@ -74,8 +74,6 @@ class SimplWcCartHelper {
             foreach($shipping_address as $key => $value) {
                 if(method_exists(WC()->customer, "set_shipping_".$key)) {
                     WC()->customer->{"set_shipping_".$key}($value);
-                    WC()->cart->calculate_shipping();
-                    WC()->cart->calculate_totals();
                 }
             }
             foreach($billing_address as $key => $value) {
@@ -83,6 +81,9 @@ class SimplWcCartHelper {
                     WC()->customer->{"set_billing_".$key}($value);    
                 }
             }
+
+            WC()->cart->calculate_shipping();
+            WC()->cart->calculate_totals();
         }
     }
 
@@ -179,10 +180,11 @@ function set_order_shipping_method_in_cart($order) {
     foreach ($order_shipping_methods as $key => $method) {
         $id = $method->get_method_id() . ':' . $method->get_instance_id();
         WC()->session->set('chosen_shipping_methods', array($id));
-        WC()->cart->calculate_shipping();
-        WC()->cart->calculate_totals();
         break;
     }
+
+    WC()->cart->calculate_shipping();
+    WC()->cart->calculate_totals();
 }
 
 function get_order_coupon_codes($order) {
