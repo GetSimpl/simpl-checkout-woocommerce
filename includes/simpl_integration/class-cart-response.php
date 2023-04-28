@@ -58,13 +58,13 @@ class SimplCartResponse
 
     function cart_common_payload($cart)
     {
-
+        $totals = $cart->get_totals();
         $cart_payload = array();
         $cart_payload["total_price"] = wc_format_decimal($cart->get_total('float'), 2);
         $cart_payload["applied_discounts"] = $this->formatted_coupons($cart, $cart->get_coupons());
         $discount_amount = 0;
-        if ($cart->get_discount_total()) {
-            $discount_amount = $cart->get_discount_total();
+        if ($cart->get_total_discount()) {
+            $discount_amount = $totals['discount_total'] + $totals['discount_tax'];
         }
         $cart_payload["total_discount"] = wc_format_decimal($discount_amount, 2);
         if (wc_prices_include_tax()) {
@@ -109,11 +109,11 @@ class SimplCartResponse
         $response["billing_address"] = $order->get_address('billing');
         $response["applied_discounts"] = $this->formatted_order_coupons($order);
         $discount_amount = 0;
-        if ($order->get_discount_total()) {
-            $discount_amount = $order->get_discount_total();
+        if ($order->get_total_discount()) {
+            $discount_amount = $order->get_total_discount(false);
         }
         $response["total_discount"] = wc_format_decimal($discount_amount, 2);
-        $response["item_subtotal_price"] = $order->get_subtotal();
+        $response["item_subtotal_price"] = wc_format_decimal($order->get_subtotal(), 2);
         $response["total_tax"] = wc_format_decimal($order->get_total_tax(), 2);
         $response["total_shipping"] = wc_format_decimal($order->get_shipping_total(), 2);
         $response["shipping_methods"] = $this->formatted_shipping_methods($order->get_shipping_methods());
@@ -135,7 +135,7 @@ class SimplCartResponse
         $applied_discounts = array();
         $applied_discount_count = 0;
         foreach ($coupons as $coupon_code => $coupon) {
-            $applied_discounts[$applied_discount_count] = array("code" => $coupon_code, "amount" => wc_format_decimal($cart->get_coupon_discount_amount($coupon_code), 2), "free_shipping" => $coupon->enable_free_shipping());
+            $applied_discounts[$applied_discount_count] = array("code" => $coupon_code, "amount" => wc_format_decimal($cart->get_coupon_discount_amount($coupon_code, false), 2), "free_shipping" => $coupon->enable_free_shipping());
             $applied_discount_count += 1;
         }
         return $applied_discounts;
@@ -143,7 +143,7 @@ class SimplCartResponse
 
     protected function formatted_order_coupons($order)
     {
-
+        $applied_discounts = array();
         $order_items = $order->get_items('coupon');
         $applied_discount_count = 0;
         foreach ($order_items as $item_id => $item) {
