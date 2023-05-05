@@ -9,6 +9,44 @@
  */
 add_action('plugins_loaded', 'simpl_checkout_int', 0);
 add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
+include_once "sentry/lib/Raven/Autoloader.php";
+Raven_Autoloader::register();
+
+$sentry_client = simpl_sentry_client();
+if(isset($sentry_client)) {
+    $sentry_client->captureLastError();
+}
+
+// $error_handler = new Raven_ErrorHandler($client);
+// $error_handler->registerExceptionHandler();
+// $error_handler->registerErrorHandler();
+// $error_handler->registerShutdownFunction();
+
+function simpl_sentry_client() {
+    $sentry_dsn = get_option("simpl_sentry_dsn");
+    if($sentry_dsn == "") {
+        return null;        
+    }
+    $client = new Raven_Client($sentry_dsn);
+    $client->install();
+    return $client;
+}
+
+function simpl_set_sentry_client($dsn) {
+    add_option("simpl_sentry_dsn", $dsn);
+    $sentry_client = simpl_sentry_client();
+    if(isset($sentry_client)) {
+        $sentry_client->captureLastError();
+    }
+}
+
+function simpl_sentry_exception($err) {
+    $client = simpl_sentry_client();
+    if(isset($client)) {
+        $client->captureException($err);
+    }
+}
+
 function simpl_checkout_int() {
 
     if (!class_exists('WC_Payment_Gateway'))
@@ -42,9 +80,9 @@ function simpl_checkout_int() {
     include_once 'includes/endpoints/load.php';
     include_once 'includes/widget/load.php';
     include_once 'includes/plugin_support/load.php';
+
     add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
     add_action( 'plugins_loaded', 'simpl_init_gateway_class' );
     register_activation_hook( __FILE__, 'my_plugin_activate' );
     register_deactivation_hook( __FILE__, 'my_plugin_deactivate' );
 }
-?>
