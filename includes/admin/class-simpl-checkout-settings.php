@@ -435,6 +435,7 @@ class WC_Simpl_Settings {
 				"shop_domain"   => self::store_url(),
 				"client_id"     => $client_credentials["client_id"],
 				"client_secret" => $client_credentials["client_secret"],
+				"sentry_monitoring_enabled" => (get_option("simpl_sentry_dsn") != "" ? "true": "false"),
 				"content-type"  => "application/json"
 			),
 		) );
@@ -443,7 +444,9 @@ class WC_Simpl_Settings {
 			$body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
 			if ( $body["success"] ) {
 				return true;
-
+				if(isset($body["data"]) && isset($body["data"]["configs"]) && isset($body["data"]["configs"]["simpl_sentry_dsn"]) && $body["data"]["configs"]["simpl_sentry_dsn"] != "") {
+					simpl_set_sentry_client($body["data"]["configs"]["simpl_sentry_dsn"]);
+				}
 			}
 		}
 

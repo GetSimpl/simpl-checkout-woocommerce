@@ -21,9 +21,6 @@ function authenticate_simpl( WP_REST_Request $request ) {
         echo(json_encode($body));
         if($body["success"]) {
             add_option(WC_Simpl_Settings::simpl_authorized_flag_key(), "true");
-            if(isset($body["data"]) && isset($body["data"]["simpl_sentry_dsn"]) && $body["data"]["simpl_sentry_dsn"] != "") {
-                simpl_set_sentry_client($body["data"]["simpl_sentry_dsn"]);
-            }
         } else {
             throw new Exception( $body['message'] );            
         }

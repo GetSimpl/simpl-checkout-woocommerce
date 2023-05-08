@@ -23,10 +23,13 @@ class SimplCheckoutCouponController {
             $si = new SimplCartResponse();
             return $si->cart_payload(WC()->cart, $order_id);
         } catch (SimplCustomHttpBadRequest $fe) {
+            simpl_sentry_exception($fe);
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
+            simpl_sentry_exception($fe);
 	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
+            simpl_sentry_exception($fe);
 	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating checkout'), 500);
         }
     }
@@ -53,10 +56,13 @@ class SimplCheckoutCouponController {
             $si = new SimplCartResponse();
             return $si->cart_payload(WC()->cart, $order->get_id());
         } catch (SimplCustomHttpBadRequest $fe) {
+            simpl_sentry_exception($fe);
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
+            simpl_sentry_exception($fe);
 	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
+            simpl_sentry_exception($fe);
 	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating checkout'), 500);
         }
     }
@@ -84,10 +90,13 @@ class SimplCheckoutCouponController {
             $si = new SimplCartResponse();
             return $si->cart_payload(WC()->cart, $order->get_id());
         } catch (SimplCustomHttpBadRequest $fe) {
+            simpl_sentry_exception($fe);
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
+            simpl_sentry_exception($fe);
 	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
+            simpl_sentry_exception($fe);
 	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating checkout'), 500);
         }
     }    
