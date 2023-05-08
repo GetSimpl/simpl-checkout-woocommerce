@@ -1,34 +1,54 @@
 <?php
 
-function fetch_master_config() {
-	$simpl_host       = WC_Simpl_Settings::simpl_host();
-	$store_url        = WC_Simpl_Settings::store_url();
-	$simplTokenHeader = "simpl-widget-session-token";
-
-	$unique_device_id = '';
-	if ( function_exists( 'get_unique_device_id' ) ) {
-		$unique_device_id = get_unique_device_id() ?: "";
+function getPageType() {
+	$page = 'product';
+	if(is_cart()){
+        $page = 'cart';
+    } else if (is_shop()){
+        $page = 'shop';
+    } else if(is_checkout()) {
+		$page = 'checkout';
+	} else if(is_account_page()) {
+		$page = 'account';
+	} else if(is_checkout_pay_page()) {
+		$page = 'checkout_pay';
 	}
-	$apiUrl            = "https://" . $simpl_host . "/api/v1/wc/widget/master-config?shop=" . $store_url;
-	$simplHttpResponse = wp_remote_get( $apiUrl,
-		array(
-			"headers" => array(
-				$simplTokenHeader => $unique_device_id,
-				"content-type"    => "application/json"
-			),
-		)
-	);
-	$body              = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
 
-	if ( ! is_wp_error( $simplHttpResponse ) ) {
-		$headers = wp_remote_retrieve_headers( $simplHttpResponse );
-		if ( isset( $headers[ $simplTokenHeader ] ) ) {
-			set_unique_device_id( $headers[ $simplTokenHeader ] );
+	return $page;
+}
+
+function fetch_master_config() {
+	$pageType = getPageType();
+	if($pageType === 'product' || $pageType == 'cart') {
+		$simpl_host       = WC_Simpl_Settings::simpl_host();
+		$store_url        = WC_Simpl_Settings::store_url();
+		$simplTokenHeader = "simpl-widget-session-token";
+
+		$unique_device_id = '';
+		if ( function_exists( 'get_unique_device_id' ) ) {
+			$unique_device_id = get_unique_device_id() ?: "";
 		}
-		$masterConfigData = isset( $body["success"] ) && isset( $body["data"] ) ? json_encode( $body["data"] ) : '{}';
-		echo( '<script type="text/javascript">var SimplMasterConfig = ' . $masterConfigData . '</script>' );
-	} else {
-		$error_message = $simplHttpResponse->get_error_message();
-		console_log( $error_message );
+		$apiUrl            = "https://" . $simpl_host . "/api/v1/wc/widget/master-config?shop=" . $store_url;
+		$simplHttpResponse = wp_remote_get( $apiUrl,
+			array(
+				"headers" => array(
+					$simplTokenHeader => $unique_device_id,
+					"content-type"    => "application/json"
+				),
+			)
+		);
+		$body              = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
+
+		if ( ! is_wp_error( $simplHttpResponse ) ) {
+			$headers = wp_remote_retrieve_headers( $simplHttpResponse );
+			if ( isset( $headers[ $simplTokenHeader ] ) ) {
+				set_unique_device_id( $headers[ $simplTokenHeader ] );
+			}
+			$masterConfigData = isset( $body["success"] ) && isset( $body["data"] ) ? json_encode( $body["data"] ) : '{}';
+			echo( '<script type="text/javascript">var SimplMasterConfig = ' . $masterConfigData . '</script>' );
+		} else {
+			$error_message = $simplHttpResponse->get_error_message();
+			console_log( $error_message );
+		}
 	}
 }
