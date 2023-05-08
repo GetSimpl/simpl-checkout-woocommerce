@@ -59,6 +59,16 @@ class WC_Simpl_Settings {
 		return $staging_env == "yes";
 	}
 
+	public static function sentry_environment() {
+		$staging_env = get_option( "wc_settings_tab_simpl_test_env" );
+
+		if($staging_env == "yes") {
+			return 'staging';
+		} else {
+			return 'production';
+		}
+	}
+
 	public static function widget_script_url() {
 		if ( SIMPL_ENV == "localhost" ) {
 			return WIDGET_SCRIPT_LOCALHOST;
@@ -435,6 +445,7 @@ class WC_Simpl_Settings {
 				"shop_domain"   => self::store_url(),
 				"client_id"     => $client_credentials["client_id"],
 				"client_secret" => $client_credentials["client_secret"],
+				"sentry_monitoring_enabled" => (get_option(SIMPL_SENTRY_DSN_KEY) != "" ? "true": "false"),
 				"content-type"  => "application/json"
 			),
 		) );
@@ -442,8 +453,9 @@ class WC_Simpl_Settings {
 		if ( ! is_wp_error( $simplHttpResponse ) ) {
 			$body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
 			if ( $body["success"] ) {
-				return true;
-
+				if(isset($body["data"]) && isset($body["data"]["config"]) && isset($body["data"]["config"][SIMPL_SENTRY_DSN_KEY]) && $body["data"]["config"][SIMPL_SENTRY_DSN_KEY] != "") {
+					simpl_set_sentry_client($body["data"]["config"][SIMPL_SENTRY_DSN_KEY]);
+				}
 			}
 		}
 

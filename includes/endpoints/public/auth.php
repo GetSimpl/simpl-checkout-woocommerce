@@ -19,12 +19,11 @@ function authenticate_simpl( WP_REST_Request $request ) {
     if ( ! is_wp_error( $simplHttpResponse ) ) {
         $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
         echo(json_encode($body));
-        // if($body["success"]) {
+        if($body["success"]) {
             add_option(WC_Simpl_Settings::simpl_authorized_flag_key(), "true");
-
-        // } else {
-        //     throw new Exception( $body['message'] );            
-        // }
+        } else {
+            throw new Exception( $body['message'] );            
+        }
     } else {
         $error_message = $simplHttpResponse->get_error_message();
         throw new Exception( $error_message );

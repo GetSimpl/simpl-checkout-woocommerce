@@ -1,5 +1,6 @@
 <?php
-class SimplCheckoutController {
+class SimplCheckoutController
+{
     function create(WP_REST_Request $request)
     {
         try {
@@ -8,7 +9,7 @@ class SimplCheckoutController {
             simpl_cart_init_common();
             SimplWcCartHelper::add_to_cart($items);
             if ($this->is_address_present($request)) {
-               SimplWcCartHelper::set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
+                SimplWcCartHelper::set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
             }
             $order = SimplWcCartHelper::create_order_from_cart();
             $si = new SimplCartResponse();
@@ -16,14 +17,17 @@ class SimplCheckoutController {
             do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
             return $cart_payload;
         } catch (SimplCustomHttpBadRequest $fe) {
+            simpl_sentry_exception($fe);
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
-	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
+            simpl_sentry_exception($fe);
+            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
-	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
+            simpl_sentry_exception($fe);
+            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         }
     }
-    
+
     function update(WP_REST_Request $request)
     {
         try {
@@ -47,14 +51,17 @@ class SimplCheckoutController {
             do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
             return $cart_payload;
         } catch (SimplCustomHttpBadRequest $fe) {
+            simpl_sentry_exception($fe);
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
-	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
+            simpl_sentry_exception($fe);
+            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
-	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating checkout'), 500);
+            simpl_sentry_exception($fe);
+            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating checkout'), 500);
         }
     }
-    
+
     function fetch(WP_REST_Request $request)
     {
         try {
@@ -66,15 +73,19 @@ class SimplCheckoutController {
             $si = new SimplCartResponse();
             return $si->cart_payload(WC()->cart, $order_id);
         } catch (SimplCustomHttpBadRequest $fe) {
+            simpl_sentry_exception($fe);
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
-	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
+            simpl_sentry_exception($fe);
+            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
-	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating checkout'), 500);
+            simpl_sentry_exception($fe);
+            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating checkout'), 500);
         }
     }
 
-    protected function is_address_present($request) {
+    protected function is_address_present($request)
+    {
         return (isset($request->get_params()["shipping_address"]) && isset($request->get_params()["billing_address"]) && count($request->get_params()["shipping_address"]) > 0 && $request->get_params()["billing_address"] > 0);
     }
 }

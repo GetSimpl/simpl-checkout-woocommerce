@@ -9,6 +9,47 @@
  */
 add_action('plugins_loaded', 'simpl_checkout_int', 0);
 add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
+define('SIMPL_SENTRY_DSN_KEY', 'simpl_sentry_dsn'); 
+
+include_once "sentry/lib/Raven/Autoloader.php";
+Raven_Autoloader::register();
+
+$sentry_client = simpl_sentry_client();
+if(isset($sentry_client)) {
+    $sentry_client->captureLastError();
+}
+
+function simpl_sentry_client() {
+    $sentry_dsn = get_option(SIMPL_SENTRY_DSN_KEY);
+    if($sentry_dsn == "") {
+        return null;        
+    }
+    include_once 'includes/admin/load.php';
+    if( ! function_exists('get_plugin_data') ){
+        require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+    }
+    $plugin_data = get_plugin_data( __FILE__ );
+    $plugin_version = $plugin_data['Version'];
+    $client = new Raven_Client($sentry_dsn, array('environment' => WC_Simpl_Settings::sentry_environment(), 'release' => $plugin_version));
+    $client->install();
+    return $client;
+}
+
+function simpl_set_sentry_client($dsn) {
+    add_option(SIMPL_SENTRY_DSN_KEY, $dsn);
+    $sentry_client = simpl_sentry_client();
+    if(isset($sentry_client)) {
+        $sentry_client->captureLastError();
+    }
+}
+
+function simpl_sentry_exception($err) {
+    $client = simpl_sentry_client();
+    if(isset($client)) {
+        $client->captureException($err);
+    }
+}
+
 function simpl_checkout_int() {
 
     if (!class_exists('WC_Payment_Gateway'))
@@ -42,9 +83,9 @@ function simpl_checkout_int() {
     include_once 'includes/endpoints/load.php';
     include_once 'includes/widget/load.php';
     include_once 'includes/plugin_support/load.php';
+
     add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
     add_action( 'plugins_loaded', 'simpl_init_gateway_class' );
     register_activation_hook( __FILE__, 'my_plugin_activate' );
     register_deactivation_hook( __FILE__, 'my_plugin_deactivate' );
 }
-?>
