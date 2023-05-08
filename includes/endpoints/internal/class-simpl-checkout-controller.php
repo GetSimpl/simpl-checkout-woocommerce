@@ -11,7 +11,7 @@ class SimplCheckoutController
             if ($this->is_address_present($request)) {
                 SimplWcCartHelper::set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
             }
-            $order = SimplWcCartHelper::createorder_from_cart();
+            $order = SimplWcCartHelper::create_order_from_cart();
             $si = new SimplCartResponse();
             $cart_payload =  $si->cart_payload(WC()->cart, $order->get_id());
             do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
