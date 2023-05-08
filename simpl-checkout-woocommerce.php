@@ -23,7 +23,7 @@ if(isset($sentry_client)) {
 // $error_handler->registerShutdownFunction();
 
 function simpl_sentry_client() {
-    $sentry_dsn = get_option("simpl_sentry_dsn");
+    $sentry_dsn = get_option(SIMPL_SENTRY_DSN_KEY);
     if($sentry_dsn == "") {
         return null;        
     }
@@ -33,7 +33,7 @@ function simpl_sentry_client() {
 }
 
 function simpl_set_sentry_client($dsn) {
-    add_option("simpl_sentry_dsn", $dsn);
+    add_option(SIMPL_SENTRY_DSN_KEY, $dsn);
     $sentry_client = simpl_sentry_client();
     if(isset($sentry_client)) {
         $sentry_client->captureLastError();
@@ -64,6 +64,7 @@ function simpl_checkout_int() {
     define("SIMPL_ORDER_METADATA", "is_simpl_checkout_order");
     define('WIDGET_SCRIPT_STAGING_URL', 'https://s3.ap-southeast-1.amazonaws.com/staging-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
     define('WIDGET_SCRIPT_PRODUCTION_URL', 'https://s3.ap-southeast-1.amazonaws.com/staging-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
+    define('SIMPL_SENTRY_DSN_KEY', 'simpl_sentry_dsn');
 
     // Defined error CODE for API
     define('SIMPL_HTTP_ERROR_USER_NOTICE','user_error');
