@@ -24,7 +24,13 @@ function simpl_sentry_client() {
     if($sentry_dsn == "") {
         return null;        
     }
-    $client = new Raven_Client($sentry_dsn);
+    include_once 'includes/admin/load.php';
+    if( ! function_exists('get_plugin_data') ){
+        require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+    }
+    $plugin_data = get_plugin_data( __FILE__ );
+    $plugin_version = $plugin_data['Version'];
+    $client = new Raven_Client($sentry_dsn, array('environment' => WC_Simpl_Settings::sentry_environment(), 'release' => $plugin_version));
     $client->install();
     return $client;
 }

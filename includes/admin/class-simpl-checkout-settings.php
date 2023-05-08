@@ -59,6 +59,16 @@ class WC_Simpl_Settings {
 		return $staging_env == "yes";
 	}
 
+	public static function sentry_environment() {
+		$staging_env = get_option( "wc_settings_tab_simpl_test_env" );
+
+		if($staging_env == "yes") {
+			return 'staging';
+		} else {
+			return 'production';
+		}
+	}
+
 	public static function widget_script_url() {
 		if ( SIMPL_ENV == "localhost" ) {
 			return WIDGET_SCRIPT_LOCALHOST;
