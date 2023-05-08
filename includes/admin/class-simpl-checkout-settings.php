@@ -444,8 +444,8 @@ class WC_Simpl_Settings {
 			$body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
 			if ( $body["success"] ) {
 				return true;
-				if(isset($body["data"]) && isset($body["data"]["configs"]) && isset($body["data"]["configs"][SIMPL_SENTRY_DSN_KEY]) && $body["data"]["configs"][SIMPL_SENTRY_DSN_KEY] != "") {
-					simpl_set_sentry_client($body["data"]["configs"][SIMPL_SENTRY_DSN_KEY]);
+				if(isset($body["data"]) && isset($body["data"]["config"]) && isset($body["data"]["config"][SIMPL_SENTRY_DSN_KEY]) && $body["data"]["config"][SIMPL_SENTRY_DSN_KEY] != "") {
+					simpl_set_sentry_client($body["data"]["config"][SIMPL_SENTRY_DSN_KEY]);
 				}
 			}
 		}
