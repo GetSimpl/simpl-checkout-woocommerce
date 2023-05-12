@@ -34,7 +34,7 @@ function cart_flows_abandoned_cart($cart, $simpl_checkout_data)
     );
     $cart_content  = $cart->get_cart();
     $checkout_details = array(
-        'email'         => $simpl_checkout_data['shipping_address']['email'] ?? '',
+        'email'         => $simpl_checkout_data['billing_address']['email'] ?? '',
         'cart_contents' => serialize($cart_content),
         'cart_total'    => sanitize_text_field($simpl_checkout_data['total_price']),
         'time'          => $current_time,
