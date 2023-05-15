@@ -36,10 +36,14 @@ function simpl_sentry_client() {
 }
 
 function simpl_set_sentry_client($dsn) {
-    add_option(SIMPL_SENTRY_DSN_KEY, $dsn);
-    $sentry_client = simpl_sentry_client();
-    if(isset($sentry_client)) {
-        $sentry_client->captureLastError();
+    try {
+        add_option(SIMPL_SENTRY_DSN_KEY, $dsn);
+        $sentry_client = simpl_sentry_client();
+        if(isset($sentry_client)) {
+            $sentry_client->captureLastError();
+        }
+    } catch (Exception $fe) {
+        return;
     }
 }
 
