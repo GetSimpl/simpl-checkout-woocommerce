@@ -456,6 +456,7 @@ class WC_Simpl_Settings {
 				if(isset($body["data"]) && isset($body["data"]["config"]) && isset($body["data"]["config"][SIMPL_SENTRY_DSN_KEY]) && $body["data"]["config"][SIMPL_SENTRY_DSN_KEY] != "") {
 					simpl_set_sentry_client($body["data"]["config"][SIMPL_SENTRY_DSN_KEY]);
 				}
+				return true;
 			}
 		}
 
