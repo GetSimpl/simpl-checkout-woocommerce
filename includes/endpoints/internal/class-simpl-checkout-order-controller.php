@@ -8,7 +8,7 @@ class SimplCheckoutOrderController
             SimplRequestValidator::validate_fetch_order_request($request);
             $order = wc_get_order((int)$request->get_params()["order_id"]);
             $si = new SimplCartResponse();
-            $order_payload = $si->fetch_order_payload($order);
+            $order_payload = $si->order_payload($order);
             return $order_payload;
         } catch (SimplCustomHttpBadRequest $fe) {
             simpl_sentry_exception($fe);

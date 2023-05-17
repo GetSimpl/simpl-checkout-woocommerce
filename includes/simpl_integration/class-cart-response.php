@@ -117,14 +117,6 @@ class SimplCartResponse
         $response["total_tax"] = wc_format_decimal($order->get_total_tax(), 2);
         $response["total_shipping"] = wc_format_decimal($order->get_shipping_total(), 2);
         $response["shipping_methods"] = $this->formatted_shipping_methods($order->get_shipping_methods());
-        self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
-        return $response;
-    }
-
-    public function fetch_order_payload($order)
-    {
-        $response = array();
-        $response["id"] = $order->get_id();
         $response["status"] = $order->get_status();
         $response["is_paid"] = $order->is_paid();
         self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
