@@ -33,11 +33,9 @@ class SimplRequestValidator {
     }
 
     static function  validate_fetch_order_request($request) {
-        foreach(array("order_id") as $key => $value) {
-            $simpl_order_request_param = $request->get_params()[$value];
-            if(!isset($simpl_order_request_param) || $simpl_order_request_param == "") {
-                throw new SimplCustomHttpBadRequest($value . " is mandatory");
-            }
+        $simpl_order_request_param = $request->get_params()["order_id"];
+        if(!isset($simpl_order_request_param) || $simpl_order_request_param == "") {
+            throw new SimplCustomHttpBadRequest("order_id" . " is mandatory");
         }
         return null;
     }
