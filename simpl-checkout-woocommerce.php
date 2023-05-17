@@ -14,9 +14,26 @@ define('SIMPL_SENTRY_DSN_KEY', 'simpl_sentry_dsn');
 include_once "sentry/lib/Raven/Autoloader.php";
 Raven_Autoloader::register();
 
+function captureSimplPluginLastError($sentry_client) {
+    if (null === $error = error_get_last()) {
+        return null;
+    }
+
+    if(!str_contains($error['file'], 'simpl-checkout-woocommerce')) {
+        return null;
+    }
+
+    $e = new ErrorException(
+        @$error['message'], 0, @$error['type'],
+        @$error['file'], @$error['line']
+    );
+
+    return $sentry_client->captureException($e);
+}
+
 $sentry_client = simpl_sentry_client();
 if(isset($sentry_client)) {
-    $sentry_client->captureLastError();
+    captureSimplPluginLastError($sentry_client);
 }
 
 function simpl_sentry_client() {
@@ -40,7 +57,7 @@ function simpl_set_sentry_client($dsn) {
         add_option(SIMPL_SENTRY_DSN_KEY, $dsn);
         $sentry_client = simpl_sentry_client();
         if(isset($sentry_client)) {
-            $sentry_client->captureLastError();
+            captureSimplPluginLastError($sentry_client);
         }
     } catch (Exception $fe) {
         return;
