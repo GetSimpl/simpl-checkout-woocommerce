@@ -61,18 +61,13 @@ add_action('rest_api_init', function () {
   register_rest_route('wc-simpl/v1', '/order', array(
     'methods' => 'GET',
     'callback' => array(new SimplCheckoutOrderController, 'fetch'),
-    'permission_callback' => function () {
-      return true;
-    }
+    'permission_callback' => 'internal_authenticate'
   ));
 
   register_rest_route('wc-simpl/v1', '/order', array(
     'methods' => 'POST',
     'callback' => array(new SimplCheckoutOrderController, 'create'),
-    'permission_callback' => function () {
-      return true;
-    }
-    // 'permission_callback' => 'internal_authenticate'
+    'permission_callback' => 'internal_authenticate'
   ));
 
   register_rest_route('wc-simpl/v1', '/authenticate_simpl', array(
