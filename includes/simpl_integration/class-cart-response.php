@@ -121,6 +121,29 @@ class SimplCartResponse
         return $response;
     }
 
+    public function fetch_order_payload($order)
+    {
+        $response = array();
+        $response["legacy_resource_id"] = $order->get_id();
+        $is_order_paid = $order->is_paid();
+        $financial_status = 'PENDING';
+        if ($is_order_paid) {
+            $financial_status = 'PAID';
+        }
+        $is_order_confirmed = false;
+        $order_status = $order->get_status();
+        if ($order_status == 'processing' || $order_status == 'completed') {
+            $is_order_confirmed = true;
+        } else if ($order_status == 'refunded') {
+            $financial_status = 'REFUNDED';
+            $is_order_confirmed = true;
+        }
+        $response["confirmed"] = $is_order_confirmed;
+        $response["display_financial_status"] = $financial_status;
+        self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
+        return $response;
+    }
+
     protected function get_applied_shipping_method($cart)
     {
         $chosen_shipping_method = $cart->calculate_shipping();

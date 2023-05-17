@@ -2,6 +2,26 @@
 
 class SimplCheckoutOrderController
 {
+    function fetch(WP_REST_Request $request)
+    {
+        try {
+            SimplRequestValidator::validate_fetch_order_request($request);
+            $order = wc_get_order((int)$request->get_params()["order_id"]);
+            $si = new SimplCartResponse();
+            $order_payload = $si->fetch_order_payload($order);
+            return $order_payload;
+        } catch (SimplCustomHttpBadRequest $fe) {
+            simpl_sentry_exception($fe);
+            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
+        } catch (Exception $fe) {
+            simpl_sentry_exception($fe);
+            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
+        } catch (Error $fe) {
+            simpl_sentry_exception($fe);
+            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in fetching order'), 500);
+        }
+    }
+
     function create(WP_REST_Request $request)
     {
         try {
