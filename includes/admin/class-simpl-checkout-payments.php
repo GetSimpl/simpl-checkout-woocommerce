@@ -71,11 +71,7 @@ function simpl_init_gateway_class()
             // $order->update_status( 'on-hold', __( 'Awaiting offline payment', 'wc-gateway-offline' ) );
 
             // Reduce stock levels            
-            if ($order->get_payment_method_title() == 'cod') {
-                $order->update_status('pending', __('Payment to be made upon delivery.', 'woocommerce'));
-            } else {
-                $order->update_status('processing');
-            }
+            $order->update_status('processing');
 
             $order->reduce_order_stock();
             // Remove cart
