@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Simpl checkout
  * Plugin URI: http://www.getsimpl.com
- * Description: A plugin creates checkout app for woocommerce
- * Author:  Getsimpl pvt. 
+ * Description: This is the best checkout provider to super charge your checkout process and increase order conversions while keeping RTO (return to origin) in check. Let us handle your conversion worries while you grow your business. Simpl checkout comes with proprietary Simpl Pay Later and Pay-in-3 payment methods besides the traditional modes of payment such as UPI, Credit/Debit cards and COD
+ * Author:   One Sigma Technologies Private Limited
  * Author URI: http://www.getsimpl.com
  * Version: 1.0
  */
