@@ -12,7 +12,6 @@ jobs:
         env:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}          
-      - name: Retrieve checkout
       - run: sudo apt-get update | sudo apt install subversion
       - run: sudo apt install ssh rsync
       - run: /home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/scripts/sync-to-svn.sh
