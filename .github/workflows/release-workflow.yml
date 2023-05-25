@@ -14,4 +14,4 @@ jobs:
           php-version: '7.4'
       - run: sudo apt-get update | sudo apt install subversion
       - run: sudo apt install ssh rsync
-      - run: ./deploy.sh
+      - run: ${{ github.action_path }}/deploy.sh
