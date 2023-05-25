@@ -8,14 +8,11 @@ jobs:
   deploy_to_wordpress:
     runs-on: ubuntu-latest    
     steps:
-      - uses: actions/checkout@v3     
-      - run: | 
+    - name: Use variables
+      env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}          
+      run: | 
           sudo apt-get update | sudo apt install subversion
           sudo apt install ssh rsync
-      - env:
-          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}     
-      - run: | 
-          echo "$SVN_USERNAME"
-          echo "!!!"
           /home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/scripts/sync-to-svn.sh
