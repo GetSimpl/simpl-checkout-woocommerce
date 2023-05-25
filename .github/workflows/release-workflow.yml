@@ -14,4 +14,4 @@ jobs:
           php-version: '7.4'
       - run: sudo apt-get update | sudo apt install subversion
       - run: sudo apt install ssh rsync
-      - run: ${{ github.action_path }}/deploy.sh
+      - run: /home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/scripts/sync-to-svn.sh
