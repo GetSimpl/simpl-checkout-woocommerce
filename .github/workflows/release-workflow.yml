@@ -12,9 +12,6 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '7.4'
-      - env:
-          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}     
       - run: echo "!!!"
       - run: echo "$SVN_USERNAME"
       - run: sudo apt-get update | sudo apt install subversion
