@@ -1,5 +1,4 @@
 ### Woocommerce for Simpl
-
 This is the best checkout provider to super charge your checkout process and increase order conversions while keeping RTO (return to origin) in check. Let us handle your conversion worries while you grow your business. Simpl checkout comes with proprietary Simpl Pay Later and Pay-in-3 payment methods besides the traditional modes of payment such as UPI, Credit/Debit cards and COD
 
 This is the authorised solution for activating Simpl Checkout provided by "One Sigma Technologies Pvt. Ltd." within your WooCommerce store. By integrating Simpl checkout, your customers can enjoy expedited checkout process, resulting in improved order conversions for your business.
