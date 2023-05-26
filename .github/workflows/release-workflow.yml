@@ -12,8 +12,12 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '7.4'
-      - run: echo "!!!"
-      - run: echo "$SVN_USERNAME"
-      - run: sudo apt-get update | sudo apt install subversion
-      - run: sudo apt install ssh rsync
-      - run: /home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/scripts/sync-to-svn.sh
+      - name: upload
+        env:
+          SVN_USERNAME: "test"
+        run: | 
+          echo "!!!"
+          echo "$SVN_USERNAME"
+          sudo apt-get update | sudo apt install subversion
+          sudo apt install ssh rsync
+          /home/runner/work/simpl-checkout-woocommerce/simpl-checkout-woocommerce/scripts/sync-to-svn.sh
