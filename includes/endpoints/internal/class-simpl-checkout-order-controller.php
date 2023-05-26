@@ -35,9 +35,8 @@ class SimplCheckoutOrderController
             }
 
             WC()->session->order_awaiting_payment = $order->get_id();
-
-            $result = $gateway->process_payment($order->get_id());
             $this->update_order_metadata($request, $order);
+            $result = $gateway->process_payment($order->get_id());
             $this->reset_session();
 
             if ($result["result"] != "success") return new WP_Error(SIMPL_HTTP_ERROR_USER_NOTICE, "order is not successful");
@@ -63,6 +62,13 @@ class SimplCheckoutOrderController
         $order->update_meta_data("simpl_cart_token", $request->get_params()["simpl_cart_token"]);
         $order->update_meta_data("simpl_payment_id", $request->get_params()["simpl_payment_id"]);
         $order->update_meta_data("simpl_order_id", $request->get_params()["simpl_order_id"]);
+        if ($request->get_params()["simpl_payment_type"] == 'Cash on Delivery (COD)') {
+            $order->set_payment_method('cod');
+            $order->set_payment_method_title('Cash on delivery');
+        } else {
+            $order->set_payment_method('simpl_checkout_payment');
+            $order->set_payment_method_title($request->get_params()["simpl_payment_type"]);
+        }
         $order->save();
     }
 
