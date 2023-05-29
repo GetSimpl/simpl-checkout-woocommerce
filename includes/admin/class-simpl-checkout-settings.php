@@ -168,21 +168,11 @@ class WC_Simpl_Settings {
 			$event_data = array(
 				"merchant_id" => $simpl_host,
 			);
-			$event_payload = array(
-				"trigger_timestamp" => time(),
-				"event_name" => "Update settings",
-				"event_data" => array_merge($event_data, self::latest_settings()),
-				"entity" =>  "Manage settings",
-				"flow" => "Merchant woocommerce-admin page"
-			);
-
-
-			$simplHttpResponse = wp_remote_post("https://".$simpl_host."/api/v1/wc/publish/events", array(
-				"body" => json_encode($event_payload),
-				"headers" => array(            
-						"content-type" => "application/json"
-					),
-			)); 
+			$event_name = "Update settings";
+			$event_data = array_merge($event_data, self::latest_settings());
+			$entity = "Manage settings";
+			$flow = "Merchant woocommerce-admin page";
+			$simplHttpResponse = SimplWcEventHelper::publish_event($event_name, $event_data, $entity, $flow);
 			if (!is_wp_error($simplHttpResponse)) {
 				$body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
 			} else {
