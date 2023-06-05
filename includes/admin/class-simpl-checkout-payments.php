@@ -76,7 +76,6 @@ function simpl_init_gateway_class()
 
             $order->reduce_order_stock();
             // Remove cart
-            //WC()->mailer()->customer_invoice($order);
             WC()->cart->empty_cart();
 
             // Return thankyou redirect
