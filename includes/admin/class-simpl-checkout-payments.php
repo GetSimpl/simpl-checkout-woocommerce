@@ -71,11 +71,11 @@ function simpl_init_gateway_class()
             // $order->update_status( 'on-hold', __( 'Awaiting offline payment', 'wc-gateway-offline' ) );
 
             // Reduce stock levels            
+            $order->update_status('pending');
             $order->update_status('processing');
 
             $order->reduce_order_stock();
             // Remove cart
-            WC()->mailer()->customer_invoice($order);
             WC()->cart->empty_cart();
 
             // Return thankyou redirect
