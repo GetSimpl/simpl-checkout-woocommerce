@@ -3,8 +3,8 @@
 class SimplWcCartHelper {
     static function create_order_from_cart() {
         $order = new WC_Order();  
-        self::set_data_from_cart( $order);        
-        self::set_address_in_order($order);
+        $order = self::set_data_from_cart( $order);        
+        $order = self::set_address_in_order($order);
         $order->update_meta_data(SIMPL_ORDER_METADATA, 'yes');
         $order->save();
         updateToSimplDraft($order->get_id());
@@ -26,7 +26,7 @@ class SimplWcCartHelper {
         $order = wc_get_order($order_id);        
         $order->remove_order_items("line_item");
         WC()->checkout->create_order_line_items( $order, WC()->cart );
-        self::set_address_in_order($order);
+        $order = self::set_address_in_order($order);
         $order->save();
         return $order;
     }
@@ -39,6 +39,7 @@ class SimplWcCartHelper {
             $order->set_address($shipping_address, 'shipping');
             $order->set_address($billing_address, 'billing');
         }
+        return $order;
     }
 
     //Created this method to support older version
@@ -55,6 +56,7 @@ class SimplWcCartHelper {
         WC()->checkout->create_order_shipping_lines( $order, WC()->session->get( 'chosen_shipping_methods' ), WC()->shipping()->get_packages() );
         WC()->checkout->create_order_tax_lines( $order, WC()->cart );
         WC()->checkout->create_order_coupon_lines( $order, WC()->cart );
+        return $order;
     }
 
     static protected function update_data_from_cart( &$order ) {

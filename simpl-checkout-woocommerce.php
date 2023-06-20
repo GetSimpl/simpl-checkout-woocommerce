@@ -3,9 +3,9 @@
  * Plugin Name: Simpl checkout
  * Plugin URI: http://www.getsimpl.com
  * Description: A plugin creates checkout app for woocommerce
- * Author:  Getsimpl pvt. 
+ * Author:  One Sigma Technologies Private Limited
  * Author URI: http://www.getsimpl.com
- * Version: 1.0
+ * Version: 1.1
  */
 add_action('plugins_loaded', 'simpl_checkout_int', 0);
 add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
@@ -88,6 +88,7 @@ function simpl_checkout_int() {
     define("SIMPL_ORDER_METADATA", "is_simpl_checkout_order");
     define('WIDGET_SCRIPT_STAGING_URL', 'https://s3.ap-southeast-1.amazonaws.com/staging-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
     define('WIDGET_SCRIPT_PRODUCTION_URL', 'https://simpl-cdn.s3.amazonaws.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
+    define('SIMPL_PLUGIN_INFO', get_plugin_data( __FILE__ ));
 
     // Defined error CODE for API
     define('SIMPL_HTTP_ERROR_USER_NOTICE','user_error');
