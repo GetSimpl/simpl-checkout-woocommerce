@@ -3,7 +3,7 @@
 class SimplWcCartHelper {
     static function create_order_from_cart() {
         $order = new WC_Order();  
-        $order = self::set_data_from_cart( $order);        
+        self::set_data_from_cart( $order);        
         self::set_address_in_order($order);
         $order->update_meta_data(SIMPL_ORDER_METADATA, 'yes');
         $order->save();
