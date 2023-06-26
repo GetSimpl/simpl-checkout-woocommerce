@@ -25,13 +25,13 @@ class SimplWcCartHelper {
     static function update_order_from_cart($order_id) {
         $order = wc_get_order($order_id);        
         $order->remove_order_items("line_item");
-        WC()->checkout->create_order_line_items( $order, WC()->cart );
+        self::set_data_from_cart( $order);
         self::set_address_in_order($order);
         $order->save();
         return $order;
     }
     
-    static protected function set_address_in_order($order) {
+    static protected function set_address_in_order(&$order) {
         $shipping_address = WC()->customer->get_shipping('edit');
         $billing_address = WC()->customer->get_billing('edit');
         WC()->cart->calculate_shipping();
@@ -43,18 +43,23 @@ class SimplWcCartHelper {
 
     //Created this method to support older version
     static protected function set_data_from_cart( &$order ) {
-        $order->set_shipping_total( WC()->cart->get_shipping_total() );
-        $order->set_discount_total( WC()->cart->get_discount_total() );
-        $order->set_discount_tax( WC()->cart->get_discount_tax() );
-        $order->set_cart_tax( WC()->cart->get_cart_contents_tax() + WC()->cart->get_fee_tax() );
-        $order->set_shipping_tax( WC()->cart->get_shipping_tax() );
-        $order->set_total( WC()->cart->get_total( 'edit' ) );
         $order->set_prices_include_tax(wc_prices_include_tax());
         WC()->checkout->create_order_line_items( $order, WC()->cart );
         WC()->checkout->create_order_fee_lines( $order, WC()->cart );
-        WC()->checkout->create_order_shipping_lines( $order, WC()->session->get( 'chosen_shipping_methods' ), WC()->shipping()->get_packages() );
-        WC()->checkout->create_order_tax_lines( $order, WC()->cart );
-        WC()->checkout->create_order_coupon_lines( $order, WC()->cart );
+        $shipping_methods = $order->get_shipping_methods();
+        if(count($shipping_methods) <= 0) {
+            WC()->checkout->create_order_shipping_lines( $order, WC()->session->get( 'chosen_shipping_methods' ), WC()->shipping()->get_packages() );        
+        }
+        WC()->checkout->create_order_coupon_lines( $order, WC()->cart );        
+        $order->set_shipping_total( WC()->cart->get_shipping_total() );
+        $order->set_discount_total( WC()->cart->get_discount_total() );
+        $order->set_discount_tax( WC()->cart->get_discount_tax() );
+        $order->set_shipping_tax( WC()->cart->get_shipping_tax() );
+        $order->set_total( WC()->cart->get_total( 'edit' ) );
+        $order->calculate_shipping();       
+        $order->calculate_taxes();  
+        $order->calculate_totals();
+        return $order;
     }
 
     static protected function update_data_from_cart( &$order ) {

@@ -29,7 +29,7 @@ class SimplCartResponse
 
     public function static_cart_payload($cart)
     {
-        $response = array("source" => "cart", "unique_id" => $this->unique_device_id());
+        $response = array("source" => "cart", "unique_id" => $this->unique_device_id());        
         $cart_payload = $this->cart_common_payload($cart);
         $response["cart"] = $cart_payload;
         return $response;
