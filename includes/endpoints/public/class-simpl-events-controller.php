@@ -5,8 +5,10 @@ class SimplEventsController {
             SimplRequestValidator::validate_events_payload($request);
             $simpl_host = WC_Simpl_Settings::simpl_host();
             $shop_domain = WC_Simpl_Settings::store_url();
+            $plugin_data = get_plugin_data( __FILE__ );
             $req_body = $request->get_params()["event_payload"];
             $req_body["event_data"]["merchant_id"] = $shop_domain;
+            $req_body["event_data"]["plugin_data"] = $plugin_data;
             $unique_id = get_unique_device_id();
             if($unique_id == "") {
                 return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_UNAUTHORIZED, "message" => "session id can not be empty"), 401);
