@@ -7,7 +7,7 @@ class SimplEventsController {
             $shop_domain = WC_Simpl_Settings::store_url();
             $req_body = $request->get_params()["event_payload"];
             $req_body["event_data"]["merchant_id"] = $shop_domain;
-            $req_body["event_data"]["plugin_data"] = SIMPL_PLUGIN_VERSION;
+            $req_body["event_data"]["plugin_version"] = SIMPL_PLUGIN_VERSION;
             $unique_id = get_unique_device_id();
             if($unique_id == "") {
                 return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_UNAUTHORIZED, "message" => "session id can not be empty"), 401);
