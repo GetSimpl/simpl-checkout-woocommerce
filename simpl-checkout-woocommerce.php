@@ -47,6 +47,7 @@ function simpl_sentry_client() {
     }
     $plugin_data = get_plugin_data( __FILE__ );
     $plugin_version = $plugin_data['Version'];
+    define('SIMPL_PLUGIN_VERSION', $plugin_version);
     $client = new Raven_Client($sentry_dsn, array('environment' => WC_Simpl_Settings::sentry_environment(), 'release' => $plugin_version));
     $client->install();
     return $client;
