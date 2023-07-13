@@ -252,7 +252,7 @@ class WC_Simpl_Settings {
 
 		$settings[] = array(
 			'title'    => esc_html__( 'Merchant Client ID', $simplTabDomain ),
-			'type'     => 'text',
+			'type'     => 'password',
 			'desc'     => 'This identifies the merchant and is obtained post merchant onboarding',
 			'desc_tip' => true,
 			'id'       => 'wc_settings_tab_simpl_merchant_client_id'

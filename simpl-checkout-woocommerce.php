@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: Simpl checkout
+ * Plugin Name: Simpl Checkout
  * Plugin URI: http://www.getsimpl.com
- * Description: A plugin creates checkout app for woocommerce
- * Author:  Getsimpl pvt. 
+ * Description: Simpl checkout offers an optimised checkout process, higher order conversions and RTO reduction. We offer Simpl Pay Later, Pay-in-3, UPI, Cards, and COD for seamless transactions while you focus on growing your business.
+ * Author:  One Sigma Technologies Pvt. Ltd.
  * Author URI: http://www.getsimpl.com
  * Version: 1.0
  */
@@ -87,7 +87,7 @@ function simpl_checkout_int() {
     define("SIMPL_ORDER_STATUS_CHECKOUT", "checkout-draft");
     define("SIMPL_ORDER_METADATA", "is_simpl_checkout_order");
     define('WIDGET_SCRIPT_STAGING_URL', 'https://s3.ap-southeast-1.amazonaws.com/staging-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
-    define('WIDGET_SCRIPT_PRODUCTION_URL', 'https://s3.ap-southeast-1.amazonaws.com/staging-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
+    define('WIDGET_SCRIPT_PRODUCTION_URL', 'https://simpl-cdn.s3.amazonaws.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
 
     // Defined error CODE for API
     define('SIMPL_HTTP_ERROR_USER_NOTICE','user_error');

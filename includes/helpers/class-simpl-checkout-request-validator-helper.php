@@ -31,6 +31,14 @@ class SimplRequestValidator {
         }    
         return null;
     }
+
+    static function  validate_fetch_order_request($request) {
+        $simpl_order_request_param = $request->get_params()["order_id"];
+        if(!isset($simpl_order_request_param) || $simpl_order_request_param == "") {
+            throw new SimplCustomHttpBadRequest("order_id" . " is mandatory");
+        }
+        return null;
+    }
     
     static function  validate_order_request($request) {
         SimplRequestValidator::validate_checkout_order_id($request);
