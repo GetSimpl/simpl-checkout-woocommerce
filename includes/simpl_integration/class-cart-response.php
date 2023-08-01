@@ -248,7 +248,7 @@ class SimplCartResponse
             $productImage = $product->get_image_id() ?? null;
             $data[$i]['image'] = $productImage ? wp_get_attachment_url($productImage) : null;
             $data[$i]['url'] = $product->get_permalink();
-            $data[$i]['price'] = wc_format_decimal((empty($product->get_price()) === false) ? $price / $item['quantity'] : 0, 2);
+            $data[$i]['price'] = wc_format_decimal((empty($this->get_product_price($product)) === false) ? $price / $item['quantity'] : 0, 2);
             $data[$i]['variant_id'] = $item['variation_id'];
             $data[$i]['product_id'] = $item['product_id'];
             $data[$i]['attributes'] = empty($item['variation_id']) ? null : wc_get_product_variation_attributes($item['variation_id']);
@@ -258,6 +258,15 @@ class SimplCartResponse
 
         return $data;
     }
+
+    protected function get_product_price($product) {
+        if ($product->is_type('simple')) {
+            return $product->get_price();
+        } else if ($product->is_type('variable')) {
+            return $product->get_variation_price();
+        }
+    }
+
     //This function will clear all type of notice or success
     protected function simpl_hide_error_messages()
     {
