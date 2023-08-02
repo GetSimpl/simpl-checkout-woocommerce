@@ -259,11 +259,17 @@ class SimplCartResponse
         return $data;
     }
 
-    protected function get_product_price($product) {
-        if ($product->is_type('simple')) {
-            return $product->get_price();
-        } else if ($product->is_type('variable')) {
-            return $product->get_variation_price();
+    protected function get_product_price($pr) {
+        if ($pr->is_type('simple')) {
+            if($pr->is_on_sale()) {
+                return $pr->get_sale_price();
+            }
+            return $pr->get_price();
+        } else if ($pr->is_type('variable')) {
+            if($pr->is_on_sale()) {
+                return $pr->get_variation_sale_price();
+            }
+            return $pr->get_variation_price();
         }
     }
 
