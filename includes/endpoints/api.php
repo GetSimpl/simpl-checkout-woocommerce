@@ -85,4 +85,10 @@ add_action('rest_api_init', function () {
       return true;
     }
   ));
+
+  register_rest_route('wc-simpl/v1', '/order/refunds', array(
+    'methods' => 'GET',
+    'callback' => array(new SimplCheckoutRefundOrderController, 'fetch'),
+    'permission_callback' => 'internal_authenticate'
+  ));
 });
