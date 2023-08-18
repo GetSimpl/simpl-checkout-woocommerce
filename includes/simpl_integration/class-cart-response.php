@@ -260,16 +260,16 @@ class SimplCartResponse
     }
 
     protected function get_product_price($pr) {
-        if ($pr->is_type('simple')) {
-            if($pr->is_on_sale()) {
-                return $pr->get_sale_price();
-            }
-            return $pr->get_price();
-        } else if ($pr->is_type('variable')) {
+        if ($pr->is_type('variable')) {
             if($pr->is_on_sale()) {
                 return $pr->get_variation_sale_price();
             }
             return $pr->get_variation_price();
+        } else {
+            if($pr->is_on_sale()) {
+                return $pr->get_sale_price();
+            }
+            return $pr->get_price();
         }
     }
 
