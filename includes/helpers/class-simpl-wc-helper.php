@@ -93,6 +93,12 @@ class SimplWcCartHelper {
             throw new SimplCustomHttpBadRequest("country is not supported");
         }
         $address["country"] = $supported_cc;
+
+        $supported_sc = SimplUtil::state_code_for_state($address["state"]);
+        if(!isset($supported_sc)) {
+            throw new SimplCustomHttpBadRequest("state is not supported");
+        }
+        $address["state"] = $supported_sc;
     
         return  $address;
     }
