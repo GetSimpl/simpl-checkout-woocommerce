@@ -255,7 +255,7 @@ class SimplCartResponse
 
         foreach ($cart as $item_id => $item) {
             $product =  wc_get_product($item['product_id']);
-            $price = (float)$product->get_price();
+            $price = (float)$item['line_subtotal'] + (float)$item['line_subtotal_tax'];
             $data[$i]['id'] = (string)$item['product_id'] . (string)$item['variation_id'];
             $data[$i]['sku'] = $product->get_sku();
             $data[$i]['quantity'] = (int)$item['quantity'];
@@ -275,19 +275,13 @@ class SimplCartResponse
         return $data;
     }
 
-    protected function get_product_price($pr) {
-        if ($pr->is_type('variable')) {
-            if($pr->is_on_sale()) {
-                return $pr->get_variation_sale_price();
-            }
-            return $pr->get_variation_price();
-        } else {
-            if($pr->is_on_sale()) {
-                return $pr->get_sale_price();
-            }
-            return $pr->get_price();
-        }
-    }
+    // protected function get_product_price($pr) {
+    //     if ($pr->is_type('variable')) {
+    //         return $pr->get_variation_price();
+    //     } else {
+    //         return $pr->get_price();
+    //     }
+    // }
 
     //This function will clear all type of notice or success
     protected function simpl_hide_error_messages()
