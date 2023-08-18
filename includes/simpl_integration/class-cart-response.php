@@ -275,14 +275,6 @@ class SimplCartResponse
         return $data;
     }
 
-    // protected function get_product_price($pr) {
-    //     if ($pr->is_type('variable')) {
-    //         return $pr->get_variation_price();
-    //     } else {
-    //         return $pr->get_price();
-    //     }
-    // }
-
     //This function will clear all type of notice or success
     protected function simpl_hide_error_messages()
     {
