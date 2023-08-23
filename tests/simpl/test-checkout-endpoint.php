@@ -44,8 +44,8 @@ class Test_Checkout_Endpoint extends WP_UnitTestCase{
         $order = SimplWcCartHelper::create_order_from_cart();
         $request = new WP_REST_Request( 'POST', '/wc-simpl/v1/checkout' );
         $request["items"] = array(array("product_id" => $data['product_id'], "variant_id" => $data['variant_id'], "quantity" => 1));
-        $request["shipping_address"] = array("city"=> "chennai", "country" => "india", "line1" => "123", "line2" => "456");
-        $request["billing_address"] = array("city"=> "chennai", "country" => "india", "line1" => "123", "line2" => "456");
+        $request["shipping_address"] = array("city"=> "chennai", "country" => "india", "line1" => "123", "line2" => "456", "state" => "Delhi");
+        $request["billing_address"] = array("city"=> "chennai", "country" => "india", "line1" => "123", "line2" => "456", "state" => "Delhi");
         $response = $this->server->dispatch( $request );
         $response_data = $response->get_data();
         $this->assertEquals($response_data["source"], "cart");
