@@ -42,8 +42,8 @@ class SimplCartResponse
         $shipping_address = WC()->customer->get_shipping('edit');
         $billing_address = WC()->customer->get_billing('edit');
         if ($this->is_address_present($shipping_address, $billing_address)) {
-            $cart_payload["shipping_address"] = $shipping_address;
-            $cart_payload["billing_address"] = $billing_address;
+            $cart_payload["shipping_address"] = $this->convert_address_response($shipping_address);
+            $cart_payload["billing_address"] = $this->convert_address_response(($billing_address));
         }
         $cart_payload['checkout_order_id'] = $order_id;
         $response["cart"] = $cart_payload;
@@ -54,6 +54,22 @@ class SimplCartResponse
     protected function is_address_present($shipping_address, $billing_address)
     {
         return (isset($shipping_address) && isset($billing_address) && count($shipping_address) > 0 && count($billing_address) > 0) && $shipping_address["country"] != "";
+    }
+
+    protected function convert_address_response($address) {
+        $country = SimplUtil::country_name_from_code($address["country"]);
+        if(!isset($country)) {
+            throw new SimplCustomHttpBadRequest("country is not supported");
+        }
+        $address["country"] = $country;
+
+        $state = SimplUtil::state_name_from_code($address["state"]);
+        if(!isset($state)) {
+            throw new SimplCustomHttpBadRequest("state is not supported");
+        }
+        $address["state"] = $state;
+    
+        return  $address;
     }
 
     function cart_common_payload($cart)
@@ -105,8 +121,8 @@ class SimplCartResponse
         $response["total_price"] = wc_format_decimal($order->get_total(), 2);
         $response["items"] = $this->getOrderLineItem($order);
         $response["taxes"] = $order->get_tax_totals();
-        $response["shipping_address"] = $order->get_address('shipping');
-        $response["billing_address"] = $order->get_address('billing');
+        $response["shipping_address"] = $this->convert_address_response($order->get_address('shipping'));
+        $response["billing_address"] = $this->convert_address_response($order->get_address('billing'));
         $response["applied_discounts"] = $this->formatted_order_coupons($order);
         $discount_amount = 0;
         if ($order->get_total_discount()) {
@@ -258,6 +274,7 @@ class SimplCartResponse
 
         return $data;
     }
+
     //This function will clear all type of notice or success
     protected function simpl_hide_error_messages()
     {

@@ -13,9 +13,21 @@ class SimplUtil
         return $supported_states[$state_name];
     }
 
+    static function state_name_from_code($state_code)
+    {
+        $states = WC()->countries->get_states("IN");
+        return $states[$state_code];
+    }
+
     static function country_code_for_country($country_name)
     {
         $supported_countries = array("india" => "IN");
         return $supported_countries[strtolower($country_name)];
+    }
+
+    static function country_name_from_code($country_code)
+    {
+        $supported_countries = array("IN" => "India");
+        return $supported_countries[$country_code];
     }
 }
