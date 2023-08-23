@@ -90,14 +90,14 @@ class SimplRequestValidator {
         $event_payload = $request->get_params()["event_payload"] ?? null;
         
         if (NULL == $event_payload) {
-            throw new HttpBadRequest("event_payload is required");
+            throw new SimplCustomHttpBadRequest("event_payload is required");
         }
     
         $required_fields = ["entity", "event_name", "flow", "event_data", "trigger_timestamp"];
     
         foreach ($required_fields as $field) {
             if (!isset($event_payload[$field]) || NULL == $event_payload[$field]) {
-                throw new HttpBadRequest("$field is required");
+                throw new SimplCustomHttpBadRequest("$field is required");
             }
         }
     }
