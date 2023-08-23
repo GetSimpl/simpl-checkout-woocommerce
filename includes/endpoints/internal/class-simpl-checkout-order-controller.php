@@ -7,8 +7,10 @@ class SimplCheckoutOrderController
         try {
             SimplRequestValidator::validate_fetch_order_request($request);
             $order = wc_get_order((int)$request->get_params()["order_id"]);
+            echo($order);
             $si = new SimplCartResponse();
             $order_payload = $si->order_payload($order);
+            echo($order_payload);
             return $order_payload;
         } catch (SimplCustomHttpBadRequest $fe) {
             simpl_sentry_exception($fe);
@@ -57,6 +59,41 @@ class SimplCheckoutOrderController
         }
     }
 
+    function fetch_refund_orders(WP_REST_Request $request) {
+        try {
+            $refund_order_ids = $this->sv_get_wc_orders_with_refunds();
+            $response_payload = array();
+            foreach ($refund_order_ids as $refund_order_id) {
+                $order = wc_get_order((int)$refund_order_id);
+                $si = new SimplCartResponse();
+                $order_payload = $si->order_payload($order);
+                array_push($response_payload, $order_payload);
+            }
+            return $response_payload;
+        } catch (SimplCustomHttpBadRequest $fe) {
+            simpl_sentry_exception($fe);
+            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
+        } catch (Exception $fe) {
+            simpl_sentry_exception($fe);
+            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
+        } catch (Error $fe) {
+            simpl_sentry_exception($fe);
+			echo($fe);
+            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in fetching order'), 500);
+        }
+    }
+
+    protected function sv_get_wc_orders_with_refunds() {
+        $query_args = array(
+            'fields'         => 'id=>parent',
+            'post_type'      => 'shop_order_refund',
+            'post_status'    => 'any',
+            'posts_per_page' => -1,
+        );
+        $refunds = get_posts( $query_args );
+        return array_values( array_unique( $refunds ) );
+    }
+    
     protected function update_order_metadata($request, $order)
     {
         $order->update_meta_data("simpl_cart_token", $request->get_params()["simpl_cart_token"]);

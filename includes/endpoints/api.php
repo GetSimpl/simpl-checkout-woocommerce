@@ -78,17 +78,19 @@ add_action('rest_api_init', function () {
     }
   ));
 
+  register_rest_route('wc-simpl/v1', '/order-refunds', array(
+    'methods' => 'GET',
+    'callback' => array(new SimplCheckoutOrderController, 'fetch_refund_orders'),
+    'permission_callback' => function () {
+      return true;
+    }
+  ));
+
   register_rest_route('wc-simpl/v1', '/revert_authenticate_simpl', array(
     'methods' => 'GET',
     'callback' => 'revert_authorization_flag',
     'permission_callback' => function () {
       return true;
     }
-  ));
-
-  register_rest_route('wc-simpl/v1', '/order/refunds', array(
-    'methods' => 'GET',
-    'callback' => array(new SimplCheckoutRefundOrderController, 'fetch'),
-    'permission_callback' => 'internal_authenticate'
   ));
 });

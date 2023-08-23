@@ -104,6 +104,7 @@ class SimplCartResponse
         $response["id"] = $order->get_id();
         $response["total_price"] = wc_format_decimal($order->get_total(), 2);
         $response["items"] = $this->getOrderLineItem($order);
+        $response["refunds"] = $this->getRefundLineItem($order);
         $response["taxes"] = $order->get_tax_totals();
         $response["shipping_address"] = $order->get_address('shipping');
         $response["billing_address"] = $order->get_address('billing');
@@ -212,20 +213,46 @@ class SimplCartResponse
 
         foreach ($order->get_items() as $item_id => $item) {
             $product =  wc_get_product($item['product_id']);
+            // echo("product_one" + $item_id + "end \n");
+            // if ($item_id == null) {
+            //     echo("here is null item_id\n");
+            //     echo($item_id);
+            //     echo("\n");
+            // } else if ($item == null) {
+            //     echo("here is null item\n");
+            //     echo($item);
+            //     echo("\n");
+            // } else if ($product == null) {
+            //     echo("here is null product\n");
+            //     echo($product);
+            //     echo("\n");
+            // }
+            // if ($item['product_id'] == 0) {
+            //     echo("here is null product_id\n");
+            //     echo($item);
+            //     echo("\n");
+            // }
+            // echo($product);
+            // echo("product_two"  + $item + "end \n");
             $price = (float)$item['line_subtotal'] + (float)$item['line_subtotal_tax'];
 
-            $data[$i]['sku'] = $product->get_sku();
-            $data[$i]['quantity'] = (int)$item['quantity'];
-            $data[$i]['title'] = mb_substr($product->get_title(), 0, 125, "UTF-8");
-            $data[$i]['description'] = mb_substr($product->get_title(), 0, 250, "UTF-8");
-            $productImage = $product->get_image_id() ?? null;
-            $data[$i]['image'] = $productImage ? wp_get_attachment_url($productImage) : null;
-            $data[$i]['url'] = $product->get_permalink();
-            $data[$i]['price'] = wc_format_decimal((empty($product->get_price()) === false) ? $price / $item['quantity'] : 0, 2);
-            $data[$i]['variant_id'] = $item['variation_id'];
-            $data[$i]['product_id'] = $item['product_id'];
-            $data[$i]['id'] = $item->get_id();
-            $data[$i]['offer_price'] = (empty($productDetails['sale_price']) === false) ? wc_format_decimal((float)$productDetails['sale_price'], 2) : wc_format_decimal($price / $item['quantity'], 2);
+            try {
+                $data[$i]['sku'] = $product->get_sku();
+                $data[$i]['quantity'] = (int)$item['quantity'];
+                $data[$i]['title'] = mb_substr($product->get_title(), 0, 125, "UTF-8");
+                $data[$i]['description'] = mb_substr($product->get_title(), 0, 250, "UTF-8");
+                $productImage = $product->get_image_id() ?? null;
+                $data[$i]['image'] = $productImage ? wp_get_attachment_url($productImage) : null;
+                $data[$i]['url'] = $product->get_permalink();
+                $data[$i]['price'] = wc_format_decimal((empty($product->get_price()) === false) ? $price / $item['quantity'] : 0, 2);
+                $data[$i]['variant_id'] = $item['variation_id'];
+                $data[$i]['product_id'] = $item['product_id'];
+                $data[$i]['id'] = $item->get_id();
+                $data[$i]['offer_price'] = (empty($productDetails['sale_price']) === false) ? wc_format_decimal((float)$productDetails['sale_price'], 2) : wc_format_decimal($price / $item['quantity'], 2);
+            } catch (Exception $e) {
+                echo 'item: ' .$item;
+                echo 'Message: ' .$e->getMessage();
+            }
             $i++;
         }
 
@@ -258,6 +285,32 @@ class SimplCartResponse
 
         return $data;
     }
+
+    protected function getRefundLineItem($order) {
+        $i = 0;
+		$order_refunds = $order->get_refunds();
+        foreach( $order_refunds as $refund ){
+            foreach ($refund->get_items() as $item_id => $item) {
+                $data[$i]['refunded_quantity']      = $item->get_quantity(); // Quantity: zero or negative integer
+				$data[$i]['refunded_line_subtotal'] = $item->get_subtotal(); // line subtotal: zero or negative number
+				$data[$i]['total_refunded'] = $order->get_total_refunded(); // line subtotal: zero or negative number
+				$data[$i]['refunded_item_id']       = $item->get_meta('_refunded_item_id'); // line subtotal: zero or negative number
+				
+				// echo($refunded_quantity);
+				// echo("\n");
+				// echo($refunded_line_subtotal);
+				// echo("\n");
+				// echo($refunded_item_id);
+				// echo("\n");
+                
+                $i++;
+            }
+        }
+
+        return $data;
+    }
+
+
     //This function will clear all type of notice or success
     protected function simpl_hide_error_messages()
     {
