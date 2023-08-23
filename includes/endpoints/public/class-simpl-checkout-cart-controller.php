@@ -4,12 +4,16 @@ class SimplCheckoutCartController {
     function create(WP_REST_Request $request)
     {
         if (isset($request->get_params()["is_pdp"]) && $request->get_params()["is_pdp"]) {
-            $productID = $request->get_params()["product_id"];
-            $variantID = $request->get_params()["variant_id"];
-            $quantity = $request->get_params()["quantity"];
-            //TODO: we needs to add validation
-            WC()->cart->empty_cart();
-            WC()->cart->add_to_cart($productID, $quantity, $variantID);
+            if (isset($request->get_params()["products"])) {
+                SimplWcCartHelper::add_to_cart($request->get_params()["products"]);
+            } else {
+                $productID = $request->get_params()["product_id"];
+                $variantID = $request->get_params()["variant_id"];
+                $quantity = $request->get_params()["quantity"];
+                //TODO: we needs to add validation
+                WC()->cart->empty_cart();
+                WC()->cart->add_to_cart($productID, $quantity, $variantID);
+            }
         }
     
     
