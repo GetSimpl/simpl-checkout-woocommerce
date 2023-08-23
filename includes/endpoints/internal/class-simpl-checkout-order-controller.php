@@ -66,7 +66,7 @@ class SimplCheckoutOrderController
             $order->set_payment_method('cod');
             $order->set_payment_method_title('Cash on delivery');
         } else {
-            $order->set_payment_method('simpl_checkout_payment');
+            $order->set_payment_method('Simpl Checkout');
             $order->set_payment_method_title($request->get_params()["simpl_payment_type"]);
         }
         $order->save();
