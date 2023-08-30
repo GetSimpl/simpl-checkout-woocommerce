@@ -63,11 +63,13 @@ class SimplCartResponse
         }
         $address["country"] = $country;
 
-        $state = SimplUtil::state_name_from_code($address["state"]);
-        if(!isset($state)) {
-            throw new SimplCustomHttpBadRequest("state is not supported");
+        if(isset($address["state"]) && $address["state"] != "") {
+            $state = SimplUtil::state_name_from_code($address["state"]);
+            if(!isset($state)) {
+                throw new SimplCustomHttpBadRequest("state is not supported");
+            }
+            $address["state"] = $state;
         }
-        $address["state"] = $state;
     
         return  $address;
     }
