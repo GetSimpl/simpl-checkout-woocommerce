@@ -232,24 +232,18 @@ class SimplCartResponse
         foreach ($order->get_items() as $item_id => $item) {
             $product =  wc_get_product($item['product_id']);
             $price = (float)$item['line_subtotal'] + (float)$item['line_subtotal_tax'];
-
-            try {
-                $data[$i]['sku'] = $product->get_sku();
-                $data[$i]['quantity'] = (int)$item['quantity'];
-                $data[$i]['title'] = mb_substr($product->get_title(), 0, 125, "UTF-8");
-                $data[$i]['description'] = mb_substr($product->get_title(), 0, 250, "UTF-8");
-                $productImage = $product->get_image_id() ?? null;
-                $data[$i]['image'] = $productImage ? wp_get_attachment_url($productImage) : null;
-                $data[$i]['url'] = $product->get_permalink();
-                $data[$i]['price'] = wc_format_decimal((empty($product->get_price()) === false) ? $price / $item['quantity'] : 0, 2);
-                $data[$i]['variant_id'] = $item['variation_id'];
-                $data[$i]['product_id'] = $item['product_id'];
-                $data[$i]['id'] = $item->get_id();
-                $data[$i]['offer_price'] = (empty($productDetails['sale_price']) === false) ? wc_format_decimal((float)$productDetails['sale_price'], 2) : wc_format_decimal($price / $item['quantity'], 2);
-            } catch (Exception $e) {
-                echo 'item: ' .$item;
-                echo 'Message: ' .$e->getMessage();
-            }
+            $data[$i]['sku'] = $product->get_sku();
+            $data[$i]['quantity'] = (int)$item['quantity'];
+            $data[$i]['title'] = mb_substr($product->get_title(), 0, 125, "UTF-8");
+            $data[$i]['description'] = mb_substr($product->get_title(), 0, 250, "UTF-8");
+            $productImage = $product->get_image_id() ?? null;
+            $data[$i]['image'] = $productImage ? wp_get_attachment_url($productImage) : null;
+            $data[$i]['url'] = $product->get_permalink();
+            $data[$i]['price'] = wc_format_decimal((empty($product->get_price()) === false) ? $price / $item['quantity'] : 0, 2);
+            $data[$i]['variant_id'] = $item['variation_id'];
+            $data[$i]['product_id'] = $item['product_id'];
+            $data[$i]['id'] = $item->get_id();
+            $data[$i]['offer_price'] = (empty($productDetails['sale_price']) === false) ? wc_format_decimal((float)$productDetails['sale_price'], 2) : wc_format_decimal($price / $item['quantity'], 2);
             $i++;
         }
 

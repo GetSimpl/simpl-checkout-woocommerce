@@ -76,7 +76,6 @@ class SimplCheckoutOrderController
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
             simpl_sentry_exception($fe);
-			echo($fe);
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in fetching order'), 500);
         }
     }
