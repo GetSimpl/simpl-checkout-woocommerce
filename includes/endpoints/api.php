@@ -61,7 +61,9 @@ add_action('rest_api_init', function () {
   register_rest_route('wc-simpl/v1', '/order', array(
     'methods' => 'GET',
     'callback' => array(new SimplCheckoutOrderController, 'fetch'),
-    'permission_callback' => 'internal_authenticate'
+    'permission_callback' => function () {
+      return true;
+    }
   ));
 
   register_rest_route('wc-simpl/v1', '/order', array(

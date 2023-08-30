@@ -7,10 +7,8 @@ class SimplCheckoutOrderController
         try {
             SimplRequestValidator::validate_fetch_order_request($request);
             $order = wc_get_order((int)$request->get_params()["order_id"]);
-            echo($order);
             $si = new SimplCartResponse();
             $order_payload = $si->order_payload($order);
-            echo($order_payload);
             return $order_payload;
         } catch (SimplCustomHttpBadRequest $fe) {
             simpl_sentry_exception($fe);
@@ -66,7 +64,7 @@ class SimplCheckoutOrderController
             foreach ($refund_order_ids as $refund_order_id) {
                 $order = wc_get_order((int)$refund_order_id);
                 $si = new SimplCartResponse();
-                $order_payload = $si->order_payload($order);
+                $order_payload = $si->order_refund_payload($order);
                 array_push($response_payload, $order_payload);
             }
             return $response_payload;
@@ -84,12 +82,18 @@ class SimplCheckoutOrderController
     }
 
     protected function sv_get_wc_orders_with_refunds() {
-        $query_args = array(
+        $args = array(
             'fields'         => 'id=>parent',
             'post_type'      => 'shop_order_refund',
             'post_status'    => 'any',
-            'posts_per_page' => -1,
+			'date_query' => array(
+				'after'     => date('Y-m-d H:i:s', strtotime('-1 day')), // since we only want orders from last 24 hours
+				'before'    => date('Y-m-d H:i:s'),
+				'inclusive' => true,
+			),
+			'posts_per_page' => -1,
         );
+
         $refunds = get_posts( $query_args );
         return array_values( array_unique( $refunds ) );
     }

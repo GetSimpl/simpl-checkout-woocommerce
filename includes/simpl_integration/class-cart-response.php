@@ -104,7 +104,6 @@ class SimplCartResponse
         $response["id"] = $order->get_id();
         $response["total_price"] = wc_format_decimal($order->get_total(), 2);
         $response["items"] = $this->getOrderLineItem($order);
-        $response["refunds"] = $this->getRefundLineItem($order);
         $response["taxes"] = $order->get_tax_totals();
         $response["shipping_address"] = $order->get_address('shipping');
         $response["billing_address"] = $order->get_address('billing');
@@ -121,6 +120,25 @@ class SimplCartResponse
         $response["status"] = $order->get_status();
         $response["is_paid"] = $order->is_paid();
         self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
+        return $response;
+    }
+
+    public function order_refund_payload($order)
+    {
+        $order_refunds = $order->get_refunds();
+        $i = 0;
+        foreach( $order_refunds as $refund ){
+            $data = json_decode($refund, true);
+
+            $jsonObject = (object) $data;
+            foreach ($jsonObject as $key => $value) {
+				$response[$i][$key] = $value;
+            }
+
+            $response[$i]['line_items'] = $this->get_refund_line_items($refund);
+            $i++;
+        }
+        self::simpl_hide_error_messages();
         return $response;
     }
 
@@ -213,27 +231,6 @@ class SimplCartResponse
 
         foreach ($order->get_items() as $item_id => $item) {
             $product =  wc_get_product($item['product_id']);
-            // echo("product_one" + $item_id + "end \n");
-            // if ($item_id == null) {
-            //     echo("here is null item_id\n");
-            //     echo($item_id);
-            //     echo("\n");
-            // } else if ($item == null) {
-            //     echo("here is null item\n");
-            //     echo($item);
-            //     echo("\n");
-            // } else if ($product == null) {
-            //     echo("here is null product\n");
-            //     echo($product);
-            //     echo("\n");
-            // }
-            // if ($item['product_id'] == 0) {
-            //     echo("here is null product_id\n");
-            //     echo($item);
-            //     echo("\n");
-            // }
-            // echo($product);
-            // echo("product_two"  + $item + "end \n");
             $price = (float)$item['line_subtotal'] + (float)$item['line_subtotal_tax'];
 
             try {
@@ -285,30 +282,23 @@ class SimplCartResponse
 
         return $data;
     }
+	
+	protected function get_refund_line_items($order_refund) {
+		$refund_items = $order_refund->get_items();
+		$i = 0;
+        foreach( $refund_items as $refund_item ){
+            $data = json_decode($refund_item, true);
 
-    protected function getRefundLineItem($order) {
-        $i = 0;
-		$order_refunds = $order->get_refunds();
-        foreach( $order_refunds as $refund ){
-            foreach ($refund->get_items() as $item_id => $item) {
-                $data[$i]['refunded_quantity']      = $item->get_quantity(); // Quantity: zero or negative integer
-				$data[$i]['refunded_line_subtotal'] = $item->get_subtotal(); // line subtotal: zero or negative number
-				$data[$i]['total_refunded'] = $order->get_total_refunded(); // line subtotal: zero or negative number
-				$data[$i]['refunded_item_id']       = $item->get_meta('_refunded_item_id'); // line subtotal: zero or negative number
-				
-				// echo($refunded_quantity);
-				// echo("\n");
-				// echo($refunded_line_subtotal);
-				// echo("\n");
-				// echo($refunded_item_id);
-				// echo("\n");
-                
-                $i++;
+            $jsonObject = (object) $data;
+            foreach ($jsonObject as $key => $value) {
+				$response[$i][$key] = $value;
             }
+			
+			$i++;
         }
 
-        return $data;
-    }
+        return $response;
+	}
 
 
     //This function will clear all type of notice or success
