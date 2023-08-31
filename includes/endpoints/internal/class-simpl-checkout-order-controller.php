@@ -93,7 +93,7 @@ class SimplCheckoutOrderController
 			'posts_per_page' => -1,
         );
 
-        $refunds = get_posts( $query_args );
+        $refunds = get_posts( $args );
         return array_values( array_unique( $refunds ) );
     }
     
