@@ -81,13 +81,23 @@ class SimplCheckoutOrderController
     }
 
     protected function sv_get_wc_orders_with_refunds() {
+		$istTimeZone = new DateTimeZone('Asia/Kolkata');
+
+		// Get the current time in IST
+		$now = new DateTime('now', $istTimeZone);
+		$currentIST = $now->format('Y-m-d H:i:s');
+
+		// Calculate the past time in IST
+		$past = new DateTime('-1 days', $istTimeZone);
+		$pastIST = $past->format('Y-m-d H:i:s');
+		
         $args = array(
             'fields'         => 'id=>parent',
             'post_type'      => 'shop_order_refund',
             'post_status'    => 'any',
 			'date_query' => array(
-				'after'     => date('Y-m-d H:i:s', strtotime('-1 day')), // since we only want orders from last 24 hours
-				'before'    => date('Y-m-d H:i:s'),
+				'after'     => $pastIST, // since we only want orders from last 24 hours
+				'before'    => $currentIST,
 				'inclusive' => true,
 			),
 			'posts_per_page' => -1,
