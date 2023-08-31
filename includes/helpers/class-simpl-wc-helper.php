@@ -94,7 +94,7 @@ class SimplWcCartHelper {
         }
         $address["country"] = $supported_cc;
 
-        if(isset($address["state"]) && $address["state"] != "") {
+        if(!empty($address["state"])) {
             $supported_sc = SimplUtil::state_code_for_state($address["state"]);
             if(!isset($supported_sc)) {
                 throw new SimplCustomHttpBadRequest("state is not supported");
