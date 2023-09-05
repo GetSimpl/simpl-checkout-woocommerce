@@ -65,9 +65,6 @@ class SimplCartResponse
 
         if(!empty($address["state"])) {
             $state = SimplUtil::state_name_from_code($address["state"]);
-            if(empty($state)) {
-                throw new SimplCustomHttpBadRequest("state is not supported");
-            }
             $address["state"] = $state;
         }
     
