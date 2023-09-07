@@ -2,9 +2,13 @@
 
 class SimplCartResponse
 {
-    public function cart_redirection_url($cart)
+    public function cart_redirection_url($cart, $request)
     {
-        $cart_request = self::static_cart_payload($cart);
+        $merchant_additional_details = $request['merchant_additional_details'];
+        $metadata = $merchant_additional_details['metadata'];
+        $utm_fields = $metadata['utm'];
+
+        $cart_request = self::static_cart_payload($cart, $utm_fields);
         $simpl_host = WC_Simpl_Settings::simpl_host();
 
         $simplHttpResponse = wp_remote_post("https://" . $simpl_host . "/api/v1/wc/cart", array(
@@ -27,11 +31,12 @@ class SimplCartResponse
     }
 
 
-    public function static_cart_payload($cart)
+    public function static_cart_payload($cart, $utm_fields)
     {
         $response = array("source" => "cart", "unique_id" => $this->unique_device_id());
         $cart_payload = $this->cart_common_payload($cart);
         $response["cart"] = $cart_payload;
+        $response["utm"] = $utm_fields;
         return $response;
     }
 
@@ -228,7 +233,6 @@ class SimplCartResponse
         foreach ($order->get_items() as $item_id => $item) {
             $product =  wc_get_product($item['product_id']);
             $price = (float)$item['line_subtotal'] + (float)$item['line_subtotal_tax'];
-
             $data[$i]['sku'] = $product->get_sku();
             $data[$i]['quantity'] = (int)$item['quantity'];
             $data[$i]['title'] = mb_substr($product->get_title(), 0, 125, "UTF-8");
