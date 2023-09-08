@@ -39,7 +39,9 @@ class SimplWcCartHelper {
             $order->set_address($shipping_address, 'shipping');
             $order->set_address($billing_address, 'billing');
 
-            self::set_customer_info_in_order($order);
+            if(!empty($order->get_billing_email())) {
+                self::set_customer_info_in_order($order);
+            }
         }
     }
 
