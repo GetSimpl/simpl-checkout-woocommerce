@@ -5,10 +5,7 @@ class SimplCartResponse
     public function cart_redirection_url($cart, $request)
     {
         $merchant_additional_details = $request['merchant_additional_details'];
-        $metadata = $merchant_additional_details['metadata'];
-        $utm_fields = $metadata['utm'];
-
-        $cart_request = self::static_cart_payload($cart, $utm_fields);
+        $cart_request = self::static_cart_payload($cart, $merchant_additional_details);
         $simpl_host = WC_Simpl_Settings::simpl_host();
 
         $simplHttpResponse = wp_remote_post("https://" . $simpl_host . "/api/v1/wc/cart", array(
@@ -31,12 +28,12 @@ class SimplCartResponse
     }
 
 
-    public function static_cart_payload($cart, $utm_fields)
+    public function static_cart_payload($cart, $merchant_additional_details)
     {
         $response = array("source" => "cart", "unique_id" => $this->unique_device_id());
         $cart_payload = $this->cart_common_payload($cart);
         $response["cart"] = $cart_payload;
-        $response["utm"] = $utm_fields;
+        $response["merchant_additional_details"] = $merchant_additional_details;
         return $response;
     }
 

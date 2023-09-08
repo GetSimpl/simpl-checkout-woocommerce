@@ -17,10 +17,9 @@ class SimplWcCartHelper {
             WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"]);
         }
         if(WC()->cart->is_empty()) {
-        throw new SimplCustomHttpBadRequest("invalid cart items");
+            throw new SimplCustomHttpBadRequest("invalid cart items");
         }
     }
-
 
     static function update_order_from_cart($order_id) {
         $order = wc_get_order($order_id);        
