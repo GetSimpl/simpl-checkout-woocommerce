@@ -39,7 +39,7 @@ class Test_Checkout_Endpoint extends WP_UnitTestCase{
 
     public function test_create_checkout_with_valid_items_payload() {
         $data = create_product();
-        $user = create_user();        
+        $user = create_test_user();        
         simpl_cart_init_common();
         WC()->cart->add_to_cart($data['product_id'], 1, $data['variant_id']);
         $order = SimplWcCartHelper::create_order_from_cart();
