@@ -179,7 +179,6 @@ class SimplWcCartHelper {
         $customer->set_first_name($order->get_billing_first_name());
         $customer->set_last_name($order->get_billing_last_name());
         $customer->set_display_name($order->get_billing_first_name() . " " . $order->get_billing_last_name());
-        $customer->set_is_paying_customer(true);
         $customer->save();
 
         return $customer;
