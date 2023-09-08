@@ -52,7 +52,7 @@ class Test_Checkout_Endpoint extends WP_UnitTestCase{
         $this->assertEquals($response_data["source"], "cart");
         $this->assertEquals($response_data["cart"]["total_price"], '10.00');
         $this->assertEquals($response_data["cart"]["shipping_address"], array("city"=> "chennai", "country" => "India", "state" => "Delhi"));
-        $this->assertEquals($response_data["cart"]["billing_address"], array("email" => $user->get_billing_email(), "city"=> "chennai", "country" => "India", "state" => "Delhi"));
+        $this->assertEquals($response_data["cart"]["billing_address"], array("email" => $user->get_email(), "city"=> "chennai", "country" => "India", "state" => "Delhi"));
         $this->assertEquals($response_data["cart"]["item_subtotal_price"], '10.00');
         $this->assertNotNull($response_data["cart"]["checkout_order_id"]);
 	}
