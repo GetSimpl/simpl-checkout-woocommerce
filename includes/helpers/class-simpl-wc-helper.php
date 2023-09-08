@@ -5,7 +5,6 @@ class SimplWcCartHelper {
         $order = new WC_Order();  
         self::set_data_from_cart( $order);        
         self::set_address_in_order($order);
-        self::set_customer_info_in_order($order);
         $order->update_meta_data(SIMPL_ORDER_METADATA, 'yes');
         $order->save();
         updateToSimplDraft($order->get_id());
@@ -39,6 +38,8 @@ class SimplWcCartHelper {
         if($shipping_address != "" && $billing_address != "") {
             $order->set_address($shipping_address, 'shipping');
             $order->set_address($billing_address, 'billing');
+
+            self::set_customer_info_in_order($order);
         }
     }
 

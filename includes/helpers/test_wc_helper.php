@@ -27,3 +27,18 @@
         
         return array("product_id" => $product->get_id(), "variant_id" => $variation->get_id());
     }
+
+    function create_user() {
+        $username = 'test_username';
+        $email    = 'test@gmail.com';
+        $password = 'test_password';
+        $user_id = wp_create_user( $username, $password, $email );
+        $user = new WP_User( $user_id );
+        $user->set_role( 'customer' );
+        // // Add WooCommerce specific user meta.
+        // update_user_meta( $user_id, 'first_name', 'custom_username' );
+        // update_user_meta( $user_id, 'billing_phone', '123456789' );
+        // update_user_meta( $user_id, 'shipping_country', 'US' );
+        $user->save();
+        return $user;
+    }

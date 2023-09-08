@@ -23,7 +23,7 @@ class Test_Checkout_Endpoint extends WP_UnitTestCase{
 	}
 
     public function test_fetch_checkout_with_valid_checkout_order_id() {
-        $data = create_product();        
+        $data = create_product();  
         simpl_cart_init_common();
         WC()->cart->add_to_cart($data['product_id'], 1, $data['variant_id']);
         $order = SimplWcCartHelper::create_order_from_cart();
@@ -38,20 +38,21 @@ class Test_Checkout_Endpoint extends WP_UnitTestCase{
 	}
 
     public function test_create_checkout_with_valid_items_payload() {
-        $data = create_product();        
+        $data = create_product();
+        $user = create_user();        
         simpl_cart_init_common();
         WC()->cart->add_to_cart($data['product_id'], 1, $data['variant_id']);
         $order = SimplWcCartHelper::create_order_from_cart();
         $request = new WP_REST_Request( 'POST', '/wc-simpl/v1/checkout' );
         $request["items"] = array(array("product_id" => $data['product_id'], "variant_id" => $data['variant_id'], "quantity" => 1));
         $request["shipping_address"] = array("city"=> "chennai", "country" => "india", "line1" => "123", "line2" => "456", "state" => "Delhi");
-        $request["billing_address"] = array("city"=> "chennai", "country" => "india", "line1" => "123", "line2" => "456", "state" => "Delhi");
+        $request["billing_address"] = array("email" => $user->get_billing_email(), "city"=> "chennai", "country" => "india", "line1" => "123", "line2" => "456", "state" => "Delhi");
         $response = $this->server->dispatch( $request );
         $response_data = $response->get_data();
         $this->assertEquals($response_data["source"], "cart");
         $this->assertEquals($response_data["cart"]["total_price"], '10.00');
         $this->assertEquals($response_data["cart"]["shipping_address"], array("city"=> "chennai", "country" => "India", "state" => "Delhi"));
-        $this->assertEquals($response_data["cart"]["billing_address"], array("city"=> "chennai", "country" => "India", "state" => "Delhi"));
+        $this->assertEquals($response_data["cart"]["billing_address"], array("email" => $user->get_billing_email(), "city"=> "chennai", "country" => "India", "state" => "Delhi"));
         $this->assertEquals($response_data["cart"]["item_subtotal_price"], '10.00');
         $this->assertNotNull($response_data["cart"]["checkout_order_id"]);
 	}
