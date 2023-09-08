@@ -5,6 +5,7 @@ class SimplWcCartHelper {
         $order = new WC_Order();  
         self::set_data_from_cart( $order);        
         self::set_address_in_order($order);
+        self::set_customer_info_in_order($order);
         $order->update_meta_data(SIMPL_ORDER_METADATA, 'yes');
         $order->save();
         updateToSimplDraft($order->get_id());
@@ -158,6 +159,33 @@ class SimplWcCartHelper {
         }
         return WC()->cart;
     }
+
+    static protected function set_customer_info_in_order($order) {
+        $customer = simpl_get_customer_by_email($order->get_billing_email());
+        if(empty($customer->get_id())) {
+            $customer = self::set_new_customer_info_from_order($order);
+        }
+        $order->set_customer_id($customer->get_id());
+    }
+
+
+
+    static protected function set_new_customer_info_from_order($order) {
+        $customer = WC()->customer;
+        $customer->set_email($order->get_billing_email());
+        $customer->set_first_name($order->get_billing_first_name());
+        $customer->set_last_name($order->get_billing_last_name());
+        $customer->set_display_name($order->get_billing_first_name() . " " . $order->get_billing_last_name());
+        $customer->set_is_paying_customer(true);
+        $customer->save();
+
+        return $customer;
+    }
+}
+
+function simpl_get_customer_by_email($email) {
+    $user = get_user_by('email', $email);
+    return new WC_Customer($user->ID);
 }
 
 
