@@ -104,6 +104,8 @@ class SimplWcCartHelper {
         $order->update_meta_data("utm_campaign", $request['utm_info']["utm_campaign"]);
         $order->update_meta_data("utm_medium", $request['utm_info']["utm_medium"]);
         $order->update_meta_data("utm_term", $request['utm_info']["utm_term"]);
+        $order->update_meta_data("fbclid", $request['utm_info']["fbclid"]);
+        $order->update_meta_data("gclid", $request['utm_info']["gclid"]);
         $order->save();
     }
 
