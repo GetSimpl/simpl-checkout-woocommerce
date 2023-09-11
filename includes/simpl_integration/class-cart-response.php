@@ -49,6 +49,7 @@ class SimplCartResponse
         }
         $cart_payload['checkout_order_id'] = $order_id;
         $response["cart"] = $cart_payload;
+        $response["merchant_additional_details"] = $merchant_additional_details;
         self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
         return $response;
     }
