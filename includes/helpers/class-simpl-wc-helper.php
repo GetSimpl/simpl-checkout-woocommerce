@@ -96,9 +96,7 @@ class SimplWcCartHelper {
     }
 
     static function set_utm_info_in_order($request, $order) {
-        $order->update_meta_data("external_id", $request['utm_info']['external_id']);
         $order->update_meta_data("landing_page", $request['utm_info']["_landing_page"]);
-        $order->update_meta_data("clevertap_id", $request['utm_info']["clevertap_object_id"]);
         $order->update_meta_data("utm_source", $request['utm_info']["utm_source"]);
         $order->update_meta_data("utm_content", $request['utm_info']["utm_content"]);
         $order->update_meta_data("utm_campaign", $request['utm_info']["utm_campaign"]);
