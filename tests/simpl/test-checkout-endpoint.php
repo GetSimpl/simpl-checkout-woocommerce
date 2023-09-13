@@ -32,7 +32,6 @@ class Test_Checkout_Endpoint extends WP_UnitTestCase{
         $request["merchant_additional_details"] = array(""=> "");
         $response = $this->server->dispatch( $request );
         $response_data = $response->get_data();
-        print_r($response_data);
         $this->assertEquals($response_data["source"], "cart");
         $this->assertEquals($response_data["cart"]["total_price"], '10.00');
         $this->assertEquals($response_data["cart"]["item_subtotal_price"], '10.00');
@@ -51,7 +50,6 @@ class Test_Checkout_Endpoint extends WP_UnitTestCase{
         $request["merchant_additional_details"] = array(""=> "");
         $response = $this->server->dispatch( $request );
         $response_data = $response->get_data();
-        print_r($response_data);
         $this->assertEquals($response_data["source"], "cart");
         $this->assertEquals($response_data["cart"]["total_price"], '10.00');
         $this->assertEquals($response_data["cart"]["shipping_address"], array("city"=> "chennai", "country" => "India", "state" => "Delhi"));
