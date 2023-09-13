@@ -84,7 +84,8 @@ function simpl_checkout_int() {
     define("SIMPL_ENV", getenv("SIMPL_ENV"));
     define("SIMPL_PRE_QA_QUERY_PARAM_KEY", "simpl-qa");
     define("SIMPL_PRE_QA_QUERY_PARAM_VALUE", "ce50e3b0-641b-4b26-8bbb-8a240f03811b");
-    define('WIDGET_SCRIPT_LOCALHOST', 'http://localhost:4300/');
+    // define('WIDGET_SCRIPT_LOCALHOST', 'http://localhost:4300/');
+    // this is used only to run locally
     define("SIMPL_ORDER_STATUS_CHECKOUT", "checkout-draft");
     define("SIMPL_ORDER_METADATA", "is_simpl_checkout_order");
     define('WIDGET_SCRIPT_STAGING_URL', 'https://s3.ap-southeast-1.amazonaws.com/staging-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
