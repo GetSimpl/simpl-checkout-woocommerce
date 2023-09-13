@@ -27,7 +27,7 @@ function fetch_master_config() {
 			echo( '<script type="text/javascript"> localStorage.setItem("'. $simplTokenHeader. '", "'. $headers[ $simplTokenHeader ] .'");</script>' );
 		}
 		$masterConfigData = isset( $body["success"] ) && isset( $body["data"] ) ? json_encode( $body["data"] ) : '{}';
-		echo( '<script type="text/javascript">var SimplMasterConfig = ' . $masterConfigData . '</script>' );
+		wp_add_inline_script('footer', 'var SimplMasterConfig = ' . $masterConfigData);
 	} else {
 		$error_message = $simplHttpResponse->get_error_message();
 		console_log( $error_message );
