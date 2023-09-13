@@ -8,68 +8,7 @@
  * Version: 1.2.4
  */
 add_action('plugins_loaded', 'simpl_checkout_int', 0);
-define('SIMPL_SENTRY_DSN_KEY', 'simpl_sentry_dsn'); 
-
-include_once "sentry/lib/Raven/Autoloader.php";
-Raven_Autoloader::register();
-
-function captureSimplPluginLastError($sentry_client) {
-    if (null === $error = error_get_last()) {
-        return null;
-    }
-
-    if(!str_contains($error['file'], 'simpl-checkout-woocommerce')) {
-        return null;
-    }
-
-    $e = new ErrorException(
-        @$error['message'], 0, @$error['type'],
-        @$error['file'], @$error['line']
-    );
-
-    return $sentry_client->captureException($e);
-}
-
-$sentry_client = simpl_sentry_client();
-if(isset($sentry_client)) {
-    captureSimplPluginLastError($sentry_client);
-}
-
-function simpl_sentry_client() {
-    $sentry_dsn = get_option(SIMPL_SENTRY_DSN_KEY);
-    if($sentry_dsn == "") {
-        return null;        
-    }
-    include_once 'includes/admin/load.php';
-    if( ! function_exists('get_plugin_data') ){
-        require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-    }
-    $plugin_data = get_plugin_data( __FILE__ );
-    $plugin_version = $plugin_data['Version'];
-    define('SIMPL_PLUGIN_VERSION', $plugin_version);
-    $client = new Raven_Client($sentry_dsn, array('environment' => WC_Simpl_Settings::sentry_environment(), 'release' => $plugin_version));
-    $client->install();
-    return $client;
-}
-
-function simpl_set_sentry_client($dsn) {
-    try {
-        add_option(SIMPL_SENTRY_DSN_KEY, $dsn);
-        $sentry_client = simpl_sentry_client();
-        if(isset($sentry_client)) {
-            captureSimplPluginLastError($sentry_client);
-        }
-    } catch (Exception $fe) {
-        return;
-    }
-}
-
-function simpl_sentry_exception($err) {
-    $client = simpl_sentry_client();
-    if(isset($client)) {
-        $client->captureException($err);
-    }
-}
+add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
 
 function simpl_checkout_int() {
 
