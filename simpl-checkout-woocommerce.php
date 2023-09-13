@@ -5,7 +5,7 @@
  * Description: Simpl checkout offers an optimised checkout process, higher order conversions and RTO reduction. We offer Simpl Pay Later, Pay-in-3, UPI, Cards, and COD for seamless transactions while you focus on growing your business.
  * Author:  One Sigma Technologies Pvt. Ltd.
  * Author URI: http://www.getsimpl.com
- * Version: 1.1.2
+ * Version: 1.1.3
  */
 add_action('plugins_loaded', 'simpl_checkout_int', 0);
 add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
@@ -88,8 +88,16 @@ function simpl_checkout_int() {
     // this is used only to run locally
     define("SIMPL_ORDER_STATUS_CHECKOUT", "checkout-draft");
     define("SIMPL_ORDER_METADATA", "is_simpl_checkout_order");
-    define('WIDGET_SCRIPT_STAGING_URL', 'https://s3.ap-southeast-1.amazonaws.com/staging-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
-    define('WIDGET_SCRIPT_PRODUCTION_URL', 'https://simpl-cdn.s3.amazonaws.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
+    $https = 'https://';
+    $staging_base_url = 's3.ap-southeast-1.amazonaws.com/';
+    $staging_cdn_base_url = 'staging-cdn.getsimpl.com/';
+    $widget_script = 'widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife';
+    $js = '.js';
+    $widget_script_staging_url = $https.$staging_base_url.$staging_cdn_base_url.$widget_script.$js;
+    define('WIDGET_SCRIPT_STAGING_URL', $widget_script_staging_url);
+    $production_base_url = 'cdn.getsimpl.com/';
+    $widget_script_production_url = $https.$production_base_url.$widget_script.$js;
+    define('WIDGET_SCRIPT_PRODUCTION_URL', $widget_script_production_url);
 
     // Defined error CODE for API
     define('SIMPL_HTTP_ERROR_USER_NOTICE','user_error');
