@@ -90,13 +90,12 @@ function simpl_checkout_int() {
     $https = 'https://';
     $staging_base_url = 's3.ap-southeast-1.amazonaws.com/';
     $staging_cdn_base_url = 'staging-cdn.getsimpl.com/';
-    $staging_widget_script = 'widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife';
+    $widget_script = 'widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife';
     $js = '.js';
-    $widget_script_staging_url = $https.$staging_base_url.$staging_cdn_base_url.$staging_widget_script.$js;
+    $widget_script_staging_url = $https.$staging_base_url.$staging_cdn_base_url.$widget_script.$js;
     define('WIDGET_SCRIPT_STAGING_URL', $widget_script_staging_url);
-    $production_base_url = 'simpl-cdn.s3.amazonaws.com/';
-    $production_cdn_base_url = 'widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife';
-    $widget_script_production_url = $https.$production_base_url.$production_cdn_base_url.$js;
+    $production_base_url = 'cdn.getsimpl.com/';
+    $widget_script_production_url = $https.$production_base_url.$widget_script.$js;
     define('WIDGET_SCRIPT_PRODUCTION_URL', $widget_script_production_url);
 
     // Defined error CODE for API
