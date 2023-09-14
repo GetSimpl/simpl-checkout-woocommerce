@@ -31,5 +31,5 @@ require $test_lib_bootstrap_file;
 require PLUGIN_DIR . '/vendor/autoload.php';
 
 echo PHP_EOL;
-echo 'Using Wordpress core : ' . ABSPATH . PHP_EOL;
+echo (esc_js('Using Wordpress core : ' . ABSPATH . PHP_EOL));
 echo PHP_EOL;

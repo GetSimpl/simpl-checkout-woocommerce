@@ -2,6 +2,6 @@
 
 function console_log($data ) {
     echo '<script>';
-    echo 'console.log('. json_encode($data) .')';
+    echo esc_html('console.log('. json_encode($data) .')');
     echo '</script>';
   }

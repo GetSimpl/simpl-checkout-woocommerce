@@ -422,7 +422,7 @@ function xml_array_dumbdown( &$data ) {
 
 function dmp( ...$args ) {
 	foreach ( $args as $thing ) {
-		echo ( is_scalar( $thing ) ? (string) $thing : var_export( $thing, true ) ), "\n";
+		echo (esc_js( is_scalar( $thing ) ? (string) $thing : var_export( $thing, true )) ), "\n";
 	}
 }
 
@@ -480,14 +480,14 @@ function print_backtrace() {
 	echo "Backtrace:\n";
 	$i = 0;
 	foreach ( $bt as $stack ) {
-		echo ++$i, ': ';
+		echo (esc_js(++$i, ': '));
 		if ( isset( $stack['class'] ) ) {
-			echo $stack['class'] . '::';
+			echo (esc_js($stack['class'] . '::'));
 		}
 		if ( isset( $stack['function'] ) ) {
-			echo $stack['function'] . '() ';
+			echo (esc_js($stack['function'] . '() '));
 		}
-		echo "line {$stack[line]} in {$stack[file]}\n";
+		echo (esc_js("line {$stack[line]} in {$stack[file]}\n"));
 	}
 	echo "\n";
 }

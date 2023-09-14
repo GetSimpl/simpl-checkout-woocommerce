@@ -221,10 +221,10 @@ function _wp_die_handler_txt( $message, $title, $args ) {
 	list( $message, $title, $args ) = _wp_die_process_input( $message, $title, $args );
 
 	echo "\nwp_die() called\n";
-	echo "Message: $message\n";
+	echo (esc_js("Message: $message\n"));
 
 	if ( ! empty( $title ) ) {
-		echo "Title: $title\n";
+		echo (esc_js("Title: $title\n"));
 	}
 
 	if ( ! empty( $args ) ) {
@@ -234,7 +234,7 @@ function _wp_die_handler_txt( $message, $title, $args ) {
 				$value = var_export( $value, true );
 			}
 
-			echo "\t$key: $value\n";
+			echo (esc_js("\t$key: $value\n"));
 		}
 	}
 }
@@ -253,10 +253,10 @@ function _wp_die_handler_exit( $message, $title, $args ) {
 	list( $message, $title, $args ) = _wp_die_process_input( $message, $title, $args );
 
 	echo "\nwp_die() called\n";
-	echo "Message: $message\n";
+	echo (esc_js("Message: $message\n"));
 
 	if ( ! empty( $title ) ) {
-		echo "Title: $title\n";
+		echo (esc_js("Title: $title\n"));
 	}
 
 	if ( ! empty( $args ) ) {
@@ -266,7 +266,7 @@ function _wp_die_handler_exit( $message, $title, $args ) {
 				$value = var_export( $value, true );
 			}
 
-			echo "\t$key: $value\n";
+			echo (esc_js("\t$key: $value\n"));
 		}
 	}
 

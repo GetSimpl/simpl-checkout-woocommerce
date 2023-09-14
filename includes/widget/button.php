@@ -1,7 +1,7 @@
 <div>
   <button
     id="btn-simpl-btn"
-    type="button" data-product-id="<?= $args["product_id"] ?>" onclick = "submitButton(this)"><?= $args["button_text"] ?>
+    type="button" data-product-id="<?= esc_attr($args["product_id"]) ?>" onclick = "submitButton(this)"><?= esc_html($args["button_text"])q ?>
   </button>
 </div>
 <script>
