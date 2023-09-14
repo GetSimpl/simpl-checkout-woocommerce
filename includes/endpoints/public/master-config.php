@@ -24,7 +24,7 @@ function fetch_master_config() {
 		$headers = wp_remote_retrieve_headers( $simplHttpResponse );
 		if ( isset( $headers[ $simplTokenHeader ] ) ) {
 			set_unique_device_id( $headers[ $simplTokenHeader ] );
-			echo( '<script type="text/javascript"> localStorage.setItem("'. $simplTokenHeader. '", "'. $headers[ $simplTokenHeader ] .'");</script>' );
+			wp_add_inline_script('footer', 'localStorage.setItem("'. $simplTokenHeader. '", "'. $headers[ $simplTokenHeader ].'")');
 		}
 		$masterConfigData = isset( $body["success"] ) && isset( $body["data"] ) ? json_encode( $body["data"] ) : '{}';
 		wp_add_inline_script('footer', 'var SimplMasterConfig = ' . $masterConfigData);
