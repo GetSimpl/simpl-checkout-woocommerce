@@ -39,7 +39,7 @@ class SimplCartResponse
     public function cart_payload($cart, $order_id = NULL)
     {
         $request = array("source" => "cart", "unique_id" => $this->unique_device_id());
-        $cart_payload = $this->cart_common_payload($cart, $merchant_additional_details);
+        $cart_payload = $this->cart_common_payload($cart, null);
         $shipping_address = WC()->customer->get_shipping('edit');
         $billing_address = WC()->customer->get_billing('edit');
         if ($this->is_address_present($shipping_address, $billing_address)) {
