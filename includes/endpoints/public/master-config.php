@@ -26,9 +26,11 @@ function fetch_master_config() {
 			set_unique_device_id( $headers[ $simplTokenHeader ] );
 		}
 		$masterConfigData = isset( $body["success"] ) && isset( $body["data"] ) ? json_encode( $body["data"] ) : '{}';
-		echo (esc_js( '<script type="text/javascript">var SimplMasterConfig = ' . $masterConfigData . '</script>' ));
+		
+		wp_enqueue_script( 'simpl-master-config' );
+		wp_add_inline_script('simpl-master-config', 'var SimplMasterConfig = ' . $masterConfigData);
 	} else {
 		$error_message = $simplHttpResponse->get_error_message();
-		console_log( $error_message );
+		scw_console_log( $error_message );
 	}
 }
