@@ -10,8 +10,6 @@
 add_action('plugins_loaded', 'simpl_checkout_int', 0);
 add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
 
-Raven_Autoloader::register();
-
 function simpl_checkout_int() {
 
     if (!class_exists('WC_Payment_Gateway'))
