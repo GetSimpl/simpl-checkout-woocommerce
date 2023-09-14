@@ -86,15 +86,6 @@ class SimplWcCartHelper {
         }
     }
 
-    static function set_merchant_additional_details_in_cart($merchant_additional_details) {
-        $data = json_decode($merchant_additional_details, true);
-
-        $jsonObject = (object) $data;
-        foreach ($jsonObject as $key => $value) {
-            $order->update_meta_data($key, $value);
-        }
-    }
-
     static function set_utm_info_in_order($request, $order) {
         $order->update_meta_data("landing_page", $request['utm_info']["_landing_page"]);
         $order->update_meta_data("utm_source", $request['utm_info']["utm_source"]);

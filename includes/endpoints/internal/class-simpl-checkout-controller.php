@@ -90,11 +90,6 @@ class SimplCheckoutController
     {
         return (isset($request->get_params()["shipping_address"]) && isset($request->get_params()["billing_address"]) && count($request->get_params()["shipping_address"]) > 0 && $request->get_params()["billing_address"] > 0);
     }
-
-    protected function is_merchant_additional_details_present($request)
-    {
-        return (isset($request->get_params()["merchant_additional_details"]) && count($request->get_params()["merchant_additional_details"]) > 0);
-    }
 }
 
 
