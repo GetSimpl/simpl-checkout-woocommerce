@@ -31,6 +31,6 @@ function fetch_master_config() {
 		wp_add_inline_script('simpl-master-config', 'var SimplMasterConfig = ' . $masterConfigData);
 	} else {
 		$error_message = $simplHttpResponse->get_error_message();
-		scw_console_log( $error_message );
+		scwp_console_log( $error_message );
 	}
 }
