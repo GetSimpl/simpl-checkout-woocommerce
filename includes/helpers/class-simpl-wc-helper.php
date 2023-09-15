@@ -166,12 +166,12 @@ class SimplWcCartHelper {
     static protected function set_customer_info_in_order($order) {
         $customer = simpl_get_customer_by_email($order->get_billing_email());
         if(empty($customer->get_id())) {
-            $customer = self::set_new_customer_info_from_order($order);
+            $customer = self::create_new_customer($order);
         }
         $order->set_customer_id($customer->get_id());
     }
 
-    static protected function set_new_customer_info_from_order($order) {
+    static protected function create_new_customer($order) {
         $customer = WC()->customer;
         $customer->set_email($order->get_billing_email());
         $customer->set_first_name($order->get_shipping_first_name());
