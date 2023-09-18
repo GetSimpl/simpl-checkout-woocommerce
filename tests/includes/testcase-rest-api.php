@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 abstract class WP_Test_REST_TestCase extends WP_UnitTestCase {
 	protected function assertErrorResponse( $code, $response, $status = null ) {
 

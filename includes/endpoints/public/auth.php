@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
 function authenticate_simpl( WP_REST_Request $request ) {    
     //POST call to simpl with credentials
     //adds header related to shop domain

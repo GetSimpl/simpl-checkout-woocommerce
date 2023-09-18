@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /**
  * Factory for creating fixtures for the deprecated Links/Bookmarks API.
  *
