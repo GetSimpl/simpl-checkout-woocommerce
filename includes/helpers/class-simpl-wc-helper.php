@@ -38,10 +38,6 @@ class SimplWcCartHelper {
         if($shipping_address != "" && $billing_address != "") {
             $order->set_address($shipping_address, 'shipping');
             $order->set_address($billing_address, 'billing');
-
-            if(!empty($order->get_billing_email())) {
-                self::set_customer_info_in_order($order);
-            }
         }
     }
 
@@ -164,11 +160,13 @@ class SimplWcCartHelper {
     }
 
     static protected function set_customer_info_in_order($order) {
-        $customer = simpl_get_customer_by_email($order->get_billing_email());
-        if(empty($customer->get_id())) {
-            $customer = self::create_new_customer($order);
+        if(!empty($order->get_billing_email())){
+            $customer = simpl_get_customer_by_email($order->get_billing_email());
+            if(empty($customer->get_id())) {
+                $customer = self::create_new_customer($order);
+            }
+            $order->set_customer_id($customer->get_id());
         }
-        $order->set_customer_id($customer->get_id());
     }
 
     static protected function create_new_customer($order) {

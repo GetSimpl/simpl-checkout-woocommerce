@@ -35,6 +35,7 @@ class SimplCheckoutOrderController
             }
 
             WC()->session->order_awaiting_payment = $order->get_id();
+            SimplWcCartHelper::set_customer_info_in_order($order);
             $this->update_order_metadata($request, $order);
             $result = $gateway->process_payment($order->get_id());
             $this->reset_session();
