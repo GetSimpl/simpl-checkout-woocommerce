@@ -25,7 +25,7 @@ class Test_Checkout_Endpoint extends WP_UnitTestCase{
     public function test_fetch_checkout_with_valid_checkout_order_id() {
         $data = create_product();        
         simpl_cart_init_common();
-        WC()->cart->add_to_cart($data['product_id'], 1, $data['variant_id']);
+        WC()->cart->scwp_add_to_cart($data['product_id'], 1, $data['variant_id']);
         $order = SimplWcCartHelper::scwp_create_order_from_cart();
         $request = new WP_REST_Request( 'GET', '/wc-simpl/v1/checkout' );
         $request["checkout_order_id"] = $order->get_id();
@@ -40,7 +40,7 @@ class Test_Checkout_Endpoint extends WP_UnitTestCase{
     public function test_create_checkout_with_valid_items_payload() {
         $data = create_product();        
         simpl_cart_init_common();
-        WC()->cart->add_to_cart($data['product_id'], 1, $data['variant_id']);
+        WC()->cart->scwp_add_to_cart($data['product_id'], 1, $data['variant_id']);
         $order = SimplWcCartHelper::scwp_create_order_from_cart();
         $request = new WP_REST_Request( 'POST', '/wc-simpl/v1/checkout' );
         $request["items"] = array(array("product_id" => $data['product_id'], "variant_id" => $data['variant_id'], "quantity" => 1));
