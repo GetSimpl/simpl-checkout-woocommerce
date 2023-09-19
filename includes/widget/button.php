@@ -1,11 +1,11 @@
 <div>
   <button
     id="btn-simpl-btn"
-    type="button" data-product-id="<?php echo esc_attr($args["product_id"]) ?>" onclick = "submitButton(this)"><?php echo esc_html($args["button_text"]) ?>
+    type="button" data-product-id="<?php echo esc_attr($args["product_id"]) ?>" onclick = "scwp_submit_button(this)"><?php echo esc_html($args["button_text"]) ?>
   </button>
 </div>
 <script>
-    function submitButton(element) {
+    function scwp_submit_button(element) {
       variantDoc = document.getElementsByName("variation_id")
       variantId = 0
       if(variantDoc.length > 0) {
@@ -14,7 +14,7 @@
       productID = element.getAttribute("data-product-id")
       quantity = document.getElementsByName("quantity")[0].value
 
-      fetch("/wp-json/simpl/v1/cart", {method: "POST", body: JSON.stringify({product_id: productID, variant_id: variantId, quantity: quantity}), headers: {'content-type': 'application/json'}})
+      scwp_fetch("/wp-json/simpl/v1/cart", {method: "POST", body: JSON.stringify({product_id: productID, variant_id: variantId, quantity: quantity}), headers: {'content-type': 'application/json'}})
       .then((response) => response.json())
       .then((result) => {
         window.open(result, "_blank")

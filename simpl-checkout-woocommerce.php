@@ -7,12 +7,12 @@
  * Author URI: http://www.getsimpl.com
  * Version: 1.1.3
  */
-add_action('plugins_loaded', 'simpl_checkout_int', 0);
-add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
+add_action('plugins_loaded', 'scwp_checkout_int', 0);
+add_filter( 'woocommerce_payment_gateways', 'scwp_add_gateway_class' );
 
-function simpl_checkout_int() {
+function scwp_checkout_int() {
 
-    if (!class_exists('WC_Payment_Gateway'))
+    if (!class_exists('SCWP_Payment_Gateway'))
     {
         return;
     }
@@ -53,8 +53,8 @@ function simpl_checkout_int() {
     include_once 'includes/widget/load.php';
     include_once 'includes/plugin_support/load.php';
 
-    add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
-    add_action( 'plugins_loaded', 'simpl_init_gateway_class' );
-    register_activation_hook( __FILE__, 'my_plugin_activate' );
-    register_deactivation_hook( __FILE__, 'my_plugin_deactivate' );
+    add_filter( 'woocommerce_payment_gateways', 'scwp_add_gateway_class' );
+    add_action( 'plugins_loaded', 'scwp_init_gateway_class' );
+    register_activation_hook( __FILE__, 'scwp_activate' );
+    register_deactivation_hook( __FILE__, 'scwp_deactivate' );
 }

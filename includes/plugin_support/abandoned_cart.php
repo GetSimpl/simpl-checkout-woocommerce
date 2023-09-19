@@ -1,8 +1,8 @@
 <?php
 
 //cart flow is third party plugin
-add_action("simpl_abandoned_cart", "cart_flows_abandoned_cart", 10, 2);
-function cart_flows_abandoned_cart($cart, $simpl_checkout_data)
+add_action("simpl_abandoned_cart", "scwp_cart_flows_abandoned_cart", 10, 2);
+function scwp_cart_flows_abandoned_cart($cart, $simpl_checkout_data)
 {
     if (!is_plugin_active('woo-cart-abandonment-recovery/woo-cart-abandonment-recovery.php')) {
         return false;
@@ -53,7 +53,7 @@ function cart_flows_abandoned_cart($cart, $simpl_checkout_data)
 
 
         if (isset($result)) {
-            $wpdb->update(
+            $wpdb->scwp_update(
                 $cart_abandonment_table,
                 $checkout_details,
                 array('session_id' => $sessionId)

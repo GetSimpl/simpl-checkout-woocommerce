@@ -1,24 +1,24 @@
 <?php
 
-class WC_Simpl_Settings {
+class SCWP_Settings {
 
-	public static function init() {
-		add_filter( 'woocommerce_settings_tabs_array', __CLASS__ . '::add_settings_tab', 50 );
-		add_action( 'woocommerce_settings_tabs_settings_tab_simpl', __CLASS__ . '::settings_tab' );
-		add_action( 'woocommerce_update_options_settings_tab_simpl', __CLASS__ . '::update_settings' );
+	public static function scwp_init() {
+		add_filter( 'woocommerce_settings_tabs_array', __CLASS__ . '::scwp_add_settings_tab', 50 );
+		add_action( 'woocommerce_settings_tabs_settings_tab_simpl', __CLASS__ . '::scwp_settings_tab' );
+		add_action( 'woocommerce_update_options_settings_tab_simpl', __CLASS__ . '::scwp_update_settings' );
 
 		// add css to admin panel
-		function register_simpl_admin_style() {
+		function scwp_register_simpl_admin_style() {
 			wp_register_style( 'simpl-admin-style', plugins_url( 'css/simpl-admin.css', __FILE__ ), false, '1.0.0', 'all' );
 			wp_enqueue_script( 'simpl-admin-js', plugin_dir_url( __FILE__ ) . 'js/simpl-admin.js', false, false, true );
 		}
 
-		add_action( 'admin_init', 'register_simpl_admin_style' );
-		function enqueue_simpl_style() {
+		add_action( 'admin_init', 'scwp_register_simpl_admin_style' );
+		function scwp_enqueue_simpl_style() {
 			wp_enqueue_style( 'simpl-admin-style' );
 		}
 
-		add_action( 'admin_enqueue_scripts', 'enqueue_simpl_style' );
+		add_action( 'admin_enqueue_scripts', 'scwp_enqueue_simpl_style' );
 
 		// This will add Custom class on body TAG
 		add_filter( 'admin_body_class', static function ( $classes ) {
@@ -33,18 +33,18 @@ class WC_Simpl_Settings {
 
 	}
 
-	public static function add_settings_tab( $settings_tabs ) {
+	public static function scwp_add_settings_tab( $settings_tabs ) {
 		$settings_tabs['settings_tab_simpl'] = 'Simpl Checkout';
 
 		return $settings_tabs;
 	}
 
 
-	public static function settings_tab() {
-		woocommerce_admin_fields( self::get_settings() );
+	public static function scwp_settings_tab() {
+		woocommerce_admin_fields( self::scwp_get_settings() );
 	}
 
-	public static function simpl_host() {
+	public static function scwp_simpl_host() {
 		$staging_env = get_option( "wc_settings_tab_simpl_test_env" );
 		if ( $staging_env == "yes" ) {
 			return SIMPL_CONFIG_STAGING_URL;
@@ -53,13 +53,13 @@ class WC_Simpl_Settings {
 		return SIMPL_CONFIG_PRODUCTION_URL;
 	}
 
-	public static function test_mode_enabled() {
+	public static function scwp_test_mode_enabled() {
 		$staging_env = get_option( "wc_settings_tab_simpl_test_env" );
 
 		return $staging_env == "yes";
 	}
 
-	public static function widget_script_url() {
+	public static function scwp_widget_script_url() {
 		// if ( SIMPL_ENV == "localhost" ) {
 		// 	return WIDGET_SCRIPT_LOCALHOST;
 		// }
@@ -72,11 +72,11 @@ class WC_Simpl_Settings {
 		return WIDGET_SCRIPT_PRODUCTION_URL;
 	}
 
-	public static function is_localhost() {
+	public static function scwp_is_localhost() {
 		return SIMPL_ENV == "localhost";
 	}
 
-	public static function simpl_authorized_flag_key() {
+	public static function scwp_simpl_authorized_flag_key() {
 		$staging_env = get_option( "wc_settings_tab_simpl_test_env" );
 		if ( $staging_env == "yes" ) {
 			return "simpl_test_authorized";
@@ -86,57 +86,57 @@ class WC_Simpl_Settings {
 	}
 
 	//Disable button for users when test mode is enabled
-	public static function is_simpl_button_enabled() {
+	public static function scwp_is_simpl_button_enabled() {
 		return get_option( "wc_settings_tab_simpl_button_activated" ) == 'yes';
 	}
 
-	public static function can_display_in_pdp_page() {
+	public static function scwp_can_display_in_pdp_page() {
 		return get_option( "wc_settings_tab_simpl_button_pdp_activated" ) == 'yes';
 	}
 
-	public static function can_display_in_collections_page() {
+	public static function scwp_can_display_in_collections_page() {
 		return get_option( "wc_settings_tab_simpl_button_collections_activated" ) == 'yes';
 	}
 
-	public static function can_display_in_cart_page() {
+	public static function scwp_can_display_in_cart_page() {
 		return get_option( "wc_settings_tab_simpl_button_cart_activated" ) == 'yes';
 	}
 
-	public static function cta_position_in_pdp() {
+	public static function scwp_cta_position_in_pdp() {
 		return get_option( "wc_settings_tab_simpl_button_position_pdp" );
 	}
 
-	public static function cta_position_in_cart() {
+	public static function scwp_cta_position_in_cart() {
 		return get_option( "wc_settings_tab_simpl_button_position_cart" );
 	}
 
-	public static function cta_text() {
+	public static function scwp_cta_text() {
 		return get_option( "wc_settings_tab_simpl_button_text" );
 	}
 
-	public static function merchant_credentials() {
+	public static function scwp_merchant_credentials() {
 		return array( "client_id"     => get_option( "wc_settings_tab_simpl_merchant_client_id" ),
 		              "client_secret" => get_option( "wc_settings_tab_simpl_merchant_client_secret" )
 		);
 	}
 
-	public static function cta_color() {
+	public static function scwp_cta_color() {
 		return get_option( "wc_settings_tab_simpl_button_bg" );
 	}
 
-	public static function is_simpl_enabled_for_admins() {
+	public static function scwp_is_simpl_enabled_for_admins() {
 		return get_option( "wc_settings_tab_simpl_enabled_to_admin" ) == 'yes';
 	}
 
-	public static function store_url() {
+	public static function scwp_store_url() {
 		return parse_url( get_site_url(), PHP_URL_HOST );
 	}
 
-	public static function store_url_with_prefix() {
+	public static function scwp_store_url_with_prefix() {
 		return get_site_url();
 	}
 
-	public static function update_settings() {
+	public static function scwp_update_settings() {
 
 		$existingSetting    = self::simpl_get_all_latest_settings();
 		$simplSettingsField = array(
@@ -152,18 +152,18 @@ class WC_Simpl_Settings {
 			"enabled_to_admin"      => ! isset( $_POST["wc_settings_tab_simpl_enabled_to_admin"] ) ? 0 : 1,
 		);
 
-		woocommerce_update_options( self::get_settings() );
+		woocommerce_update_options( self::scwp_get_settings() );
 		self::is_valid_credentials( true );
 		if ( serialize($existingSetting) != serialize($simplSettingsField)) {
-			$simpl_host = WC_Simpl_Settings::simpl_host();
+			$scwp_simpl_host = SCWP_Settings::scwp_simpl_host();
 			$event_data = array(
-				"merchant_id" => $simpl_host,
+				"merchant_id" => $scwp_simpl_host,
 			);
 			$event_name = "Update settings";
 			$event_data = array_merge($event_data, self::latest_settings());
 			$entity = "Manage settings";
 			$flow = "Merchant woocommerce-admin page";
-			$simplHttpResponse = SimplWcEventHelper::publish_event($event_name, $event_data, $entity, $flow);
+			$simplHttpResponse = SimplWcEventHelper::scwp_publish_event($event_name, $event_data, $entity, $flow);
 			if (!is_wp_error($simplHttpResponse)) {
 				$body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
 			} else {
@@ -198,7 +198,7 @@ class WC_Simpl_Settings {
 		);
 	}
 
-	public static function reset_settings() {
+	public static function scwp_reset_settings() {
 		delete_option( "wc_settings_tab_simpl_button_bg" );
 		delete_option( "wc_settings_tab_simpl_test_env" );
 		delete_option( "wc_settings_tab_simpl_button_activated" );
@@ -206,7 +206,7 @@ class WC_Simpl_Settings {
 		delete_option( "wc_settings_tab_simpl_merchant_client_secret" );
 	}
 
-	public static function get_settings() {
+	public static function scwp_get_settings() {
 		$valid_credentials = self::is_valid_credentials();
 		$simplTabDomain    = 'woocommerce-settings-tab-simpl';
 		$doneDOM           = '<span class="status-enabled-simpl simpl-accordian-mapping"></span>';
@@ -264,11 +264,11 @@ class WC_Simpl_Settings {
 				'app_name'     => 'simpl_wordpress_integration',
 				'scope'        => 'read_write',
 				'user_id'      => 2,
-				'return_url'   => self::store_url_with_prefix() . "/wp-admin/admin.php?page=wc-settings&tab=settings_tab_simpl",
-				'callback_url' => self::store_url_with_prefix() . "/wp-json/wc-simpl/v1/authenticate_simpl"
+				'return_url'   => self::scwp_store_url_with_prefix() . "/wp-admin/admin.php?page=wc-settings&tab=settings_tab_simpl",
+				'callback_url' => self::scwp_store_url_with_prefix() . "/wp-json/wc-simpl/v1/authenticate_simpl"
 			];
 			$query_string  = http_build_query( $params );
-			$auth_endpoint = self::store_url_with_prefix() . $endpoint . $query_string;
+			$auth_endpoint = self::scwp_store_url_with_prefix() . $endpoint . $query_string;
 
 			$settings[] = array(
 				'name' => 'Enable simpl for store admins',
@@ -280,7 +280,7 @@ class WC_Simpl_Settings {
 				'type' => 'sectionend',
 				'id'   => 'wc_settings_tab_simpl_api_creds_section_end'
 			);
-			$simpl_authorized = get_option( self::simpl_authorized_flag_key() );
+			$simpl_authorized = get_option( self::scwp_authorized_flag_key() );
 			$step2Validate    = $simpl_authorized ? $doneDOM : $errorDOM;
 
 			$settings[] = array(
@@ -420,10 +420,10 @@ class WC_Simpl_Settings {
 
 	protected static function is_valid_credentials( $showMessage = false ) {
 		// return true;
-		$client_credentials = self::merchant_credentials();
-		$simplHttpResponse  = wp_remote_get( "https://" . self::simpl_host() . "/api/v1/wc/app/verify", array(
+		$client_credentials = self::scwp_merchant_credentials();
+		$simplHttpResponse  = wp_remote_get( "https://" . self::scwp_simpl_host() . "/api/v1/wc/app/verify", array(
 			"headers" => array(
-				"shop_domain"   => self::store_url(),
+				"shop_domain"   => self::scwp_store_url(),
 				"client_id"     => $client_credentials["client_id"],
 				"client_secret" => $client_credentials["client_secret"],
 				"content-type"  => "application/json"
@@ -445,4 +445,4 @@ class WC_Simpl_Settings {
 	}
 }
 
-WC_Simpl_Settings::init();
+SCWP_Settings::init();
