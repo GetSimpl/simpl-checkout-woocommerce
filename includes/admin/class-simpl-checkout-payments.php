@@ -19,17 +19,15 @@ function simpl_init_gateway_class()
             $this->method_description = 'Payment mode for Simpl checkout'; // will be displayed on the options page
 
             // gateways can support subscriptions, refunds, saved payment methods,
-            $this->supports = array(
-                'refunds'
-            );
+            array_push($this->supports, 'refunds');
 
             // Method with all the options fields
             $this->init_form_fields();
 
             // Load the settings.
             $this->init_settings();
-            $this->title = $this->get_option('title');
-            $this->description = $this->get_option('description');
+            $this->title = 'Simpl checkout payment';
+            $this->description = 'Payment mode for Simpl checkout';
             $this->enabled = $this->get_option('enabled');
 
             // This action hook saves the settings
