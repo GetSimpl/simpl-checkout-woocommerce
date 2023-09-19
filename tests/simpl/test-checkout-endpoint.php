@@ -26,7 +26,7 @@ class Test_Checkout_Endpoint extends WP_UnitTestCase{
         $data = create_product();        
         simpl_cart_init_common();
         WC()->cart->add_to_cart($data['product_id'], 1, $data['variant_id']);
-        $order = SimplWcCartHelper::create_order_from_cart();
+        $order = SimplWcCartHelper::scwp_create_order_from_cart();
         $request = new WP_REST_Request( 'GET', '/wc-simpl/v1/checkout' );
         $request["checkout_order_id"] = $order->get_id();
         $response = $this->server->dispatch( $request );
@@ -41,7 +41,7 @@ class Test_Checkout_Endpoint extends WP_UnitTestCase{
         $data = create_product();        
         simpl_cart_init_common();
         WC()->cart->add_to_cart($data['product_id'], 1, $data['variant_id']);
-        $order = SimplWcCartHelper::create_order_from_cart();
+        $order = SimplWcCartHelper::scwp_create_order_from_cart();
         $request = new WP_REST_Request( 'POST', '/wc-simpl/v1/checkout' );
         $request["items"] = array(array("product_id" => $data['product_id'], "variant_id" => $data['variant_id'], "quantity" => 1));
         $request["shipping_address"] = array("city"=> "chennai", "country" => "india", "line1" => "123", "line2" => "456", "state" => "Delhi");
