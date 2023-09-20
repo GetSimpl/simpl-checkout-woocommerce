@@ -12,7 +12,7 @@ add_filter( 'woocommerce_payment_gateways', 'scwp_add_gateway_class' );
 
 function scwp_checkout_int() {
 
-    if (!class_exists('SCWP_Payment_Gateway'))
+    if (!class_exists('WC_Payment_Gateway'))
     {
         return;
     }

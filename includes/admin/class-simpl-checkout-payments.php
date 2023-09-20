@@ -7,7 +7,7 @@ function scwp_add_gateway_class($gateways)
 
 function scwp_init_gateway_class()
 {
-    class SCWP_Gateway extends SCWP_Payment_Gateway
+    class SCWP_Gateway extends WC_Payment_Gateway
     {
         public function scwp_construct()
         {
