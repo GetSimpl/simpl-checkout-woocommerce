@@ -17,10 +17,9 @@ class SimplWcCartHelper {
             WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"]);
         }
         if(WC()->cart->is_empty()) {
-        throw new SimplCustomHttpBadRequest("invalid cart items");
+            throw new SimplCustomHttpBadRequest("invalid cart items");
         }
     }
-
 
     static function update_order_from_cart($order_id) {
         $order = wc_get_order($order_id);        
@@ -85,6 +84,18 @@ class SimplWcCartHelper {
             WC()->cart->calculate_shipping();
             WC()->cart->calculate_totals();
         }
+    }
+
+    static function set_utm_info_in_order($request, $order) {
+        $order->update_meta_data("landing_page", $request['utm_info']["_landing_page"]);
+        $order->update_meta_data("utm_source", $request['utm_info']["utm_source"]);
+        $order->update_meta_data("utm_content", $request['utm_info']["utm_content"]);
+        $order->update_meta_data("utm_campaign", $request['utm_info']["utm_campaign"]);
+        $order->update_meta_data("utm_medium", $request['utm_info']["utm_medium"]);
+        $order->update_meta_data("utm_term", $request['utm_info']["utm_term"]);
+        $order->update_meta_data("fbclid", $request['utm_info']["fbclid"]);
+        $order->update_meta_data("gclid", $request['utm_info']["gclid"]);
+        $order->save();
     }
 
     static protected function convert_address_payload($address) {
