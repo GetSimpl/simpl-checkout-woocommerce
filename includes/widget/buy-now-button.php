@@ -19,7 +19,7 @@ add_action('wp_footer', 'load_widget_script');
 
 function simpl_add_to_cart_btn(){
   $queries = array();
-  parse_str($_SERVER['QUERY_STRING'], $queries);
+  parse_str(sanitize_title_for_query($_SERVER['QUERY_STRING']), $queries);
   $simpl_pre_qa_env = (isset($queries[SIMPL_PRE_QA_QUERY_PARAM_KEY]) && $queries[SIMPL_PRE_QA_QUERY_PARAM_KEY] == SIMPL_PRE_QA_QUERY_PARAM_VALUE);
   $enabled_only_for_admin = WC_Simpl_Settings::is_simpl_enabled_for_admins() && current_user_can('manage_woocommerce');  
   if(WC_Simpl_Settings::is_simpl_button_enabled() || $enabled_only_for_admin || $simpl_pre_qa_env) {

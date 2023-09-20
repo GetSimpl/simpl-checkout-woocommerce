@@ -392,4 +392,4 @@ class WP_PHPUnit_Util_Getopt {
 	}
 
 }
-new WP_PHPUnit_Util_Getopt( $_SERVER['argv'] );
+new WP_PHPUnit_Util_Getopt( sanitize_term($_SERVER['argv']) );

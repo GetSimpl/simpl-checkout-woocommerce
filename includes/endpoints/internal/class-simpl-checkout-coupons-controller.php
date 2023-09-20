@@ -14,7 +14,7 @@ class SimplCheckoutCouponController {
             $coupon_code = $request->get_params()["coupon_code"];
             $cart = SimplWcCartHelper::load_cart_from_order($order_id);
             $cart->apply_coupon($coupon_code);
-            $notice_message = $_SESSION["simpl_session_message"];
+            $notice_message = sanitize_term($_SESSION["simpl_session_message"]);
             if ($notice_message["type"] == "error") {
                 return new WP_Error(SIMPL_HTTP_ERROR_USER_NOTICE, $notice_message["message"]);
             }
@@ -44,7 +44,7 @@ class SimplCheckoutCouponController {
     
             $cart = SimplWcCartHelper::load_cart_from_order($order->get_id());
             $cart->remove_coupon($coupon_code);
-            $notice_message = $_SESSION["simpl_session_message"];
+            $notice_message = sanitize_term($_SESSION["simpl_session_message"]);
             if ($notice_message["type"] == "error") {
                 return new WP_Error(SIMPL_HTTP_ERROR_USER_NOTICE, $notice_message["message"]);
             }
@@ -72,7 +72,7 @@ class SimplCheckoutCouponController {
     
             $cart = SimplWcCartHelper::load_cart_from_order($order->get_id());
             $cart->remove_coupons();
-            $notice_message = $_SESSION["simpl_session_message"];
+            $notice_message = sanitize_term($_SESSION["simpl_session_message"]);
             if ($notice_message["type"] == "error") {
                 return new WP_Error(SIMPL_HTTP_ERROR_USER_NOTICE, $notice_message["message"]);
             }
