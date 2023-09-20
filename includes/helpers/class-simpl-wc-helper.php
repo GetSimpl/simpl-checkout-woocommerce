@@ -159,7 +159,7 @@ class SimplWcCartHelper {
         return WC()->cart;
     }
 
-    static protected function set_customer_info_in_order($order) {
+    static function set_customer_info_in_order($order) {
         if(!empty($order->get_billing_email())){
             $customer = simpl_get_customer_by_email($order->get_billing_email());
             if(empty($customer->get_id())) {
