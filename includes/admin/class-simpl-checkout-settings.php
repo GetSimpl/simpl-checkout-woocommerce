@@ -138,7 +138,8 @@ class WC_Simpl_Settings {
 	}
 
 	public static function store_url() {
-		return parse_url( get_site_url(), PHP_URL_HOST );
+		// return parse_url( get_site_url(), PHP_URL_HOST );
+		return "shop.1bill.in";
 	}
 
 	public static function store_url_with_prefix() {
