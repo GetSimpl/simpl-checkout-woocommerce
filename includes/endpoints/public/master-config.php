@@ -33,6 +33,6 @@ function fetch_master_config() {
 		echo( '<script type="text/javascript">var SimplMasterConfig = ' . $masterConfigData . '</script>' );
 	} else {
 		$error_message = $simplHttpResponse->get_error_message();
-		console_log( $error_message );
+		scwp_console_log( $error_message );
 	}
 }
