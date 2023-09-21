@@ -35,11 +35,12 @@ function simpl_add_to_cart_btn(){
         $page = 'product';
     }
 
-    echo esc_html('<div class="simpl-checkout-cta-container simpl-button-container" data-background="' . $color . '" page=' . $page . ' data-product-id=' . $productID . ' data-text="' . $buttonText . '"></div>');
+    echo '<div class="simpl-checkout-cta-container simpl-button-container" data-background="' . $color . '" page=' . $page . ' data-product-id=' . $productID . ' data-text="' . $buttonText . '"></div>';
   }
 }
 
 function load_widget_script(){
   $script_url = WC_Simpl_Settings::widget_script_url();
-  wp_enqueue_script('widget_script', $script_url);
+  wp_register_script( 'simpl-widget-script', $script_url );
+	wp_enqueue_script( 'simpl-widget-script' );
 }
