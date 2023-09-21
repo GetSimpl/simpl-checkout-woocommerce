@@ -18,7 +18,7 @@ function authenticate_simpl( WP_REST_Request $request ) {
 
     if ( ! is_wp_error( $simplHttpResponse ) ) {
         $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
-        echo(esc_js(json_encode($body)));
+        echo(wp_kses(json_encode($body)));
         if($body["success"]) {
             add_option(WC_Simpl_Settings::simpl_authorized_flag_key(), "true");
         } else {
