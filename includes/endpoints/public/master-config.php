@@ -24,6 +24,10 @@ function scwp_fetch_master_config() {
 		$headers = wp_remote_retrieve_headers( $simplHttpResponse );
 		if ( isset( $headers[ $simplTokenHeader ] ) ) {
 			scwp_set_unique_device_id( $headers[ $simplTokenHeader ] );
+
+			wp_register_script( 'simpl-widget-session-token', '' );
+			wp_enqueue_script( 'simpl-widget-session-token' );
+			wp_add_inline_script('simpl-widget-session-token', 'localStorage.setItem("'. $simplTokenHeader. '", "'. $headers[ $simplTokenHeader ].'")');
 		}
 		$masterConfigData = isset( $body["success"] ) && isset( $body["data"] ) ? json_encode( $body["data"] ) : '{}';
 		

@@ -2,9 +2,10 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class SimplCartResponse
 {
-    public function scwp_cart_redirection_url($cart)
+    public function scwp_cart_redirection_url($cart, $request)
     {
-        $cart_request = self::scwp_static_cart_payload($cart);
+        $merchant_additional_details = $request['merchant_additional_details'];
+        $cart_request = self::scwp_static_cart_payload($cart, $merchant_additional_details);
         $scwp_host = SCWP_Settings::scwp_host();
 
         $simplHttpResponse = wp_remote_post("https://" . $scwp_host . "/api/v1/wc/cart", array(
@@ -27,18 +28,18 @@ class SimplCartResponse
     }
 
 
-    public function scwp_static_cart_payload($cart)
+    public function scwp_static_cart_payload($cart, $merchant_additional_details)
     {
-        $response = array("source" => "cart", "unique_id" => $this->scwp_unique_device_id());
-        $cart_payload = $this->scwp_cart_common_payload($cart);
-        $response["cart"] = $cart_payload;
-        return $response;
+        $request = array("source" => "cart", "unique_id" => $this->scwp_unique_device_id());
+        $cart_payload = $this->scwp_cart_common_payload($cart, $merchant_additional_details);
+        $request["cart"] = $cart_payload;
+        return $request;
     }
 
     public function scwp_cart_payload($cart, $order_id = NULL)
     {
-        $response = array("source" => "cart", "unique_id" => $this->scwp_unique_device_id());
-        $cart_payload = $this->scwp_cart_common_payload($cart);
+        $request = array("source" => "cart", "unique_id" => $this->scwp_unique_device_id());
+        $cart_payload = $this->scwp_cart_common_payload($cart, null);
         $shipping_address = WC()->customer->get_shipping('edit');
         $billing_address = WC()->customer->get_billing('edit');
         if ($this->scwp_is_address_present($shipping_address, $billing_address)) {
@@ -46,9 +47,9 @@ class SimplCartResponse
             $cart_payload["billing_address"] = $this->scwp_convert_address_response(($billing_address));
         }
         $cart_payload['checkout_order_id'] = $order_id;
-        $response["cart"] = $cart_payload;
+        $request["cart"] = $cart_payload;
         self::scwp_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
-        return $response;
+        return $request;
     }
 
     protected function scwp_is_address_present($shipping_address, $billing_address)
@@ -71,7 +72,7 @@ class SimplCartResponse
         return  $address;
     }
 
-    function scwp_cart_common_payload($cart)
+    function scwp_cart_common_payload($cart, $merchant_additional_details)
     {
         $totals = $cart->get_totals();
         $cart_payload = array();
@@ -96,6 +97,7 @@ class SimplCartResponse
         $cart_content = $cart->get_cart();
         $cart_payload["items"] = $this->scwp_get_cart_line_item($cart_content);
         $cart_payload['attributes'] = array('a' => '2');
+        $cart_payload["merchant_additional_details"] = $merchant_additional_details;
         return $cart_payload;
     }
 
@@ -228,7 +230,6 @@ class SimplCartResponse
         foreach ($order->get_items() as $item_id => $item) {
             $product =  wc_get_product($item['product_id']);
             $price = (float)$item['line_subtotal'] + (float)$item['line_subtotal_tax'];
-
             $data[$i]['sku'] = $product->get_sku();
             $data[$i]['quantity'] = (int)$item['quantity'];
             $data[$i]['title'] = mb_substr($product->get_title(), 0, 125, "UTF-8");
