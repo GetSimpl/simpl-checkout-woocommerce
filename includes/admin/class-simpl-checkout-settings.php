@@ -130,7 +130,7 @@ class SCWP_Settings {
 	}
 
 	public static function scwp_store_url() {
-		return "shop.1bill.in";//parse_url( get_site_url(), PHP_URL_HOST ); TODO: to be removed
+		return parse_url( get_site_url(), PHP_URL_HOST ); 
 	}
 
 	public static function scwp_store_url_with_prefix() {
