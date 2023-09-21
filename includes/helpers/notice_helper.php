@@ -1,4 +1,5 @@
 <?php
+    if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
     function wc_add_notice($message, $notice_type="success", $data = array()) {
         $notice_message = array("type"=> $notice_type, "message"=>$message);
         $_SESSION["simpl_session_message"]=$notice_message;

@@ -1,4 +1,5 @@
 <?php 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 $buttonPosition_pdp = WC_Simpl_Settings::cta_position_in_pdp();
 $buttonPosition_cart = WC_Simpl_Settings::cta_position_in_cart();
 if(WC_Simpl_Settings::can_display_in_pdp_page()){
@@ -35,11 +36,12 @@ function simpl_add_to_cart_btn(){
         $page = 'product';
     }
 
-    echo esc_html('<div class="simpl-checkout-cta-container simpl-button-container" data-background="' . $color . '" page=' . $page . ' data-product-id=' . $productID . ' data-text="' . $buttonText . '"></div>');
+    echo '<div class="simpl-checkout-cta-container simpl-button-container" data-background="' . esc_attr($color) . '" page=' . esc_attr($page) . ' data-product-id=' . $productID . ' data-text="' . esc_attr($buttonText) . '"></div>';
   }
 }
 
 function load_widget_script(){
   $script_url = WC_Simpl_Settings::widget_script_url();
-  wp_enqueue_script('widget_script', $script_url);
+  wp_register_script( 'simpl-widget-script', $script_url );
+	wp_enqueue_script( 'simpl-widget-script' );
 }

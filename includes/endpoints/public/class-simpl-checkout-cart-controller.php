@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
 class SimplCheckoutCartController {
     function create(WP_REST_Request $request)
     {

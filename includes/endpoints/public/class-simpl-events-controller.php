@@ -1,4 +1,5 @@
 <?php 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
 class SimplEventsController {
     function publish_events(WP_REST_Request $request) {
         try {

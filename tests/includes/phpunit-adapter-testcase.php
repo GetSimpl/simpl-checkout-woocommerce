@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 use Yoast\PHPUnitPolyfills\TestCases\TestCase as Polyfill_TestCase;
 
 /**

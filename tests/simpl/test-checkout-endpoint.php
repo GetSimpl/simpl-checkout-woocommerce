@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 include_once PLUGIN_DIR . '/includes/helpers/test_wc_helper.php';
 
 class Test_Checkout_Endpoint extends WP_UnitTestCase{

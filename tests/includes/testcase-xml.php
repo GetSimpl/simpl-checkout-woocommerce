@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 abstract class WP_Test_XML_TestCase extends WP_UnitTestCase {
 	/**
 	 * Load XML from a string.

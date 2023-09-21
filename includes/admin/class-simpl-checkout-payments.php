@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly   
+   
 function simpl_add_gateway_class($gateways)
 {
     $gateways[] = 'WC_Simpl_Gateway'; // your class name is here

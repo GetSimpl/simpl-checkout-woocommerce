@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /**
  * Installs WordPress for running the tests and loads WordPress and the test libraries
  */

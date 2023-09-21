@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 abstract class WP_Test_REST_Controller_Testcase extends WP_Test_REST_TestCase {
 
 	protected $server;

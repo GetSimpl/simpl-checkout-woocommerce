@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 require_once __DIR__ . '/factory/class-wp-unittest-factory-for-thing.php';
 require_once __DIR__ . '/factory/class-wp-unittest-factory-for-post.php';
 require_once __DIR__ . '/factory/class-wp-unittest-factory-for-bookmark.php';

@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class SimplCartResponse
 {
     public function cart_redirection_url($cart)
