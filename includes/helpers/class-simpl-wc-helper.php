@@ -86,7 +86,30 @@ class SimplWcCartHelper {
         }
     }
 
-    static function set_utm_info_in_order($request, $order) {
+    static function update_order_metadata($request, $order)
+    {
+        $order->update_meta_data("simpl_cart_token", $request->get_params()["simpl_cart_token"]);
+        $order->update_meta_data("simpl_payment_id", $request->get_params()["simpl_payment_id"]);
+        $order->update_meta_data("simpl_order_id", $request->get_params()["simpl_order_id"]);
+        if ($request->get_params()["simpl_payment_type"] == 'Cash on Delivery (COD)') {
+            $order->set_payment_method('cod');
+            $order->set_payment_method_title('Cash on delivery');
+        } else {
+            $order->set_payment_method('Simpl Checkout');
+            $order->set_payment_method_title($request->get_params()["simpl_payment_type"]);
+        }
+
+        if (self::is_utm_info_present($request)) {
+            self::set_utm_info_in_order($request, $order);
+        }
+    }
+
+    static protected function is_utm_info_present($request)
+    {
+        return (isset($request->get_params()["utm_info"]) && count($request->get_params()["utm_info"]) > 0);
+    }
+
+    static protected function set_utm_info_in_order($request, $order) {
         $order->update_meta_data("landing_page", $request['utm_info']["_landing_page"]);
         $order->update_meta_data("utm_source", $request['utm_info']["utm_source"]);
         $order->update_meta_data("utm_content", $request['utm_info']["utm_content"]);
@@ -95,7 +118,6 @@ class SimplWcCartHelper {
         $order->update_meta_data("utm_term", $request['utm_info']["utm_term"]);
         $order->update_meta_data("fbclid", $request['utm_info']["fbclid"]);
         $order->update_meta_data("gclid", $request['utm_info']["gclid"]);
-        $order->save();
     }
 
     static protected function convert_address_payload($address) {
@@ -189,6 +211,18 @@ class SimplWcCartHelper {
         $customer->save();
 
         return $customer;
+    }
+
+    static function set_shipping_method_in_order($order, $shipping_method) {
+        $method = new WC_Order_Item_Shipping();
+
+        $method->set_method_id($shipping_method['slug']);
+        $method->set_name($shipping_method['name']);
+        $method->set_total($shipping_method['amount']);
+
+        // Add Shipping item to the order.
+        $order->add_item( $method );
+        $order->calculate_totals();
     }
 }
 
