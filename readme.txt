@@ -43,19 +43,3 @@ We cannot guarantee that your customer will get the Pay-later payment option whe
 = How do customers initiate returns? =
 
 To initiate the return customer can download the Simpl app and go to ‘Manage your Orders'. Customers can provide a reason for the return and we will work with you directly to place a return order on customer’s behalf. Customers can track the return order details directly on the Simpl app. 
-
-
-== Screenshots ==
-
-
-
-== Changelog ==
-
-= 1.0 =
-* A change since the previous version.
-* Another change.
-= 0.5 =
-* List versions from most recent at top to oldest at bottom.
-== Upgrade Notice ==
-= 1.0 =
-Upgrade notices describe the reason a user should upgrade.  No more than 300 characters.
