@@ -11,7 +11,7 @@ function scwp_init_gateway_class()
 {
     class SCWP_Gateway extends WC_Payment_Gateway
     {
-        public function scwp_construct()
+        public function __construct()
         {
 
             $this->id = 'simpl_checkout_payment'; // payment gateway plugin ID
