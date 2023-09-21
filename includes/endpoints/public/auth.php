@@ -3,10 +3,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 function scwp_authenticate_simpl( WP_REST_Request $request ) {    
     //POST call to simpl with credentials
     //adds header related to shop domain
-    $scwp_simpl_host = SCWP_Settings::scwp_simpl_host();
+    $scwp_host = SCWP_Settings::scwp_host();
     $scwp_store_url = SCWP_Settings::scwp_store_url();
     $client_credentials = SCWP_Settings::scwp_merchant_credentials();
-    $simplHttpResponse = wp_remote_post( "https://".$scwp_simpl_host."/api/v1/wc/app/install", array(
+    $simplHttpResponse = wp_remote_post( "https://".$scwp_host."/api/v1/wc/app/install", array(
         "body" => json_encode($request->get_params()),
         "headers" => array(
                 "shop_domain" => $scwp_store_url,

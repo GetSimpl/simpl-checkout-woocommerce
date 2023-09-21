@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
 function scwp_fetch_master_config() {
-	$scwp_simpl_host       = SCWP_Settings::scwp_simpl_host();
+	$scwp_host       = SCWP_Settings::scwp_host();
 	$scwp_store_url        = SCWP_Settings::scwp_store_url();
 	$simplTokenHeader = "simpl-widget-session-token";
 
@@ -9,7 +9,7 @@ function scwp_fetch_master_config() {
 	if ( function_exists( 'scwp_get_unique_device_id' ) ) {
 		$unique_device_id = scwp_get_unique_device_id() ?: "";
 	}
-	$apiUrl            = "https://" . $scwp_simpl_host . "/api/v1/wc/widget/master-config?shop=" . $scwp_store_url;
+	$apiUrl            = "https://" . $scwp_host . "/api/v1/wc/widget/master-config?shop=" . $scwp_store_url;
 	$simplHttpResponse = wp_remote_get( $apiUrl,
 		array(
 			"headers" => array(

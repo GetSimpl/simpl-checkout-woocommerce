@@ -3,7 +3,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class SCWP_Settings {
 
-	public static function scwp_init() {
+	public static function init() {
 		add_filter( 'woocommerce_settings_tabs_array', __CLASS__ . '::scwp_add_settings_tab', 50 );
 		add_action( 'woocommerce_settings_tabs_settings_tab_simpl', __CLASS__ . '::scwp_settings_tab' );
 		add_action( 'woocommerce_update_options_settings_tab_simpl', __CLASS__ . '::scwp_update_settings' );
@@ -45,7 +45,7 @@ class SCWP_Settings {
 		woocommerce_admin_fields( self::scwp_get_settings() );
 	}
 
-	public static function scwp_simpl_host() {
+	public static function scwp_host() {
 		$staging_env = get_option( "wc_settings_tab_simpl_test_env" );
 		if ( $staging_env == "yes" ) {
 			return SIMPL_CONFIG_STAGING_URL;
@@ -156,9 +156,9 @@ class SCWP_Settings {
 		woocommerce_update_options( self::scwp_get_settings() );
 		self::is_valid_credentials( true );
 		if ( serialize($existingSetting) != serialize($simplSettingsField)) {
-			$scwp_simpl_host = SCWP_Settings::scwp_simpl_host();
+			$scwp_host = SCWP_Settings::scwp_host();
 			$event_data = array(
-				"merchant_id" => $scwp_simpl_host,
+				"merchant_id" => $scwp_host,
 			);
 			$event_name = "Update settings";
 			$event_data = array_merge($event_data, self::latest_settings());
@@ -422,7 +422,7 @@ class SCWP_Settings {
 	protected static function is_valid_credentials( $showMessage = false ) {
 		// return true;
 		$client_credentials = self::scwp_merchant_credentials();
-		$simplHttpResponse  = wp_remote_get( "https://" . self::scwp_simpl_host() . "/api/v1/wc/app/verify", array(
+		$simplHttpResponse  = wp_remote_get( "https://" . self::scwp_host() . "/api/v1/wc/app/verify", array(
 			"headers" => array(
 				"shop_domain"   => self::scwp_store_url(),
 				"client_id"     => $client_credentials["client_id"],
@@ -446,4 +446,4 @@ class SCWP_Settings {
 	}
 }
 
-SCWP_Settings::scwp_init();
+SCWP_Settings::init();

@@ -4,7 +4,7 @@ class SimplEventsController {
     function scwp_publish_events(WP_REST_Request $request) {
         try {
             SimplRequestValidator::validate_events_payload($request);
-            $scwp_simpl_host = SCWP_Settings::scwp_simpl_host();
+            $scwp_host = SCWP_Settings::scwp_host();
             $shop_domain = SCWP_Settings::scwp_store_url();
             $req_body = $request->get_params()["event_payload"];
             $req_body["event_data"]["merchant_id"] = $shop_domain;
@@ -15,7 +15,7 @@ class SimplEventsController {
             }
             $req_body["event_data"]["Simpl-Widget-Session-Token"] = $unique_id;
             $req_body["event_data"]["Simpl-CTR-Unique-ID"] = $shop_domain."-".$req_body["event_data"]["Simpl-Widget-Session-Token"]."-".$req_body["trigger_timestamp"];
-            $simplHttpResponse = wp_remote_post("https://".$scwp_simpl_host."/api/v1/wc/publish/events", array(
+            $simplHttpResponse = wp_remote_post("https://".$scwp_host."/api/v1/wc/publish/events", array(
                 "body" => json_encode($req_body),
                 "headers" => array(            
                         "content-type" => "application/json"

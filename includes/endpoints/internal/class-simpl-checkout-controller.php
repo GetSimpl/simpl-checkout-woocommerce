@@ -96,7 +96,7 @@ function scwp_internal_authenticate()
 
 class SimplCustomHttpBadRequest extends Exception
 {
-    public function scwp_errorMessage()
+    public function errorMessage()
     {
         //error message
         $errorMsg = 'Error on line ' . $this->getLine() . ' in ' . $this->getFile()

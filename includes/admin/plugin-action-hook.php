@@ -5,7 +5,7 @@ function scwp_activate() {
 }
 
 function scwp_deactivate() {
-    $scwp_simpl_host = SCWP_Settings::scwp_simpl_host();
+    $scwp_host = SCWP_Settings::scwp_host();
     $current_user = wp_get_current_user();
     $email = $current_user->user_email;
     $admin = $current_user->user_login;
@@ -13,7 +13,7 @@ function scwp_deactivate() {
     $entity = "Manage Plugin";
     $flow = "woocommerce-admin plugin page";
     $event_data = array(
-        "merchant_id" => $scwp_simpl_host,
+        "merchant_id" => $scwp_host,
         "action" => "plugin deactivate",
         "user" => $admin,
         "email" => $email

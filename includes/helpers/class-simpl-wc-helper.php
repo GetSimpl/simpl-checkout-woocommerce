@@ -214,7 +214,7 @@ function scwp_update_to_simpl_draft($orderId) {
 
 class SimplWcEventHelper {
     static function scwp_publish_event($event_name, $event_data, $entity, $flow) {
-        $scwp_simpl_host = SCWP_Settings::scwp_simpl_host();
+        $scwp_host = SCWP_Settings::scwp_host();
         $event_payload = array(
             "trigger_timestamp" => time(),
             "event_name" => $event_name,
@@ -222,7 +222,7 @@ class SimplWcEventHelper {
             "entity" =>  $entity,
             "flow" => $flow
         );
-        $simplHttpResponse = wp_remote_post("https://".$scwp_simpl_host."/api/v1/wc/publish/events", array(
+        $simplHttpResponse = wp_remote_post("https://".$scwp_host."/api/v1/wc/publish/events", array(
             "body" => json_encode($event_payload),
             "headers" => array(            
                     "content-type" => "application/json"

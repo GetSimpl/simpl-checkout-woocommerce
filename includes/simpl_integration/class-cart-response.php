@@ -5,9 +5,9 @@ class SimplCartResponse
     public function scwp_cart_redirection_url($cart)
     {
         $cart_request = self::scwp_static_cart_payload($cart);
-        $scwp_simpl_host = SCWP_Settings::scwp_simpl_host();
+        $scwp_host = SCWP_Settings::scwp_host();
 
-        $simplHttpResponse = wp_remote_post("https://" . $scwp_simpl_host . "/api/v1/wc/cart", array(
+        $simplHttpResponse = wp_remote_post("https://" . $scwp_host . "/api/v1/wc/cart", array(
             "body" => json_encode($cart_request),
             //TODO: merchantClientID
             "headers" => array("shop-domain" => SCWP_Settings::scwp_store_url(), "content-type" => "application/json"),
