@@ -1,5 +1,5 @@
 <?php
-wp_enqueue_script( 'simpl-widget-js', plugin_dir_url( __FILE__ ) . 'js/simpl-widget.js', false, false, true );
+
 function fetch_master_config() {
 	$simpl_host       = WC_Simpl_Settings::simpl_host();
 	$store_url        = WC_Simpl_Settings::store_url();
@@ -24,12 +24,15 @@ function fetch_master_config() {
 		$headers = wp_remote_retrieve_headers( $simplHttpResponse );
 		if ( isset( $headers[ $simplTokenHeader ] ) ) {
 			set_unique_device_id( $headers[ $simplTokenHeader ] );
-			wp_add_inline_script('simpl-widget-js', 'localStorage.setItem("'. $simplTokenHeader. '", "'. $headers[ $simplTokenHeader ].'")', 'after');
+
+			wp_register_script( 'simpl-widget-session-token', '' );
+			wp_enqueue_script( 'simpl-widget-session-token' );
+			wp_add_inline_script('simpl-widget-session-token', 'localStorage.setItem("'. $simplTokenHeader. '", "'. $headers[ $simplTokenHeader ].'")');
 		}
 		$masterConfigData = isset( $body["success"] ) && isset( $body["data"] ) ? json_encode( $body["data"] ) : '{}';
 		echo( '<script type="text/javascript">var SimplMasterConfig = ' . $masterConfigData . '</script>' );
 	} else {
 		$error_message = $simplHttpResponse->get_error_message();
-		scwp_console_log( $error_message );
+		console_log( $error_message );
 	}
 }
