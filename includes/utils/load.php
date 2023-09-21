@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class SimplUtil
 {
     static function state_code_for_state($state_name)

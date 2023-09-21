@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class TracTickets {
 	/**
 	 * When open tickets for a Trac installation is requested, the results are stored here.

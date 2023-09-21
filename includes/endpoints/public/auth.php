@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
 function scwp_authenticate_simpl( WP_REST_Request $request ) {    
     //POST call to simpl with credentials
     //adds header related to shop domain
@@ -18,7 +18,7 @@ function scwp_authenticate_simpl( WP_REST_Request $request ) {
 
     if ( ! is_wp_error( $simplHttpResponse ) ) {
         $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
-        echo(esc_js(json_encode($body)));
+        echo(wp_kses(json_encode($body)));
         if($body["success"]) {
             scwp_add_option(SCWP_Settings::scwp_authorized_flag_key(), "true"); //todo : doubt
         } else {

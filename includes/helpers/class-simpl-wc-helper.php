@@ -1,5 +1,5 @@
 <?php        
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
 class SimplWcCartHelper {
     static function scwp_create_order_from_cart() {
         $order = new WC_Order();  

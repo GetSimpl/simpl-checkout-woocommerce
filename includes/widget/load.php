@@ -1,5 +1,5 @@
 <?php 
-
+	if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     include_once SIMPL_PLUGIN_DIR . '/includes/helpers/debug_helper.php';
 	include_once SIMPL_PLUGIN_DIR . '/includes/helpers/utils.php';
 

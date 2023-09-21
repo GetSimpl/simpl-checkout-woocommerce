@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class Spy_REST_Server extends WP_REST_Server {
 
 	public $sent_headers        = array();

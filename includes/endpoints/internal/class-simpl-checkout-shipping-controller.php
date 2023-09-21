@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
 class SimplCheckoutShippingController {
     function scwp_set_shipping_method(WP_REST_Request $request)
     {

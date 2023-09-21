@@ -1,5 +1,5 @@
 <?php
-
+    if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
     function create_product() {
         $product = new WC_Product_Variable();
         // Name and image would be enough

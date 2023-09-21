@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly   
+   
 function scwp_add_gateway_class($gateways)
 {
     $gateways[] = 'SCWP_Gateway'; // your class name is here

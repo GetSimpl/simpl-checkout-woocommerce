@@ -1,5 +1,6 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class SCWP_Settings {
 
 	public static function scwp_init() {
@@ -445,4 +446,4 @@ class SCWP_Settings {
 	}
 }
 
-SCWP_Settings::init();
+SCWP_Settings::scwp_init();

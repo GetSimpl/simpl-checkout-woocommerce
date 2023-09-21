@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /**
  * An abstract class that serves as a basis for all WordPress object-type factory classes.
  */

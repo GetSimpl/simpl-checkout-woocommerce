@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
 function scwp_fetch_master_config() {
 	$scwp_simpl_host       = SCWP_Settings::scwp_simpl_host();
 	$scwp_store_url        = SCWP_Settings::scwp_store_url();
@@ -27,8 +27,9 @@ function scwp_fetch_master_config() {
 		}
 		$masterConfigData = isset( $body["success"] ) && isset( $body["data"] ) ? json_encode( $body["data"] ) : '{}';
 		
+		wp_register_script( 'simpl-master-config', '' );
 		wp_enqueue_script( 'simpl-master-config' );
-		wp_add_inline_script('simpl-master-config', 'var SimplMasterConfig = ' . $masterConfigData);
+		wp_add_inline_script('simpl-master-config', 'var SimplMasterConfig = ' . $masterConfigData, false);
 	} else {
 		$error_message = $simplHttpResponse->get_error_message();
 		scwp_console_log( $error_message );
