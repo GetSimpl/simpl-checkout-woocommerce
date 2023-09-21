@@ -1,5 +1,5 @@
 === Simpl Checkout ===
-Contributors: (this should be a list of wordpress.org userid's)
+Contributors: getsimpl
 Tags: woocommerce,simpl,ecommerce,e-commerce,checkout,buy-now-pay-later,payments,india
 Requires at least: 1.1.5
 Tested up to: 6.3.1
