@@ -2,9 +2,10 @@
 
 class SimplCartResponse
 {
-    public function cart_redirection_url($cart)
+    public function cart_redirection_url($cart, $request)
     {
-        $cart_request = self::static_cart_payload($cart);
+        $merchant_additional_details = $request['merchant_additional_details'];
+        $cart_request = self::static_cart_payload($cart, $merchant_additional_details);
         $simpl_host = WC_Simpl_Settings::simpl_host();
 
         $simplHttpResponse = wp_remote_post("https://" . $simpl_host . "/api/v1/wc/cart", array(
@@ -27,18 +28,18 @@ class SimplCartResponse
     }
 
 
-    public function static_cart_payload($cart)
+    public function static_cart_payload($cart, $merchant_additional_details)
     {
-        $response = array("source" => "cart", "unique_id" => $this->unique_device_id());
-        $cart_payload = $this->cart_common_payload($cart);
-        $response["cart"] = $cart_payload;
-        return $response;
+        $request = array("source" => "cart", "unique_id" => $this->unique_device_id());
+        $cart_payload = $this->cart_common_payload($cart, $merchant_additional_details);
+        $request["cart"] = $cart_payload;
+        return $request;
     }
 
     public function cart_payload($cart, $order_id = NULL)
     {
-        $response = array("source" => "cart", "unique_id" => $this->unique_device_id());
-        $cart_payload = $this->cart_common_payload($cart);
+        $request = array("source" => "cart", "unique_id" => $this->unique_device_id());
+        $cart_payload = $this->cart_common_payload($cart, null);
         $shipping_address = WC()->customer->get_shipping('edit');
         $billing_address = WC()->customer->get_billing('edit');
         if ($this->is_address_present($shipping_address, $billing_address)) {
@@ -46,9 +47,9 @@ class SimplCartResponse
             $cart_payload["billing_address"] = $this->convert_address_response(($billing_address));
         }
         $cart_payload['checkout_order_id'] = $order_id;
-        $response["cart"] = $cart_payload;
+        $request["cart"] = $cart_payload;
         self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
-        return $response;
+        return $request;
     }
 
     protected function is_address_present($shipping_address, $billing_address)
@@ -71,7 +72,7 @@ class SimplCartResponse
         return  $address;
     }
 
-    function cart_common_payload($cart)
+    function cart_common_payload($cart, $merchant_additional_details)
     {
         $totals = $cart->get_totals();
         $cart_payload = array();
@@ -96,6 +97,7 @@ class SimplCartResponse
         $cart_content = $cart->get_cart();
         $cart_payload["items"] = $this->getCartLineItem($cart_content);
         $cart_payload['attributes'] = array('a' => '2');
+        $cart_payload["merchant_additional_details"] = $merchant_additional_details;
         return $cart_payload;
     }
 

@@ -35,7 +35,13 @@ class SimplCheckoutOrderController
             }
 
             WC()->session->order_awaiting_payment = $order->get_id();
+            SimplWcCartHelper::set_customer_info_in_order($order);
             $this->update_order_metadata($request, $order);
+            
+            if ($this->is_utm_info_present($request)) {
+                SimplWcCartHelper::set_utm_info_in_order($request, $order);
+            }
+
             $result = $gateway->process_payment($order->get_id());
             $this->reset_session();
 
@@ -133,5 +139,10 @@ class SimplCheckoutOrderController
         WC()->session->set("simpl_order_id", $order_id);
         $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
         return $available_gateways["simpl_checkout_payment"];
+    }
+
+    protected function is_utm_info_present($request)
+    {
+        return (isset($request->get_params()["utm_info"]) && count($request->get_params()["utm_info"]) > 0);
     }
 }
