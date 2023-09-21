@@ -107,7 +107,7 @@ function simpl_checkout_int() {
     include_once 'includes/plugin_support/load.php';
 
     add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
-    add_filter( 'woocommerce_shipping_chosen_method', '__return_false', 99);
+    add_filter( 'woocommerce_shipping_chosen_method', '__return_false', 99); // this disables the application of default shipping method
     add_action( 'plugins_loaded', 'simpl_init_gateway_class' );
     register_activation_hook( __FILE__, 'my_plugin_activate' );
     register_deactivation_hook( __FILE__, 'my_plugin_deactivate' );
