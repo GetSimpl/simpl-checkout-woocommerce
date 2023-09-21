@@ -17,10 +17,9 @@ class SimplWcCartHelper {
             WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"]);
         }
         if(WC()->cart->is_empty()) {
-        throw new SimplCustomHttpBadRequest("invalid cart items");
+            throw new SimplCustomHttpBadRequest("invalid cart items");
         }
     }
-
 
     static function update_order_from_cart($order_id) {
         $order = wc_get_order($order_id);        
@@ -85,6 +84,18 @@ class SimplWcCartHelper {
             WC()->cart->calculate_shipping();
             WC()->cart->calculate_totals();
         }
+    }
+
+    static function set_utm_info_in_order($request, $order) {
+        $order->update_meta_data("landing_page", $request['utm_info']["_landing_page"]);
+        $order->update_meta_data("utm_source", $request['utm_info']["utm_source"]);
+        $order->update_meta_data("utm_content", $request['utm_info']["utm_content"]);
+        $order->update_meta_data("utm_campaign", $request['utm_info']["utm_campaign"]);
+        $order->update_meta_data("utm_medium", $request['utm_info']["utm_medium"]);
+        $order->update_meta_data("utm_term", $request['utm_info']["utm_term"]);
+        $order->update_meta_data("fbclid", $request['utm_info']["fbclid"]);
+        $order->update_meta_data("gclid", $request['utm_info']["gclid"]);
+        $order->save();
     }
 
     static protected function convert_address_payload($address) {
@@ -158,6 +169,32 @@ class SimplWcCartHelper {
         }
         return WC()->cart;
     }
+
+    static function set_customer_info_in_order($order) {
+        if(!empty($order->get_billing_email())){
+            $customer = simpl_get_customer_by_email($order->get_billing_email());
+            if(empty($customer->get_id())) {
+                $customer = self::create_new_customer($order);
+            }
+            $order->set_customer_id($customer->get_id());
+        }
+    }
+
+    static protected function create_new_customer($order) {
+        $customer = WC()->customer;
+        $customer->set_email($order->get_billing_email());
+        $customer->set_first_name($order->get_shipping_first_name());
+        $customer->set_last_name($order->get_shipping_last_name());
+        $customer->set_display_name($order->get_shipping_first_name() . " " . $order->get_shipping_last_name());
+        $customer->save();
+
+        return $customer;
+    }
+}
+
+function simpl_get_customer_by_email($email) {
+    $user = get_user_by('email', $email);
+    return new WC_Customer($user->ID);
 }
 
 

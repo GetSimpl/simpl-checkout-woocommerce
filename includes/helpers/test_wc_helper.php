@@ -27,3 +27,14 @@
         
         return array("product_id" => $product->get_id(), "variant_id" => $variation->get_id());
     }
+
+    function create_test_user() {
+        $username = 'test_username';
+        $email    = 'test@gmail.com';
+        $password = 'test_password';
+        $user_id = wp_create_user( $username, $password, $email );
+        $user = new WP_User( $user_id );
+        $user->set_role( 'customer' );
+        $user->save();
+        return $user;
+    }
