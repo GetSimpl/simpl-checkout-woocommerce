@@ -1,9 +1,9 @@
 === Simpl Checkout ===
 Contributors: (this should be a list of wordpress.org userid's)
 Tags: payments, india, woocommerce, ecommerce
-Requires at least: 1.0.0
-Tested up to: 1.1.4
-Stable tag: 1.1.4
+Requires at least: 4.0
+Tested up to: 6.3.1
+Stable tag: 1.1.6
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -23,6 +23,7 @@ Built in Pay Later and Pay-in-3 for flexible payment options
 Support for traditional payment modes such as Credit & Debit Cards, Wallets, Net Banking, UPI and COD
 Support for discounts and coupons 
 Support for automatic discounts which are applied on the basis of cart value
+
 == Frequently Asked Questions ==
 
 = I am a D2C merchant, how do I make Simpl checkout available to my customers? =
@@ -32,6 +33,7 @@ Integration is simple. You can install our unified Simpl Checkout plugin and wit
 = I have integrated with Simpl but only 50% of my customers are getting Pay-later and Pay-after-delivery options when using Simpl Checkout. How can I increase this to 100%? =
 
 We will work closely with you to learn more about your customers who are not getting these payment options. However we do not expect to be able to offer all payment options to all customers as our propensity and underwriting models decide what's the best option for any given customer that is designed to maximize conversion and reduce business losses for you as a merchant. 
+
 = My customers are not existing Simpl customers, how can they use Simpl Checkout? =
 
 New Simpl users will still be able to discover Simpl Checkout on our partner merchant’s product page or homepage. New users can easily create their account with Simpl by verifying their mobile number and entering their delivery address details after they proceed to checkout with their order. Once they have created an account with Simpl they can use Simpl 1-click checkout across the thousands of merchants that we support.

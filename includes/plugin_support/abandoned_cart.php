@@ -48,6 +48,7 @@ function cart_flows_abandoned_cart($cart, $simpl_checkout_data)
     $cart_abandonment_table = $wpdb->prefix . "cartflows_ca_cart_abandonment";
     if (empty($checkout_details) == false) {
         $result = $wpdb->get_row(
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
             $wpdb->prepare('SELECT * FROM `' . $cart_abandonment_table . '` WHERE session_id = %s and order_status IN (%s, %s)', $sessionId, 'normal', 'abandoned')
         );
 
