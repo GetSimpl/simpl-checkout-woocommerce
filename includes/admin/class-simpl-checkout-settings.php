@@ -77,7 +77,7 @@ class SCWP_Settings {
 		return SIMPL_ENV == "localhost";
 	}
 
-	public static function scwp_simpl_authorized_flag_key() {
+	public static function scwp_authorized_flag_key() {
 		$staging_env = get_option( "wc_settings_tab_simpl_test_env" );
 		if ( $staging_env == "yes" ) {
 			return "simpl_test_authorized";
@@ -130,7 +130,7 @@ class SCWP_Settings {
 	}
 
 	public static function scwp_store_url() {
-		return "shop.1bill.in";//parse_url( get_site_url(), PHP_URL_HOST );
+		return "shop.1bill.in";//parse_url( get_site_url(), PHP_URL_HOST ); TODO: to be removed
 	}
 
 	public static function scwp_store_url_with_prefix() {
