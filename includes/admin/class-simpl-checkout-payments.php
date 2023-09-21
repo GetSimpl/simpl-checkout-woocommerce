@@ -32,10 +32,10 @@ function simpl_init_gateway_class()
 
             // This action hook saves the settings
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-            add_filter('woocommerce_available_payment_gateways', array(
-                $this,
-                'remove_simpl_gateway'
-            ), 10, 2);
+            // add_filter('woocommerce_available_payment_gateways', array(
+            //     $this,
+            //     'remove_simpl_gateway'
+            // ), 10, 2);
 
             // You can also register a webhook here
             // add_action( 'woocommerce_api_{webhook name}', array( $this, 'webhook' ) );
