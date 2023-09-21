@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
 function fetch_master_config() {
 	$simpl_host       = WC_Simpl_Settings::simpl_host();
 	$store_url        = WC_Simpl_Settings::store_url();

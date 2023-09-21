@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 // class Test_Simpl_API_Files extends WP_UnitTestCase
 // {
 //     /** @test */

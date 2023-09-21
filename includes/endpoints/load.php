@@ -1,4 +1,5 @@
 <?php
+    if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
     include_once 'api.php';
     include_once "public/auth.php";
 	include_once "public/master-config.php";

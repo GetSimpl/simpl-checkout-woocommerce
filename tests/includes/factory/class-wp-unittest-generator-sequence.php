@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class WP_UnitTest_Generator_Sequence {
 	public static $incr = -1;
 	public $next;

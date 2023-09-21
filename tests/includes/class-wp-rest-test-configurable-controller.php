@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /**
  * Unit tests covering WP_REST_Controller functionality using a flexible schema.
  *

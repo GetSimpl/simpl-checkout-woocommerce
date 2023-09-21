@@ -1,4 +1,5 @@
 <?php 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 $buttonPosition_pdp = WC_Simpl_Settings::cta_position_in_pdp();
 $buttonPosition_cart = WC_Simpl_Settings::cta_position_in_cart();
 if(WC_Simpl_Settings::can_display_in_pdp_page()){

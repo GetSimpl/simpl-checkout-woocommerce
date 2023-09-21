@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class WP_UnitTest_Factory_Callback_After_Create {
 
 	/**

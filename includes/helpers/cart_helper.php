@@ -1,5 +1,5 @@
-<?php   
-
+<?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
 add_action( 'wp_loaded', 'maybe_load_cart', 5 );
 
 function maybe_load_cart() {

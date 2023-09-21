@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 // class Test_Simpl_Checkout_Settings extends WP_UnitTestCase {
 // 	/** @test */
 // 	public function sampleTest() {
