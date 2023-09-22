@@ -14,15 +14,15 @@ Simpl Checkout streamlines the checkout process for your customers, leading to i
 
 This is the authorized solution for activating Simpl Checkout provided by "Bill Sigma Technologies Pvt. Ltd." within your WooCommerce store. By integrating Simpl checkout, your customers can enjoy an expedited checkout process, resulting in improved order conversions for your business.
 It comes with below features out-of-the-box:
-Pre-logged in flow for repeat users
-Pre-filled address for repeat users and 50% new users
-Smart payment recommendations to improve conversions
-Centralised Order tracking on Simpl App with timely updates
-Intelligent Chat Bot for post order support
-Built in Pay Later and Pay-in-3 for flexible payment options
-Support for traditional payment modes such as Credit & Debit Cards, Wallets, Net Banking, UPI and COD
-Support for discounts and coupons 
-Support for automatic discounts which are applied on the basis of cart value
+- Pre-logged in flow for repeat users
+- Pre-filled address for repeat users and 50% new users
+- Smart payment recommendations to improve conversions
+- Centralised Order tracking on Simpl App with timely updates
+- Intelligent Chat Bot for post order support
+- Built in Pay Later and Pay-in-3 for flexible payment options
+- Support for traditional payment modes such as Credit & Debit Cards, Wallets, Net Banking, UPI and COD
+- Support for discounts and coupons 
+- Support for automatic discounts which are applied on the basis of cart value
 
 COUNTRIES SUPPORTED
 Simpl Checkout is available for Merchants in
