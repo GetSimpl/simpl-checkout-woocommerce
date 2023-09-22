@@ -1,6 +1,6 @@
 === Simpl Checkout ===
-Contributors: (this should be a list of wordpress.org userid's)
-Tags: payments, india, woocommerce, ecommerce
+Contributors: getsimpl
+Tags: woocommerce,simpl,ecommerce,e-commerce,checkout,buy-now-pay-later,payments,india
 Requires at least: 4.0
 Tested up to: 6.3.1
 Stable tag: 1.1.6
@@ -24,6 +24,15 @@ Support for traditional payment modes such as Credit & Debit Cards, Wallets, Net
 Support for discounts and coupons 
 Support for automatic discounts which are applied on the basis of cart value
 
+COUNTRIES SUPPORTED
+Simpl Checkout is available for Merchants in
+- India
+
+== Installation ==
+1. Install the plugin or upload plugin folder to to the “/wp-content/plugins/” directory.
+2. Activate the plugin through the “Plugins” menu in WordPress.
+3. Go WooCommerce Settings –> Simpl Checkout and configure your Simpl Checkout settings.
+
 == Frequently Asked Questions ==
 
 = I am a D2C merchant, how do I make Simpl checkout available to my customers? =
@@ -45,3 +54,7 @@ We cannot guarantee that your customer will get the Pay-later payment option whe
 = How do customers initiate returns? =
 
 To initiate the return customer can download the Simpl app and go to ‘Manage your Orders'. Customers can provide a reason for the return and we will work with you directly to place a return order on customer’s behalf. Customers can track the return order details directly on the Simpl app. 
+
+== Changelog ==
+= 1.1.5 =
+* wordpress security issue fix
