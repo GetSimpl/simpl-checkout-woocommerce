@@ -24,8 +24,8 @@ class WC_Simpl_Settings {
 		// This will add Custom class on body TAG
 		add_filter( 'admin_body_class', static function ( $classes ) {
 			$classes = explode( ' ', $classes );
-			$page    = ! empty( $_GET['page'] ) ? $_GET['page'] : '';
-			$tab     = ! empty( $_GET['tab'] ) ? $_GET['tab'] : '';
+			$page    = ! empty( $_GET['page']) ? sanitize_text_field($_GET['page']) : '';
+			$tab     = ! empty( $_GET['tab'] ) ? sanitize_text_field($_GET['tab']) : '';
 			$classes = array_merge( $classes, [ $page, $tab ] );
 			$classes = array_filter( $classes );
 
@@ -141,10 +141,10 @@ class WC_Simpl_Settings {
 
 		$existingSetting    = self::simpl_get_all_latest_settings();
 		$simplSettingsField = array(
-			"merchant_client_id"     => $_POST["wc_settings_tab_simpl_merchant_client_id"] ?? '',
-			"merchant_client_secret" => $_POST["wc_settings_tab_simpl_merchant_client_secret"] ?? '',
-			"button_position_pdp"    => $_POST["wc_settings_tab_simpl_button_position_pdp"] ?? '',
-			"button_position_cart"   => $_POST["wc_settings_tab_simpl_button_position_cart"] ?? '',
+			"merchant_client_id"     => sanitize_text_field($_POST["wc_settings_tab_simpl_merchant_client_id"]) ?? '',
+			"merchant_client_secret" => sanitize_text_field($_POST["wc_settings_tab_simpl_merchant_client_secret"]) ?? '',
+			"button_position_pdp"    => sanitize_text_field($_POST["wc_settings_tab_simpl_button_position_pdp"]) ?? '',
+			"button_position_cart"   => sanitize_text_field($_POST["wc_settings_tab_simpl_button_position_cart"]) ?? '',
 
 			"test_env"              => ! isset( $_POST["wc_settings_tab_simpl_test_env"] ) ? 0 : 1,
 			"button_activated"      => ! isset( $_POST["wc_settings_tab_simpl_button_activated"] ) ? 0 : 1,

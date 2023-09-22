@@ -4,12 +4,12 @@ add_action( 'wp_loaded', 'maybe_load_cart', 5 );
 
 function maybe_load_cart() {
 	if ( version_compare( WC_VERSION, '3.6.0', '>=' ) && WC()->is_rest_api_request() ) {
-		if ( empty( $_SERVER['REQUEST_URI'] ) ) {
+		if ( empty( sanitize_url($_SERVER['REQUEST_URI']) ) ) {
 			return;
 		}
 
 		$rest_prefix = 'simpl/v1';
-		$req_uri     = esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+		$req_uri     = esc_url_raw( wp_unslash( sanitize_url($_SERVER['REQUEST_URI']) ) );
 
 		$is_my_endpoint = ( false !== strpos( $req_uri, $rest_prefix ) );
 
