@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Simpl Checkout for WooCommerce
+ * Plugin Name: Simpl Checkout
  * Plugin URI: http://www.getsimpl.com
  * 
  * Description: Simpl checkout offers an optimised checkout process, higher order conversions and RTO reduction.
