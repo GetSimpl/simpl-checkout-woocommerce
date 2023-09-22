@@ -2,19 +2,19 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class SimplCartResponse
 {
-    public function cart_redirection_url($cart, $request)
+    public function scwp_cart_redirection_url($cart, $request)
     {
         $merchant_additional_details = $request['merchant_additional_details'];
-        $cart_request = self::static_cart_payload($cart, $merchant_additional_details);
-        $simpl_host = WC_Simpl_Settings::simpl_host();
+        $cart_request = self::scwp_static_cart_payload($cart, $merchant_additional_details);
+        $scwp_host = SCWP_Settings::scwp_host();
 
-        $simplHttpResponse = wp_remote_post("https://" . $simpl_host . "/api/v1/wc/cart", array(
+        $simplHttpResponse = wp_remote_post("https://" . $scwp_host . "/api/v1/wc/cart", array(
             "body" => json_encode($cart_request),
             //TODO: merchantClientID
-            "headers" => array("shop-domain" => WC_Simpl_Settings::store_url(), "content-type" => "application/json"),
+            "headers" => array("shop-domain" => SCWP_Settings::scwp_store_url(), "content-type" => "application/json"),
         ));
 
-        self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
+        self::scwp_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
         if (!is_wp_error($simplHttpResponse)) {
             $body = json_decode(wp_remote_retrieve_body($simplHttpResponse), true);
 
@@ -28,36 +28,36 @@ class SimplCartResponse
     }
 
 
-    public function static_cart_payload($cart, $merchant_additional_details)
+    public function scwp_static_cart_payload($cart, $merchant_additional_details)
     {
-        $request = array("source" => "cart", "unique_id" => $this->unique_device_id());
-        $cart_payload = $this->cart_common_payload($cart, $merchant_additional_details);
+        $request = array("source" => "cart", "unique_id" => $this->scwp_unique_device_id());
+        $cart_payload = $this->scwp_cart_common_payload($cart, $merchant_additional_details);
         $request["cart"] = $cart_payload;
         return $request;
     }
 
-    public function cart_payload($cart, $order_id = NULL)
+    public function scwp_cart_payload($cart, $order_id = NULL)
     {
-        $request = array("source" => "cart", "unique_id" => $this->unique_device_id());
-        $cart_payload = $this->cart_common_payload($cart, null);
+        $request = array("source" => "cart", "unique_id" => $this->scwp_unique_device_id());
+        $cart_payload = $this->scwp_cart_common_payload($cart, null);
         $shipping_address = WC()->customer->get_shipping('edit');
         $billing_address = WC()->customer->get_billing('edit');
-        if ($this->is_address_present($shipping_address, $billing_address)) {
-            $cart_payload["shipping_address"] = $this->convert_address_response($shipping_address);
-            $cart_payload["billing_address"] = $this->convert_address_response(($billing_address));
+        if ($this->scwp_is_address_present($shipping_address, $billing_address)) {
+            $cart_payload["shipping_address"] = $this->scwp_convert_address_response($shipping_address);
+            $cart_payload["billing_address"] = $this->scwp_convert_address_response(($billing_address));
         }
         $cart_payload['checkout_order_id'] = $order_id;
         $request["cart"] = $cart_payload;
-        self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
+        self::scwp_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
         return $request;
     }
 
-    protected function is_address_present($shipping_address, $billing_address)
+    protected function scwp_is_address_present($shipping_address, $billing_address)
     {
         return (isset($shipping_address) && isset($billing_address) && count($shipping_address) > 0 && count($billing_address) > 0) && $shipping_address["country"] != "";
     }
 
-    protected function convert_address_response($address) {
+    protected function scwp_convert_address_response($address) {
         $country = SimplUtil::country_name_from_code($address["country"]);
         if(!isset($country)) {
             throw new SimplCustomHttpBadRequest("country is not supported");
@@ -72,12 +72,12 @@ class SimplCartResponse
         return  $address;
     }
 
-    function cart_common_payload($cart, $merchant_additional_details)
+    function scwp_cart_common_payload($cart, $merchant_additional_details)
     {
         $totals = $cart->get_totals();
         $cart_payload = array();
         $cart_payload["total_price"] = wc_format_decimal($cart->get_total('float'), 2);
-        $cart_payload["applied_discounts"] = $this->formatted_coupons($cart, $cart->get_coupons());
+        $cart_payload["applied_discounts"] = $this->scwp_formatted_coupons($cart, $cart->get_coupons());
         $discount_amount = 0;
         if ($cart->get_total_discount()) {
             $discount_amount = $totals['discount_total'] + $totals['discount_tax'];
@@ -92,16 +92,16 @@ class SimplCartResponse
 
         $cart_payload["total_tax"] = wc_format_decimal($cart->get_total_tax(), 2);
         $cart_payload["checkout_url"] = wc_get_checkout_url();
-        $cart_payload["shipping_methods"] = $this->get_shipping_methods($cart);
-        $cart_payload["applied_shipping_method"] = $this->get_applied_shipping_method($cart);
+        $cart_payload["shipping_methods"] = $this->scwp_get_shipping_methods($cart);
+        $cart_payload["applied_shipping_method"] = $this->scwp_get_applied_shipping_method($cart);
         $cart_content = $cart->get_cart();
-        $cart_payload["items"] = $this->getCartLineItem($cart_content);
+        $cart_payload["items"] = $this->scwp_get_cart_line_item($cart_content);
         $cart_payload['attributes'] = array('a' => '2');
         $cart_payload["merchant_additional_details"] = $merchant_additional_details;
         return $cart_payload;
     }
 
-    protected function unique_device_id()
+    protected function scwp_unique_device_id()
     {
         $unique_device_id = WC()->session->get("simpl:session:id");
         if ($unique_device_id) {
@@ -115,16 +115,16 @@ class SimplCartResponse
     }
 
 
-    public function order_payload($order)
+    public function scwp_order_payload($order)
     {
         $response = array();
         $response["id"] = $order->get_id();
         $response["total_price"] = wc_format_decimal($order->get_total(), 2);
-        $response["items"] = $this->getOrderLineItem($order);
+        $response["items"] = $this->scwp_get_order_line_item($order);
         $response["taxes"] = $order->get_tax_totals();
-        $response["shipping_address"] = $this->convert_address_response($order->get_address('shipping'));
-        $response["billing_address"] = $this->convert_address_response($order->get_address('billing'));
-        $response["applied_discounts"] = $this->formatted_order_coupons($order);
+        $response["shipping_address"] = $this->scwp_convert_address_response($order->get_address('shipping'));
+        $response["billing_address"] = $this->scwp_convert_address_response($order->get_address('billing'));
+        $response["applied_discounts"] = $this->scwp_formatted_order_coupons($order);
         $discount_amount = 0;
         if ($order->get_total_discount()) {
             $discount_amount = $order->get_total_discount(false);
@@ -133,14 +133,14 @@ class SimplCartResponse
         $response["item_subtotal_price"] = wc_format_decimal($order->get_subtotal(), 2);
         $response["total_tax"] = wc_format_decimal($order->get_total_tax(), 2);
         $response["total_shipping"] = wc_format_decimal($order->get_shipping_total(), 2);
-        $response["shipping_methods"] = $this->formatted_shipping_methods($order->get_shipping_methods());
+        $response["shipping_methods"] = $this->scwp_formatted_shipping_methods($order->scwp_get_shipping_methods());
         $response["status"] = $order->get_status();
         $response["is_paid"] = $order->is_paid();
-        self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
+        self::scwp_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
         return $response;
     }
 
-    protected function get_applied_shipping_method($cart)
+    protected function scwp_get_applied_shipping_method($cart)
     {
         $chosen_shipping_method = $cart->calculate_shipping();
         if (count($chosen_shipping_method) > 0) {
@@ -149,7 +149,7 @@ class SimplCartResponse
         return "";
     }
 
-    protected function formatted_coupons($cart, $coupons)
+    protected function scwp_formatted_coupons($cart, $coupons)
     {
         $applied_discounts = array();
         $applied_discount_count = 0;
@@ -160,7 +160,7 @@ class SimplCartResponse
         return $applied_discounts;
     }
 
-    protected function formatted_order_coupons($order)
+    protected function scwp_formatted_order_coupons($order)
     {
         $applied_discounts = array();
         $order_items = $order->get_items('coupon');
@@ -186,7 +186,7 @@ class SimplCartResponse
         return $applied_discounts;
     }
 
-    protected function formatted_shipping_methods($shipping_methods)
+    protected function scwp_formatted_shipping_methods($shipping_methods)
     {
         $shipping_methods_array = array();
         foreach ($shipping_methods as $item_id => $item) {
@@ -199,7 +199,7 @@ class SimplCartResponse
         return $shipping_methods_array;
     }
 
-    function get_shipping_methods($cart)
+    function scwp_get_shipping_methods($cart)
     {
         $cart->calculate_shipping();
         $shipping_methods_count = 0;
@@ -223,7 +223,7 @@ class SimplCartResponse
         return $shipping_methods_array;
     }
 
-    function getOrderLineItem($order)
+    function scwp_get_order_line_item($order) //todo: doubt
     {
         $i = 0;
 
@@ -249,7 +249,7 @@ class SimplCartResponse
     }
 
 
-    protected function getCartLineItem($cart)
+    protected function scwp_get_cart_line_item($cart)
     {
         $i = 0;
 
@@ -276,7 +276,7 @@ class SimplCartResponse
     }
 
     //This function will clear all type of notice or success
-    protected function simpl_hide_error_messages()
+    protected function scwp_hide_error_messages()
     {
 
         $_SESSION["simpl_session_message"] = [];

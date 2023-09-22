@@ -28,7 +28,7 @@
         return array("product_id" => $product->get_id(), "variant_id" => $variation->get_id());
     }
 
-    function create_test_user() {
+    function scwp_create_test_user() {
         $username = 'test_username';
         $email    = 'test@gmail.com';
         $password = 'test_password';

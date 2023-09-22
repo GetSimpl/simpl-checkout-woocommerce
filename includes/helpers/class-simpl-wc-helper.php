@@ -1,36 +1,37 @@
 <?php        
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
 class SimplWcCartHelper {
-    static function create_order_from_cart() {
+    static function scwp_create_order_from_cart() {
         $order = new WC_Order();  
-        self::set_data_from_cart( $order);        
-        self::set_address_in_order($order);
+        self::scwp_set_data_from_cart( $order);        
+        self::scwp_set_address_in_order($order);
         $order->update_meta_data(SIMPL_ORDER_METADATA, 'yes');
         $order->save();
-        updateToSimplDraft($order->get_id());
+        scwp_update_to_simpl_draft($order->get_id());
         return $order;
     }     
 
-    static function add_to_cart($items) {
+    static function scwp_add_to_cart($items) {
         WC()->cart->empty_cart();
         foreach($items as $item_id => $item) {
-            WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"]);
+            WC()->cart->scwp_add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"]);
         }
         if(WC()->cart->is_empty()) {
             throw new SimplCustomHttpBadRequest("invalid cart items");
         }
     }
 
-    static function update_order_from_cart($order_id) {
+
+    static function scwp_update_order_from_cart($order_id) {
         $order = wc_get_order($order_id);        
         $order->remove_order_items("line_item");
         WC()->checkout->create_order_line_items( $order, WC()->cart );
-        self::set_address_in_order($order);
+        self::scwp_set_address_in_order($order);
         $order->save();
         return $order;
     }
     
-    static protected function set_address_in_order($order) {
+    static protected function scwp_set_address_in_order($order) {
         $shipping_address = WC()->customer->get_shipping('edit');
         $billing_address = WC()->customer->get_billing('edit');
         WC()->cart->calculate_shipping();
@@ -41,7 +42,7 @@ class SimplWcCartHelper {
     }
 
     //Created this method to support older version
-    static protected function set_data_from_cart( &$order ) {
+    static protected function scwp_set_data_from_cart( &$order ) {
         $order->set_shipping_total( WC()->cart->get_shipping_total() );
         $order->set_discount_total( WC()->cart->get_discount_total() );
         $order->set_discount_tax( WC()->cart->get_discount_tax() );
@@ -56,7 +57,7 @@ class SimplWcCartHelper {
         WC()->checkout->create_order_coupon_lines( $order, WC()->cart );
     }
 
-    static protected function update_data_from_cart( &$order ) {
+    static protected function scwp_update_data_from_cart( &$order ) {
         $order->set_shipping_total( WC()->cart->get_shipping_total() );
         $order->set_discount_total( WC()->cart->get_discount_total() );
         $order->set_discount_tax( WC()->cart->get_discount_tax() );
@@ -65,9 +66,9 @@ class SimplWcCartHelper {
         $order->set_total( WC()->cart->get_total( 'edit' ) );
     }
 
-    static function set_address_in_cart($shipping_address, $billing_address) {
-        $shipping_address = self::convert_address_payload($shipping_address);
-        $billing_address = self::convert_address_payload($billing_address);  
+    static function scwp_set_address_in_cart($shipping_address, $billing_address) {
+        $shipping_address = self::scwp_convert_address_payload($shipping_address);
+        $billing_address = self::scwp_convert_address_payload($billing_address);  
     
         if(isset($shipping_address) && isset($billing_address)) {        
             foreach($shipping_address as $key => $value) {
@@ -86,7 +87,7 @@ class SimplWcCartHelper {
         }
     }
 
-    static function set_utm_info_in_order($request, $order) {
+    static function scwp_set_utm_info_in_order($request, $order) {
         $order->update_meta_data("landing_page", $request['utm_info']["_landing_page"]);
         $order->update_meta_data("utm_source", $request['utm_info']["utm_source"]);
         $order->update_meta_data("utm_content", $request['utm_info']["utm_content"]);
@@ -98,7 +99,7 @@ class SimplWcCartHelper {
         $order->save();
     }
 
-    static protected function convert_address_payload($address) {
+    static protected function scwp_convert_address_payload($address) {
         $supported_cc = SimplUtil::country_code_for_country($address["country"]);
         if(!isset($supported_cc)) {
             throw new SimplCustomHttpBadRequest("country is not supported");
@@ -113,13 +114,13 @@ class SimplWcCartHelper {
         return  $address;
     }
 
-    static function load_cart_from_order($order_id) {
+    static function scwp_load_cart_from_order($order_id) {
         $order = wc_get_order((int)$order_id);
-        return self::convert_wc_order_to_wc_cart($order);
+        return self::scwp_convert_wc_order_to_wc_cart($order);
     }
     
 
-    static function update_shipping_line($order_id) {
+    static function scwp_update_shipping_line($order_id) {
         $order = wc_get_order($order_id);        
         $order->remove_order_items("shipping");
         $shipping_methods = WC()->cart->calculate_shipping();
@@ -131,12 +132,12 @@ class SimplWcCartHelper {
             $item->calculate_taxes($shipping_methods[0]->get_taxes());
             $order->add_item($item);        
         }
-        self::update_data_from_cart($order);
+        self::scwp_update_data_from_cart($order);
         $order->save();
         return $order;
     }
 
-    static protected function convert_wc_order_to_wc_cart($order) {
+    static protected function scwp_convert_wc_order_to_wc_cart($order) {
         $variationAttributes = [];
         WC()->cart->empty_cart();
         if ($order && $order->get_item_count() > 0) {
@@ -156,31 +157,31 @@ class SimplWcCartHelper {
                     }
                 }
                 
-                WC()->cart->add_to_cart($productId, $quantity, $variationId, $variationAttributes, $customData);                
+                WC()->cart->scwp_add_to_cart($productId, $quantity, $variationId, $variationAttributes, $customData);                
             }
-            $order_coupons = get_order_coupon_codes($order);
+            $order_coupons = scwp_get_order_coupon_codes($order);
             if(count($order_coupons) > 0) {
                 foreach ($order_coupons as $item_id => $coupon_code) {
                     WC()->cart->add_discount($coupon_code);
                 }
             }
-            set_order_address_in_cart($order->get_address('shipping'), $order->get_address('billing'));
-            set_order_shipping_method_in_cart($order);
+            scwp_set_order_address_in_cart($order->get_address('shipping'), $order->get_address('billing'));
+            scwp_set_order_shipping_method_in_cart($order);
         }
         return WC()->cart;
     }
 
-    static function set_customer_info_in_order($order) {
+    static function scwp_set_customer_info_in_order($order) {
         if(!empty($order->get_billing_email())){
-            $customer = simpl_get_customer_by_email($order->get_billing_email());
+            $customer = scwp_get_customer_by_email($order->get_billing_email());
             if(empty($customer->get_id())) {
-                $customer = self::create_new_customer($order);
+                $customer = self::scwp_create_new_customer($order);
             }
             $order->set_customer_id($customer->get_id());
         }
     }
 
-    static protected function create_new_customer($order) {
+    static protected function scwp_create_new_customer($order) {
         $customer = WC()->customer;
         $customer->set_email($order->get_billing_email());
         $customer->set_first_name($order->get_shipping_first_name());
@@ -192,13 +193,13 @@ class SimplWcCartHelper {
     }
 }
 
-function simpl_get_customer_by_email($email) {
+function scwp_get_customer_by_email($email) {
     $user = get_user_by('email', $email);
     return new WC_Customer($user->ID);
 }
 
 
-function set_order_address_in_cart($shipping_address, $billing_address) {
+function scwp_set_order_address_in_cart($shipping_address, $billing_address) {
     if(isset($shipping_address) && isset($billing_address)) {        
         foreach($shipping_address as $key => $value) {
             if(method_exists(WC()->customer, "set_shipping_".$key)) {
@@ -217,8 +218,8 @@ function set_order_address_in_cart($shipping_address, $billing_address) {
 }
 
 
-function set_order_shipping_method_in_cart($order) {
-    $order_shipping_methods = $order->get_shipping_methods();
+function scwp_set_order_shipping_method_in_cart($order) {
+    $order_shipping_methods = $order->scwp_get_shipping_methods();
     foreach ($order_shipping_methods as $key => $method) {
         $id = $method->get_method_id() . ':' . $method->get_instance_id();
         WC()->session->set('chosen_shipping_methods', array($id));
@@ -229,7 +230,7 @@ function set_order_shipping_method_in_cart($order) {
     WC()->cart->calculate_totals();
 }
 
-function get_order_coupon_codes($order) {
+function scwp_get_order_coupon_codes($order) {
 	$coupon_codes = array();
 	$coupons      = $order->get_items( 'coupon' );
 
@@ -241,7 +242,7 @@ function get_order_coupon_codes($order) {
 	return $coupon_codes;
 }
 
-function updateToSimplDraft($orderId) {
+function scwp_update_to_simpl_draft($orderId) {
     wp_update_post(array(
         'ID'          => $orderId,
         'post_status' => 'checkout-draft',
@@ -250,8 +251,8 @@ function updateToSimplDraft($orderId) {
 
 
 class SimplWcEventHelper {
-    static function publish_event($event_name, $event_data, $entity, $flow) {
-        $simpl_host = WC_Simpl_Settings::simpl_host();
+    static function scwp_publish_event($event_name, $event_data, $entity, $flow) {
+        $scwp_host = SCWP_Settings::scwp_host();
         $event_payload = array(
             "trigger_timestamp" => time(),
             "event_name" => $event_name,
@@ -259,7 +260,7 @@ class SimplWcEventHelper {
             "entity" =>  $entity,
             "flow" => $flow
         );
-        $simplHttpResponse = wp_remote_post("https://".$simpl_host."/api/v1/wc/publish/events", array(
+        $simplHttpResponse = wp_remote_post("https://".$scwp_host."/api/v1/wc/publish/events", array(
             "body" => json_encode($event_payload),
             "headers" => array(            
                     "content-type" => "application/json"

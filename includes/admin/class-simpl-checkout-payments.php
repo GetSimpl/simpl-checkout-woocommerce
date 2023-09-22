@@ -1,15 +1,15 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly   
    
-function simpl_add_gateway_class($gateways)
+function scwp_add_gateway_class($gateways)
 {
-    $gateways[] = 'WC_Simpl_Gateway'; // your class name is here
+    $gateways[] = 'SCWP_Gateway'; // your class name is here
     return $gateways;
 }
 
-function simpl_init_gateway_class()
+function scwp_init_gateway_class()
 {
-    class WC_Simpl_Gateway extends WC_Payment_Gateway
+    class SCWP_Gateway extends WC_Payment_Gateway
     {
         public function __construct()
         {
@@ -38,14 +38,14 @@ function simpl_init_gateway_class()
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
             add_filter('woocommerce_available_payment_gateways', array(
                 $this,
-                'remove_simpl_gateway'
+                'scwp_remove_simpl_gateway'
             ), 10, 2);
 
             // You can also register a webhook here
             // add_action( 'woocommerce_api_{webhook name}', array( $this, 'webhook' ) );
         }
 
-        public function remove_simpl_gateway($available_gateways)
+        public function scwp_remove_simpl_gateway($available_gateways)
         {
             if (WC()->session) {
                 $simpl_order_id = WC()->session->get("simpl_order_id");
@@ -64,7 +64,7 @@ function simpl_init_gateway_class()
             return $available_gateways;
         }
 
-        public function process_payment($order_id)
+        public function scwp_process_payment($order_id)
         {
 
             $order = wc_get_order($order_id);

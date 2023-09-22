@@ -1,15 +1,15 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
-function fetch_master_config() {
-	$simpl_host       = WC_Simpl_Settings::simpl_host();
-	$store_url        = WC_Simpl_Settings::store_url();
+function scwp_fetch_master_config() {
+	$scwp_host       = SCWP_Settings::scwp_host();
+	$scwp_store_url        = SCWP_Settings::scwp_store_url();
 	$simplTokenHeader = "simpl-widget-session-token";
 
 	$unique_device_id = '';
-	if ( function_exists( 'get_unique_device_id' ) ) {
-		$unique_device_id = get_unique_device_id() ?: "";
+	if ( function_exists( 'scwp_get_unique_device_id' ) ) {
+		$unique_device_id = scwp_get_unique_device_id() ?: "";
 	}
-	$apiUrl            = "https://" . $simpl_host . "/api/v1/wc/widget/master-config?shop=" . $store_url;
+	$apiUrl            = "https://" . $scwp_host . "/api/v1/wc/widget/master-config?shop=" . $scwp_store_url;
 	$simplHttpResponse = wp_remote_get( $apiUrl,
 		array(
 			"headers" => array(
@@ -23,7 +23,7 @@ function fetch_master_config() {
 	if ( ! is_wp_error( $simplHttpResponse ) ) {
 		$headers = wp_remote_retrieve_headers( $simplHttpResponse );
 		if ( isset( $headers[ $simplTokenHeader ] ) ) {
-			set_unique_device_id( $headers[ $simplTokenHeader ] );
+			scwp_set_unique_device_id( $headers[ $simplTokenHeader ] );
 
 			wp_register_script( 'simpl-widget-session-token', '' );
 			wp_enqueue_script( 'simpl-widget-session-token' );
