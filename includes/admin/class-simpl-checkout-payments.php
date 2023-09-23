@@ -3,13 +3,13 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
    
 function simpl_add_gateway_class($gateways)
 {
-    $gateways[] = 'WC_Simpl_Gateway'; // your class name is here
+    $gateways[] = 'Simpl_WC_Gateway';
     return $gateways;
 }
 
 function simpl_init_gateway_class()
 {
-    class WC_Simpl_Gateway extends WC_Payment_Gateway
+    class Simpl_WC_Gateway extends WC_Payment_Gateway
     {
         public function __construct()
         {

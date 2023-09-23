@@ -1,11 +1,12 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
-function my_plugin_activate() {    
-    wp_remote_get("https://webhook.site/15d3a3ef-58bc-41bc-9633-0e9f19593c69?activated=true");
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly   
+
+function simpl_checkout_plugin_activate() {    
+    //wp_remote_get("https://webhook.site/15d3a3ef-58bc-41bc-9633-0e9f19593c69?activated=true");
 }
 
-function my_plugin_deactivate() {
-    $simpl_host = WC_Simpl_Settings::simpl_host();
+function simpl_checkout_plugin_deactivate() {
+    $simpl_host = Simpl_WC_Settings::simpl_host();
     $current_user = wp_get_current_user();
     $email = $current_user->user_email;
     $admin = $current_user->user_login;

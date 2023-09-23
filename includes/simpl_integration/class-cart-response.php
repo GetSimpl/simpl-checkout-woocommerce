@@ -6,12 +6,12 @@ class SimplCartResponse
     {
         $merchant_additional_details = $request['merchant_additional_details'];
         $cart_request = self::static_cart_payload($cart, $merchant_additional_details);
-        $simpl_host = WC_Simpl_Settings::simpl_host();
+        $simpl_host = Simpl_WC_Settings::simpl_host();
 
         $simplHttpResponse = wp_remote_post("https://" . $simpl_host . "/api/v1/wc/cart", array(
             "body" => json_encode($cart_request),
             //TODO: merchantClientID
-            "headers" => array("shop-domain" => WC_Simpl_Settings::store_url(), "content-type" => "application/json"),
+            "headers" => array("shop-domain" => Simpl_WC_Settings::store_url(), "content-type" => "application/json"),
         ));
 
         self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION

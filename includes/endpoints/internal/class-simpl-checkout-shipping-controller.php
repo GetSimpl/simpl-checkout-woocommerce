@@ -1,6 +1,7 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
-class SimplCheckoutShippingController {
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly  
+    
+class Simpl_Checkout_Shipping_Controller {
     function set_shipping_method(WP_REST_Request $request)
     {
         try {
