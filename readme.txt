@@ -56,5 +56,5 @@ We cannot guarantee that your customer will get the Pay-later payment option whe
 To initiate the return customer can download the Simpl app and go to ‘Manage your Orders'. Customers can provide a reason for the return and we will work with you directly to place a return order on customer’s behalf. Customers can track the return order details directly on the Simpl app. 
 
 == Changelog ==
-= 1.1.5 =
+= 2.0.1 =
 * wordpress security issue fix
