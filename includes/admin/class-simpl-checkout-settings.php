@@ -132,11 +132,11 @@ if ( ! class_exists( 'Simpl_WC_Settings' ) ) {
 		}
 
 		public static function store_url() {
-			parse_url( get_site_url(), PHP_URL_HOST );
+			return parse_url( get_site_url(), PHP_URL_HOST );
 		}
 
 		public static function store_url_with_prefix() {
-			get_site_url();
+			return get_site_url();
 		}
 
 		public static function update_settings() {
