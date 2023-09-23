@@ -23,7 +23,7 @@ class Test_Checkout_Endpoint extends WP_UnitTestCase{
 	}
 
     public function test_fetch_checkout_with_valid_checkout_order_id() {
-        $data = create_product();  
+        $data = simpl_create_product();  
         simpl_cart_init_common();
         WC()->cart->add_to_cart($data['product_id'], 1, $data['variant_id']);
         $order = SimplWcCartHelper::create_order_from_cart();
@@ -39,8 +39,8 @@ class Test_Checkout_Endpoint extends WP_UnitTestCase{
 	}
 
     public function test_create_checkout_with_valid_items_payload() {
-        $data = create_product();
-        $user = create_test_user();        
+        $data = simpl_create_product();
+        $user = simpl_create_test_user();        
         simpl_cart_init_common();
         WC()->cart->add_to_cart($data['product_id'], 1, $data['variant_id']);
         $order = SimplWcCartHelper::create_order_from_cart();

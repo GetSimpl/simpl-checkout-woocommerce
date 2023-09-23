@@ -1,8 +1,9 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 //cart flow is third party plugin
-add_action("simpl_abandoned_cart", "cart_flows_abandoned_cart", 10, 2);
-function cart_flows_abandoned_cart($cart, $simpl_checkout_data)
+add_action("simpl_abandoned_cart", "simpl_flows_abandoned_cart", 10, 2);
+function simpl_flows_abandoned_cart($cart, $simpl_checkout_data)
 {
     if (!is_plugin_active('woo-cart-abandonment-recovery/woo-cart-abandonment-recovery.php')) {
         return false;

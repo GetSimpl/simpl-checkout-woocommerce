@@ -1,15 +1,16 @@
 <?php 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
-class SimplEventsController {
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+class Simpl_Events_Controller {
     function publish_events(WP_REST_Request $request) {
         try {
             SimplRequestValidator::validate_events_payload($request);
-            $simpl_host = WC_Simpl_Settings::simpl_host();
-            $shop_domain = WC_Simpl_Settings::store_url();
+            $simpl_host = Simpl_WC_Settings::simpl_host();
+            $shop_domain = Simpl_WC_Settings::store_url();
             $req_body = $request->get_params()["event_payload"];
             $req_body["event_data"]["merchant_id"] = $shop_domain;
             $req_body["event_data"]["plugin_version"] = SIMPL_PLUGIN_VERSION;
-            $unique_id = get_unique_device_id();
+            $unique_id = simpl_get_unique_device_id();
             if($unique_id == "") {
                 return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_UNAUTHORIZED, "message" => "session id can not be empty"), 401);
             }

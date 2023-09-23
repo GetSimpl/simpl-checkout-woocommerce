@@ -1,6 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
-class SimplCheckoutOrderController
+
+class Simpl_Checkout_Order_Controller
 {
     function fetch(WP_REST_Request $request)
     {

@@ -1,8 +1,8 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
-add_action( 'wp_loaded', 'maybe_load_cart', 5 );
+add_action( 'wp_loaded', 'simpl_maybe_load_cart', 5 );
 
-function maybe_load_cart() {
+function simpl_maybe_load_cart() {
 	if ( version_compare( WC_VERSION, '3.6.0', '>=' ) && WC()->is_rest_api_request() ) {
 		if ( empty( sanitize_url($_SERVER['REQUEST_URI']) ) ) {
 			return;

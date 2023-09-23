@@ -1,6 +1,7 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
-class SimplCheckoutCartController {
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+   
+class Simpl_Checkout_Cart_Controller {
     function create(WP_REST_Request $request)
     {
         if (isset($request->get_params()["is_pdp"]) && $request->get_params()["is_pdp"]) {

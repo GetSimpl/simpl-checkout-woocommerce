@@ -1,13 +1,13 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
-function fetch_master_config() {
-	$simpl_host       = WC_Simpl_Settings::simpl_host();
-	$store_url        = WC_Simpl_Settings::store_url();
+function simpl_fetch_master_config() {
+	$simpl_host       = Simpl_WC_Settings::simpl_host();
+	$store_url        = Simpl_WC_Settings::store_url();
 	$simplTokenHeader = "simpl-widget-session-token";
 
 	$unique_device_id = '';
-	if ( function_exists( 'get_unique_device_id' ) ) {
-		$unique_device_id = get_unique_device_id() ?: "";
+	if ( function_exists( 'simpl_get_unique_device_id' ) ) {
+		$unique_device_id = simpl_get_unique_device_id() ?: "";
 	}
 	$apiUrl            = "https://" . $simpl_host . "/api/v1/wc/widget/master-config?shop=" . $store_url;
 	$simplHttpResponse = wp_remote_get( $apiUrl,
@@ -23,7 +23,7 @@ function fetch_master_config() {
 	if ( ! is_wp_error( $simplHttpResponse ) ) {
 		$headers = wp_remote_retrieve_headers( $simplHttpResponse );
 		if ( isset( $headers[ $simplTokenHeader ] ) ) {
-			set_unique_device_id( $headers[ $simplTokenHeader ] );
+			simpl_set_unique_device_id( $headers[ $simplTokenHeader ] );
 
 			wp_register_script( 'simpl-widget-session-token', '' );
 			wp_enqueue_script( 'simpl-widget-session-token' );
@@ -36,6 +36,6 @@ function fetch_master_config() {
 		wp_add_inline_script('simpl-master-config', 'var SimplMasterConfig = ' . $masterConfigData, false);
 	} else {
 		$error_message = $simplHttpResponse->get_error_message();
-		scwp_console_log( $error_message );
+		simpl_console_log( $error_message );
 	}
 }

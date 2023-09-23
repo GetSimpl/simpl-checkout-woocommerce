@@ -1,5 +1,6 @@
 <?php        
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly      
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+      
 class SimplWcCartHelper {
     static function create_order_from_cart() {
         $order = new WC_Order();  
@@ -7,7 +8,7 @@ class SimplWcCartHelper {
         self::set_address_in_order($order);
         $order->update_meta_data(SIMPL_ORDER_METADATA, 'yes');
         $order->save();
-        updateToSimplDraft($order->get_id());
+        simpl_update_to_draft($order->get_id());
         return $order;
     }     
 
@@ -241,7 +242,7 @@ function get_order_coupon_codes($order) {
 	return $coupon_codes;
 }
 
-function updateToSimplDraft($orderId) {
+function simpl_update_to_draft($orderId) {
     wp_update_post(array(
         'ID'          => $orderId,
         'post_status' => 'checkout-draft',
@@ -251,7 +252,7 @@ function updateToSimplDraft($orderId) {
 
 class SimplWcEventHelper {
     static function publish_event($event_name, $event_data, $entity, $flow) {
-        $simpl_host = WC_Simpl_Settings::simpl_host();
+        $simpl_host = Simpl_WC_Settings::simpl_host();
         $event_payload = array(
             "trigger_timestamp" => time(),
             "event_name" => $event_name,

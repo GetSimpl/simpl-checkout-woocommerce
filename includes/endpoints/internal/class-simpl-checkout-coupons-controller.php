@@ -1,6 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
-class SimplCheckoutCouponController {
+
+class Simpl_Checkout_Coupon_Controller {
     function apply(WP_REST_Request $request)
     {
         try {
