@@ -132,11 +132,11 @@ if ( ! class_exists( 'Simpl_WC_Settings' ) ) {
 		}
 
 		public static function store_url() {
-			return parse_url( get_site_url(), PHP_URL_HOST );
+			return 'shop.1bill.in';//parse_url( get_site_url(), PHP_URL_HOST );
 		}
 
 		public static function store_url_with_prefix() {
-			return get_site_url();
+			return 'https://shop.1bill.in';//get_site_url();
 		}
 
 		public static function update_settings() {

@@ -1,5 +1,5 @@
 === Simpl Checkout ===
-Contributors: getsimpl
+Contributors: 1sigma
 Tags: woocommerce,simpl,ecommerce,e-commerce,checkout,buy-now-pay-later,payments,india
 Requires at least: 4.0
 Tested up to: 6.3.1
