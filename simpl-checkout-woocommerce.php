@@ -111,21 +111,17 @@ function simpl_checkout_int() {
     register_activation_hook( __FILE__, 'my_plugin_activate' );
     register_deactivation_hook( __FILE__, 'my_plugin_deactivate' );
 
-    add_action( 'woocommerce_new_order', 'order_creation_hook', 10, 1 );
-    add_action( 'woocommerce_order_status_changed', 'send_order_status_to_api', 10, 3 );
-    add_action( 'woocommerce_order_refunded', 'order_refund_hook', 10, 1 );
+    add_action( 'woocommerce_order_refunded', 'order_hook', 10, 1 );
 }
 
-function order_refund_hook($order_id)
+function order_hook($order_id)
 {
     $order = wc_get_order($order_id);
     $request = $order;
     
     $simpl_host = WC_Simpl_Settings::simpl_host();
     $store_url = WC_Simpl_Settings::store_url();
-    $store_url = "https://shop.1bill.in";
     $client_credentials = WC_Simpl_Settings::merchant_credentials();
-    $client_credentials["client_id"] = "b6464523f1effc892b3f2f765de60cc8";
 
     $url = "https://" . $simpl_host . "/order_hook";
     error_log("==========================");
@@ -151,6 +147,7 @@ function order_refund_hook($order_id)
     if ( ! is_wp_error( $simplHttpResponse ) ) {
         $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
         echo(json_encode($body));
+        error_log(json_encode($body));
         // if($body["success"]) {
         //     error_log(print_r($body, TRUE)); 
         // } else {
@@ -160,40 +157,5 @@ function order_refund_hook($order_id)
         $error_message = $simplHttpResponse->get_error_message();
         error_log(print_r($error_message, TRUE)); 
         throw new Exception( $error_message );
-    }
-}
-
-function send_order_status_to_api($order_id, $old_status, $new_status) 
-{
-    $order = wc_get_order($order_id);
-    $request = $order;
-
-    $simpl_host = WC_Simpl_Settings::simpl_host();
-
-    // $shop_url = $_SERVER['SERVER_NAME'];
-    $shop_url = WC_Simpl_Settings::store_url();
-    $signature = '0c773591dec81c0f5be546c7b5252fbeb1e5fae41d41a7fdf2ace29e8bea23a2ebc18bfd1689bec0';
-
-    $response = wp_remote_post("https://" . $simpl_host . "/webhook", array(
-        "body" => json_encode($request),
-        //TODO: merchantClientID
-        "headers" => array(
-            "content-type" => "application/json",
-            'X-WC-Webhook-Source' => WC_Simpl_Settings::store_url(),
-            'X-WC-Webhook-Signature' => $signature,),
-    ));
-
-    // Check for errors or handle the API response as needed
-    if (is_wp_error($response)) {
-        error_log('API request failed: ' . $response->get_error_message());
-    } else {
-        $response_code = wp_remote_retrieve_response_code($response);
-        $response_body = wp_remote_retrieve_body($response);
-
-        // Handle the API response here
-        // You can log it, process it, or take other actions based on the response.
-        // error_log(print_r($old_status, TRUE)); 
-        error_log(print_r($response_code, TRUE)); 
-        error_log(print_r($response_body, TRUE)); 
     }
 }
