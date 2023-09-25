@@ -29,7 +29,7 @@ class SimplCheckoutOrderController
             SimplRequestValidator::validate_order_request($request);
 
             $order = wc_get_order((int)$request->get_params()["checkout_order_id"]);
-            self::update_order_details($request, $order);
+            self::simpl_update_order_details($request, $order);
 
             WC()->session->order_awaiting_payment = $order->get_id();
 
@@ -59,14 +59,14 @@ class SimplCheckoutOrderController
         }
     }
 
-    static function update_order_details($request, $order) {
-        SimplWcCartHelper::update_order_metadata($request, $order);
-        SimplWcCartHelper::set_customer_info_in_order($order);
+    static function simpl_update_order_details($request, $order) {
+        SimplWcCartHelper::simpl_update_order_metadata($request, $order);
+        SimplWcCartHelper::simpl_set_customer_info_in_order($order);
 
         // Check if there is In-house Shipping
         $shipping_method = $request['shipping_method'];
         if(!empty($shipping_method)) {
-            SimplWcCartHelper::set_shipping_method_in_order($order, $shipping_method);
+            SimplWcCartHelper::simpl_set_shipping_method_in_order($order, $shipping_method);
         }
 
         $order->save();
