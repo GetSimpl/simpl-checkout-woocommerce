@@ -140,25 +140,6 @@ class SimplCartResponse
         return $response;
     }
 
-    public function order_refund_payload($order)
-    {
-        $order_refunds = $order->get_refunds();
-        $i = 0;
-        foreach( $order_refunds as $refund ){
-            $data = json_decode($refund, true);
-
-            $jsonObject = (object) $data;
-            foreach ($jsonObject as $key => $value) {
-				$response[$i][$key] = $value;
-            }
-
-            $response[$i]['line_items'] = $this->get_refund_line_items($refund);
-            $i++;
-        }
-        self::simpl_hide_error_messages();
-        return $response;
-    }
-
     protected function get_applied_shipping_method($cart)
     {
         $chosen_shipping_method = $cart->calculate_shipping();
@@ -293,23 +274,6 @@ class SimplCartResponse
 
         return $data;
     }
-	
-	protected function get_refund_line_items($order_refund) {
-		$refund_items = $order_refund->get_items();
-		$i = 0;
-        foreach( $refund_items as $refund_item ){
-            $data = json_decode($refund_item, true);
-
-            $jsonObject = (object) $data;
-            foreach ($jsonObject as $key => $value) {
-				$response[$i][$key] = $value;
-            }
-			
-			$i++;
-        }
-
-        return $response;
-	}
 
 
     //This function will clear all type of notice or success

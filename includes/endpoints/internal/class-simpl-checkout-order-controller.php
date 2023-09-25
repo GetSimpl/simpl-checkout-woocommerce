@@ -62,56 +62,6 @@ class SimplCheckoutOrderController
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating order'), 500);
         }
     }
-
-    function fetch_refund_orders(WP_REST_Request $request) {
-        try {
-            $refund_order_ids = $this->sv_get_wc_orders_with_refunds();
-            $response_payload = array();
-            foreach ($refund_order_ids as $refund_order_id) {
-                $order = wc_get_order((int)$refund_order_id);
-                $si = new SimplCartResponse();
-                $order_payload = $si->order_refund_payload($order);
-                array_push($response_payload, $order_payload);
-            }
-            return $response_payload;
-        } catch (SimplCustomHttpBadRequest $fe) {
-            simpl_sentry_exception($fe);
-            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
-        } catch (Exception $fe) {
-            simpl_sentry_exception($fe);
-            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
-        } catch (Error $fe) {
-            simpl_sentry_exception($fe);
-            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in fetching order'), 500);
-        }
-    }
-
-    protected function sv_get_wc_orders_with_refunds() {
-		$istTimeZone = new DateTimeZone('Asia/Kolkata');
-
-		// Get the current time in IST
-		$now = new DateTime('now', $istTimeZone);
-		$currentIST = $now->format('Y-m-d H:i:s');
-
-		// Calculate the past time in IST
-		$past = new DateTime('-1 days', $istTimeZone);
-		$pastIST = $past->format('Y-m-d H:i:s');
-		
-        $args = array(
-            'fields'         => 'id=>parent',
-            'post_type'      => 'shop_order_refund',
-            'post_status'    => 'any',
-			'date_query' => array(
-				'after'     => $pastIST, // since we only want orders from last 24 hours
-				'before'    => $currentIST,
-				'inclusive' => true,
-			),
-			'posts_per_page' => -1,
-        );
-
-        $refunds = get_posts( $args );
-        return array_values( array_unique( $refunds ) );
-    }
     
     protected function update_order_metadata($request, $order)
     {
