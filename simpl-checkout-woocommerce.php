@@ -122,27 +122,83 @@ function order_hook($order_id)
     $store_url = WC_Simpl_Settings::store_url_with_prefix();
     $client_credentials = WC_Simpl_Settings::merchant_credentials();
 
+    $order_data = $order->get_data();
+    $order_data["line_items"] = get_order_line_items($order);
+    $order_data["tax_lines"] = get_tax_lines($order);
+    $order_data["shipping_lines"] = get_shipping_lines($order);
+	
+	if ($order->get_date_created() != null) {
+	    $order_data["date_created"] = $order->get_date_created()->__toString();	
+	}
+	
+	if ($order->get_date_modified() != null) {
+	    $order_data["date_modified"] = $order->get_date_modified()->__toString();
+	}
+
     $simplHttpResponse = wp_remote_post("https://" . $simpl_host . "/order_hook", array(
-        "body" => json_encode($order->get_data()),
+        "body" => json_encode($order_data),
         "headers" => array(
             "content-type" => "application/json",
             "merchant_client_id" => $client_credentials["client_id"],
             "X-WC-Webhook-Source" => $store_url,
         ),
     ));
-    
+
     if ( ! is_wp_error( $simplHttpResponse ) ) {
         $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
-        // echo(json_encode($body));
-        // error_log(json_encode($body));
-        // if($body["success"]) {
-        //     error_log(print_r($body, TRUE)); 
-        // } else {
-        //     throw new Exception( $body['message'] );            
-        // }
     } else {
         $error_message = $simplHttpResponse->get_error_message();
         error_log(print_r($error_message, TRUE)); 
         throw new Exception( $error_message );
     }
+}
+
+
+function get_order_line_items($order) {
+    $order_items = $order->get_items();
+
+    $i = 0;
+    foreach( $order_items as $order_item ){
+        $item_data = $order_item->get_data();
+        
+        $x = array();
+        $obj = [];
+
+        $line_item_tax = $item_data["taxes"];
+        $line_item_total_taxes = $line_item_tax["total"];
+        $line_item_subtotal_taxes = $line_item_tax["subtotal"];
+        
+        foreach ($line_item_total_taxes as $key => $value) {
+            $obj["id"] = $key;
+            $obj["total"] = $value;
+            $obj["subtotal"] = $line_item_subtotal_taxes[$key];
+
+            array_push($x, $obj);
+        }
+
+        $item_data["taxes"] = $x;
+
+        $response[$i] = $item_data;
+        $i++;
+    }
+
+    return $response;
+}
+
+function get_tax_lines($order) {
+   return get_data($order->get_taxes());
+}
+
+function get_shipping_lines($order) {
+    return get_data($order->get_shipping_methods());
+}
+
+function get_data($obj) {
+    $i = 0;
+    foreach( $obj as $obj_item ){
+        $response[$i] = $obj_item->get_data();
+        $i++;
+    }
+
+    return $response;
 }
