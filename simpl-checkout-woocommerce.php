@@ -126,6 +126,7 @@ function order_hook($order_id)
     $order_data["line_items"] = get_order_line_items($order);
     $order_data["tax_lines"] = get_tax_lines($order);
     $order_data["shipping_lines"] = get_shipping_lines($order);
+    $order_data["refunds"] = get_order_refunds($order);
 	
 	if ($order->get_date_created() != null) {
 	    $order_data["date_created"] = $order->get_date_created()->__toString();	
@@ -135,12 +136,23 @@ function order_hook($order_id)
 	    $order_data["date_modified"] = $order->get_date_modified()->__toString();
 	}
 
+    if ($order->get_date_paid() != null) {
+	    $order_data["date_paid"] = $order->get_date_paid()->__toString();
+	}
+
+    if ($order->get_date_completed() != null) {
+	    $order_data["date_completed"] = $order->get_date_completed()->__toString();
+	}
+
     $simplHttpResponse = wp_remote_post("https://" . $simpl_host . "/order_hook", array(
         "body" => json_encode($order_data),
         "headers" => array(
             "content-type" => "application/json",
             "merchant_client_id" => $client_credentials["client_id"],
             "X-WC-Webhook-Source" => $store_url,
+            "X-WC-Webhook-Topic" => "order.updated",
+            "X-WC-Webhook-Resource" => "order",
+            "X-WC-Webhook-Event" => "updated",
         ),
     ));
 
@@ -161,7 +173,7 @@ function get_order_line_items($order) {
     foreach( $order_items as $order_item ){
         $item_data = $order_item->get_data();
         
-        $x = array();
+        $res_arr = array();
         $obj = [];
 
         $line_item_tax = $item_data["taxes"];
@@ -173,10 +185,10 @@ function get_order_line_items($order) {
             $obj["total"] = $value;
             $obj["subtotal"] = $line_item_subtotal_taxes[$key];
 
-            array_push($x, $obj);
+            array_push($res_arr, $obj);
         }
 
-        $item_data["taxes"] = $x;
+        $item_data["taxes"] = $res_arr;
 
         $response[$i] = $item_data;
         $i++;
@@ -190,7 +202,36 @@ function get_tax_lines($order) {
 }
 
 function get_shipping_lines($order) {
-    return get_data($order->get_shipping_methods());
+    $shipping_lines = get_data($order->get_shipping_methods());
+
+    $i = 0;
+    foreach( $shipping_lines as $item_data ){
+        $res_arr = array();
+        $obj = [];
+
+        $line_item_tax = $item_data["taxes"];
+        $line_item_total_taxes = $line_item_tax["total"];
+        $line_item_subtotal_taxes = $line_item_tax["subtotal"];
+        
+        foreach ($line_item_total_taxes as $key => $value) {
+            $obj["id"] = $key;
+            $obj["total"] = $value;
+            $obj["subtotal"] = $line_item_subtotal_taxes[$key];
+
+            array_push($res_arr, $obj);
+        }
+
+        $item_data["taxes"] = $res_arr;
+
+        $shipping_lines[$i] = $item_data;
+        $i++;
+    }
+
+    return $shipping_lines;
+}
+
+function get_order_refunds($order) {
+    return get_data($order->get_refunds());
 }
 
 function get_data($obj) {
