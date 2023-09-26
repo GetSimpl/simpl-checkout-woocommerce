@@ -5,7 +5,7 @@
  * Description: Simpl checkout offers an optimised checkout process, higher order conversions and RTO reduction. We offer Simpl Pay Later, Pay-in-3, UPI, Cards, and COD for seamless transactions while you focus on growing your business.
  * Author:  One Sigma Technologies Pvt. Ltd.
  * Author URI: http://www.getsimpl.com
- * Version: 1.1.5
+ * Version: 1.1.6
  */
 add_action('plugins_loaded', 'simpl_checkout_int', 0);
 add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
@@ -117,37 +117,24 @@ function simpl_checkout_int() {
 function order_hook($order_id)
 {
     $order = wc_get_order($order_id);
-    $request = $order;
     
     $simpl_host = WC_Simpl_Settings::simpl_host();
-    $store_url = WC_Simpl_Settings::store_url();
+    $store_url = WC_Simpl_Settings::store_url_with_prefix();
     $client_credentials = WC_Simpl_Settings::merchant_credentials();
 
-    $url = "https://" . $simpl_host . "/order_hook";
-    error_log("==========================");
-    error_log($url);
-    error_log($request);
-    error_log(print_r(array(
-        "content-type" => "application/json",
-        "merchant_client_id" => $client_credentials["client_id"],
-        'X-WC-Webhook-Source' => $store_url,
-    ), TRUE));
-
     $simplHttpResponse = wp_remote_post("https://" . $simpl_host . "/order_hook", array(
-        "body" => json_encode($request),
+        "body" => json_encode($order->get_data()),
         "headers" => array(
             "content-type" => "application/json",
             "merchant_client_id" => $client_credentials["client_id"],
-            'X-WC-Webhook-Source' => WC_Simpl_Settings::store_url(),
+            "X-WC-Webhook-Source" => $store_url,
         ),
     ));
-
-    error_log(print_r($simplHttpResponse, TRUE));
-
+    
     if ( ! is_wp_error( $simplHttpResponse ) ) {
         $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
-        echo(json_encode($body));
-        error_log(json_encode($body));
+        // echo(json_encode($body));
+        // error_log(json_encode($body));
         // if($body["success"]) {
         //     error_log(print_r($body, TRUE)); 
         // } else {
