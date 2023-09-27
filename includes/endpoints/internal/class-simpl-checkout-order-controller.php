@@ -62,7 +62,7 @@ class SimplCheckoutOrderController
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating order'), 500);
         }
     }
-    
+
     protected function update_order_metadata($request, $order)
     {
         $order->update_meta_data("simpl_cart_token", $request->get_params()["simpl_cart_token"]);

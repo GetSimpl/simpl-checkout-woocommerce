@@ -111,6 +111,10 @@ function simpl_checkout_int() {
     register_activation_hook( __FILE__, 'my_plugin_activate' );
     register_deactivation_hook( __FILE__, 'my_plugin_deactivate' );
 
+    define('WEBHOOK_SOURCE', 'X-WC-Webhook-Source');
+    define('WEBHOOK_TOPIC', 'X-WC-Webhook-Topic');
+    define('WEBHOOK_RESOURCE', 'X-WC-Webhook-Resource');
+    define('WEBHOOK_EVENT', 'X-WC-Webhook-Event');
     add_action( 'woocommerce_order_refunded', 'order_hook', 10, 1 );
 }
 
@@ -128,31 +132,20 @@ function order_hook($order_id)
     $order_data["shipping_lines"] = get_shipping_lines($order);
     $order_data["refunds"] = get_order_refunds($order);
 	
-	if ($order->get_date_created() != null) {
-	    $order_data["date_created"] = $order->get_date_created()->__toString();	
-	}
-	
-	if ($order->get_date_modified() != null) {
-	    $order_data["date_modified"] = $order->get_date_modified()->__toString();
-	}
-
-    if ($order->get_date_paid() != null) {
-	    $order_data["date_paid"] = $order->get_date_paid()->__toString();
-	}
-
-    if ($order->get_date_completed() != null) {
-	    $order_data["date_completed"] = $order->get_date_completed()->__toString();
-	}
+    $order_data["date_created"] = convert_date_obj_to_str($order->get_date_created());	
+    $order_data["date_modified"] = convert_date_obj_to_str($order->get_date_modified());
+    $order_data["date_paid"] = convert_date_obj_to_str($order->get_date_paid());
+    $order_data["date_completed"] = convert_date_obj_to_str($order->get_date_completed());
 
     $simplHttpResponse = wp_remote_post("https://" . $simpl_host . "/order_hook", array(
         "body" => json_encode($order_data),
         "headers" => array(
             "content-type" => "application/json",
             "merchant_client_id" => $client_credentials["client_id"],
-            "X-WC-Webhook-Source" => $store_url,
-            "X-WC-Webhook-Topic" => "order.updated",
-            "X-WC-Webhook-Resource" => "order",
-            "X-WC-Webhook-Event" => "updated",
+            WEBHOOK_SOURCE => $store_url,
+            WEBHOOK_TOPIC => "order.updated",
+            WEBHOOK_RESOURCE => "order",
+            WEBHOOK_EVENT => "updated",
         ),
     ));
 
@@ -169,29 +162,12 @@ function order_hook($order_id)
 function get_order_line_items($order) {
     $order_items = $order->get_items();
 
-    $i = 0;
+    $response = array();
     foreach( $order_items as $order_item ){
         $item_data = $order_item->get_data();
+        $item_data["taxes"] = convert_tax_obj_to_arr($item_data);
         
-        $res_arr = array();
-        $obj = [];
-
-        $line_item_tax = $item_data["taxes"];
-        $line_item_total_taxes = $line_item_tax["total"];
-        $line_item_subtotal_taxes = $line_item_tax["subtotal"];
-        
-        foreach ($line_item_total_taxes as $key => $value) {
-            $obj["id"] = $key;
-            $obj["total"] = $value;
-            $obj["subtotal"] = $line_item_subtotal_taxes[$key];
-
-            array_push($res_arr, $obj);
-        }
-
-        $item_data["taxes"] = $res_arr;
-
-        $response[$i] = $item_data;
-        $i++;
+        array_push($response, $item_data);
     }
 
     return $response;
@@ -204,30 +180,14 @@ function get_tax_lines($order) {
 function get_shipping_lines($order) {
     $shipping_lines = get_data($order->get_shipping_methods());
 
-    $i = 0;
+    $response = array();
     foreach( $shipping_lines as $item_data ){
-        $res_arr = array();
-        $obj = [];
+        $item_data["taxes"] = convert_tax_obj_to_arr($item_data);
 
-        $line_item_tax = $item_data["taxes"];
-        $line_item_total_taxes = $line_item_tax["total"];
-        $line_item_subtotal_taxes = $line_item_tax["subtotal"];
-        
-        foreach ($line_item_total_taxes as $key => $value) {
-            $obj["id"] = $key;
-            $obj["total"] = $value;
-            $obj["subtotal"] = $line_item_subtotal_taxes[$key];
-
-            array_push($res_arr, $obj);
-        }
-
-        $item_data["taxes"] = $res_arr;
-
-        $shipping_lines[$i] = $item_data;
-        $i++;
+        array_push($response, $item_data);
     }
 
-    return $shipping_lines;
+    return $response;
 }
 
 function get_order_refunds($order) {
@@ -242,4 +202,31 @@ function get_data($obj) {
     }
 
     return $response;
+}
+
+function convert_tax_obj_to_arr($item_data) {
+    $res_arr = array();
+    $obj = [];
+
+    $line_item_tax = $item_data["taxes"];
+    $line_item_total_taxes = $line_item_tax["total"];
+    $line_item_subtotal_taxes = $line_item_tax["subtotal"];
+    
+    foreach ($line_item_total_taxes as $key => $value) {
+        $obj["id"] = $key;
+        $obj["total"] = $value;
+        $obj["subtotal"] = $line_item_subtotal_taxes[$key];
+
+        array_push($res_arr, $obj);
+    }
+
+    return $res_arr;
+}
+
+function convert_date_obj_to_str($date_obj) {
+    if ($date_obj != null) {
+	    return $date_obj->__toString();	
+	}
+
+    return "";
 }

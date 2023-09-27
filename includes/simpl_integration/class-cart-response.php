@@ -275,7 +275,6 @@ class SimplCartResponse
         return $data;
     }
 
-
     //This function will clear all type of notice or success
     protected function simpl_hide_error_messages()
     {
