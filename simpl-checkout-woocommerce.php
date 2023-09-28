@@ -118,10 +118,6 @@ function simpl_checkout_int() {
 function order_hook($order_id)
 {
     $order = wc_get_order($order_id);
-    
-    $simpl_host = WC_Simpl_Settings::simpl_host();
-    $store_url = WC_Simpl_Settings::store_url_with_prefix();
-    $client_credentials = WC_Simpl_Settings::merchant_credentials();
 
     $order_data = $order->get_data();
     $order_data["line_items"] = $order->get_items();
@@ -144,31 +140,4 @@ function get_data($obj) {
     }
 
     return $response;
-}
-
-function convert_tax_obj_to_arr($item_data) {
-    $res_arr = array();
-    $obj = [];
-
-    $line_item_tax = $item_data["taxes"];
-    $line_item_total_taxes = $line_item_tax["total"];
-    $line_item_subtotal_taxes = $line_item_tax["subtotal"];
-    
-    foreach ($line_item_total_taxes as $key => $value) {
-        $obj["id"] = $key;
-        $obj["total"] = $value;
-        $obj["subtotal"] = $line_item_subtotal_taxes[$key];
-
-        array_push($res_arr, $obj);
-    }
-
-    return $res_arr;
-}
-
-function convert_date_obj_to_str($date_obj) {
-    if ($date_obj != null) {
-	    return $date_obj->__toString();	
-	}
-
-    return "";
 }

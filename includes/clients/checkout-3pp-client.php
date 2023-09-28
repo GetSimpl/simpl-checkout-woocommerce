@@ -10,23 +10,15 @@ class Simpl_Checkout_3pp_Client {
 
     function simpl_post_hook_request($request) {
         $simpl_host = WC_Simpl_Settings::simpl_host();
-        $store_url = WC_Simpl_Settings::store_url_with_prefix();
+        
         $client_credentials = WC_Simpl_Settings::merchant_credentials();
+        $request["merchant_client_id"] = $client_credentials["client_id"];
+        $request["store_url"] = WC_Simpl_Settings::store_url_with_prefix();
 
-        $data = $request["data"];
-        $topic = $request["topic"];
-        $resource = $request["resource"];
-        $event = $request["event"];
-
-        $simplHttpResponse = wp_remote_post("https://" . $simpl_host . "/order_hook", array(
-            "body" => json_encode($data),
+        $simplHttpResponse = wp_remote_post("https://" . $simpl_host . "/hook", array(
+            "body" => json_encode($request),
             "headers" => array(
                 "content-type" => "application/json",
-                "merchant_client_id" => $client_credentials["client_id"],
-                WEBHOOK_SOURCE => $store_url,
-                WEBHOOK_TOPIC => $topic,
-                WEBHOOK_RESOURCE => $resource,
-                WEBHOOK_EVENT => $event,
             ),
         ));
 
