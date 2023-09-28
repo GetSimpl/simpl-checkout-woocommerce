@@ -105,16 +105,13 @@ function simpl_checkout_int() {
     include_once 'includes/endpoints/load.php';
     include_once 'includes/widget/load.php';
     include_once 'includes/plugin_support/load.php';
+    include_once 'includes/clients';
 
     add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
     add_action( 'plugins_loaded', 'simpl_init_gateway_class' );
     register_activation_hook( __FILE__, 'my_plugin_activate' );
     register_deactivation_hook( __FILE__, 'my_plugin_deactivate' );
 
-    define('WEBHOOK_SOURCE', 'X-WC-Webhook-Source');
-    define('WEBHOOK_TOPIC', 'X-WC-Webhook-Topic');
-    define('WEBHOOK_RESOURCE', 'X-WC-Webhook-Resource');
-    define('WEBHOOK_EVENT', 'X-WC-Webhook-Event');
     add_action( 'woocommerce_order_refunded', 'order_hook', 10, 1 );
 }
 
@@ -127,78 +124,23 @@ function order_hook($order_id)
     $client_credentials = WC_Simpl_Settings::merchant_credentials();
 
     $order_data = $order->get_data();
-    $order_data["line_items"] = get_order_line_items($order);
-    $order_data["tax_lines"] = get_tax_lines($order);
-    $order_data["shipping_lines"] = get_shipping_lines($order);
-    $order_data["refunds"] = get_order_refunds($order);
-	
-    $order_data["date_created"] = convert_date_obj_to_str($order->get_date_created());	
-    $order_data["date_modified"] = convert_date_obj_to_str($order->get_date_modified());
-    $order_data["date_paid"] = convert_date_obj_to_str($order->get_date_paid());
-    $order_data["date_completed"] = convert_date_obj_to_str($order->get_date_completed());
+    $order_data["line_items"] = $order->get_items();
+    $order_data["tax_lines"] = get_data($order->get_taxes());
+    $order_data["shipping_lines"] = get_data($order->get_shipping_methods());
+    $order_data["refunds"] = get_data($order->get_refunds());
 
-    $simplHttpResponse = wp_remote_post("https://" . $simpl_host . "/order_hook", array(
-        "body" => json_encode($order_data),
-        "headers" => array(
-            "content-type" => "application/json",
-            "merchant_client_id" => $client_credentials["client_id"],
-            WEBHOOK_SOURCE => $store_url,
-            WEBHOOK_TOPIC => "order.updated",
-            WEBHOOK_RESOURCE => "order",
-            WEBHOOK_EVENT => "updated",
-        ),
-    ));
-
-    if ( ! is_wp_error( $simplHttpResponse ) ) {
-        $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
-    } else {
-        $error_message = $simplHttpResponse->get_error_message();
-        error_log(print_r($error_message, TRUE)); 
-        throw new Exception( $error_message );
-    }
-}
-
-
-function get_order_line_items($order) {
-    $order_items = $order->get_items();
-
-    $response = array();
-    foreach( $order_items as $order_item ){
-        $item_data = $order_item->get_data();
-        $item_data["taxes"] = convert_tax_obj_to_arr($item_data);
-        
-        array_push($response, $item_data);
-    }
-
-    return $response;
-}
-
-function get_tax_lines($order) {
-   return get_data($order->get_taxes());
-}
-
-function get_shipping_lines($order) {
-    $shipping_lines = get_data($order->get_shipping_methods());
-
-    $response = array();
-    foreach( $shipping_lines as $item_data ){
-        $item_data["taxes"] = convert_tax_obj_to_arr($item_data);
-
-        array_push($response, $item_data);
-    }
-
-    return $response;
-}
-
-function get_order_refunds($order) {
-    return get_data($order->get_refunds());
+    $request["topic"] = "order.updated";
+    $request["resource"] = "order";
+    $request["event"] = "updated";
+    $request["data"] = $order_data;
+    $checkout_3pp_client = new Simpl_Checkout_3pp_Client;
+    $simplHttpResponse = $checkout_3pp_client->simpl_post_hook_request($request);
 }
 
 function get_data($obj) {
-    $i = 0;
+    $response = array();
     foreach( $obj as $obj_item ){
-        $response[$i] = $obj_item->get_data();
-        $i++;
+        array_push($response, $obj_item->get_data());
     }
 
     return $response;
