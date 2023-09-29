@@ -14,7 +14,7 @@ class Simpl_Checkout_3pp_Client {
         $client_credentials = WC_Simpl_Settings::merchant_credentials();
         $request["merchant_client_id"] = $client_credentials["client_id"];
         $request["store_url"] = WC_Simpl_Settings::store_url_with_prefix();
-
+        
         $simplHttpResponse = wp_remote_post("https://" . $simpl_host . "/hook", array(
             "body" => json_encode($request),
             "headers" => array(

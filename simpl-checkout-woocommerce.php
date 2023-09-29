@@ -105,22 +105,22 @@ function simpl_checkout_int() {
     include_once 'includes/endpoints/load.php';
     include_once 'includes/widget/load.php';
     include_once 'includes/plugin_support/load.php';
-    include_once 'includes/clients';
+    include_once 'includes/clients/load.php';
 
     add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
     add_action( 'plugins_loaded', 'simpl_init_gateway_class' );
     register_activation_hook( __FILE__, 'my_plugin_activate' );
     register_deactivation_hook( __FILE__, 'my_plugin_deactivate' );
 
-    add_action( 'woocommerce_order_refunded', 'order_hook', 10, 1 );
+    add_action( 'woocommerce_order_refunded', 'hook', 10, 1 );
 }
 
-function order_hook($order_id)
+function hook($order_id)
 {
     $order = wc_get_order($order_id);
 
     $order_data = $order->get_data();
-    $order_data["line_items"] = $order->get_items();
+    $order_data["line_items"] = get_data($order->get_items());
     $order_data["tax_lines"] = get_data($order->get_taxes());
     $order_data["shipping_lines"] = get_data($order->get_shipping_methods());
     $order_data["refunds"] = get_data($order->get_refunds());
