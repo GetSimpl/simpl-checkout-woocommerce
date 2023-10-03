@@ -1,6 +1,6 @@
 <?php
 
-class Simpl_Checkout_3pp_Client {
+class SimplCheckout3ppClient {
     public static function init() {
         define('WEBHOOK_SOURCE', 'X-WC-Webhook-Source');
         define('WEBHOOK_TOPIC', 'X-WC-Webhook-Topic');
@@ -34,4 +34,4 @@ class Simpl_Checkout_3pp_Client {
     }
 }
 
-Simpl_Checkout_3pp_Client::init();
+SimplCheckout3ppClient::init();

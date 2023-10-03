@@ -112,10 +112,10 @@ function simpl_checkout_int() {
     register_activation_hook( __FILE__, 'my_plugin_activate' );
     register_deactivation_hook( __FILE__, 'my_plugin_deactivate' );
 
-    add_action( 'woocommerce_order_refunded', 'hook', 10, 1 );
+    add_action( 'woocommerce_order_refunded', 'order_hook', 10, 1 );
 }
 
-function hook($order_id)
+function order_hook($order_id)
 {
     $order = wc_get_order($order_id);
 
@@ -129,7 +129,7 @@ function hook($order_id)
     $request["resource"] = "order";
     $request["event"] = "updated";
     $request["data"] = $order_data;
-    $checkout_3pp_client = new Simpl_Checkout_3pp_Client;
+    $checkout_3pp_client = new SimplCheckout3ppClient;
     $simplHttpResponse = $checkout_3pp_client->simpl_post_hook_request($request);
 }
 
