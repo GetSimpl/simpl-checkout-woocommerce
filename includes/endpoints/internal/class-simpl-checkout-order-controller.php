@@ -82,6 +82,6 @@ class SimplCheckoutOrderController
     {
         WC()->session->set("simpl_order_id", $order_id);
         $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
-        return $available_gateways["simpl_checkout_payment"];
+        return $available_gateways[PAYMENT_GATEWAY_SIMPL];
     }
 }
