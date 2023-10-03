@@ -91,11 +91,11 @@ class SimplWcCartHelper {
         $order->update_meta_data("simpl_cart_token", $request->get_params()["simpl_cart_token"]);
         $order->update_meta_data("simpl_payment_id", $request->get_params()["simpl_payment_id"]);
         $order->update_meta_data("simpl_order_id", $request->get_params()["simpl_order_id"]);
-        if ($request->get_params()["simpl_payment_type"] == 'Cash on Delivery (COD)') {
-            $order->set_payment_method('cod');
-            $order->set_payment_method_title('Cash on delivery');
+        if ($request->get_params()["simpl_payment_type"] == PAYMENT_TYPE_COD) {
+            $order->set_payment_method(PAYMENT_METHOD_COD);
+            $order->set_payment_method_title(PAYMENT_METHOD_TITLE_COD);
         } else {
-            $order->set_payment_method('Simpl Checkout');
+            $order->set_payment_method(PAYMENT_METHOD_SIMPL);
             $order->set_payment_method_title($request->get_params()["simpl_payment_type"]);
         }
 
