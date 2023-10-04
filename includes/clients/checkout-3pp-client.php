@@ -1,21 +1,21 @@
 <?php
 
 class SimplCheckout3ppClient {
-    public static function init() {
-        define('WEBHOOK_SOURCE', 'X-WC-Webhook-Source');
-        define('WEBHOOK_TOPIC', 'X-WC-Webhook-Topic');
-        define('WEBHOOK_RESOURCE', 'X-WC-Webhook-Resource');
-        define('WEBHOOK_EVENT', 'X-WC-Webhook-Event');
+    private $clientId;
+    private $simplHost;
+    private $storeUrl;
+
+    function __construct($storeUrl, $simplHost, $clientId) {
+        $this->storeUrl = $storeUrl;
+        $this->simplHost = $simplHost;
+        $this->clientId = $clientId;
     }
 
     function simpl_post_hook_request($request) {
-        $simpl_host = WC_Simpl_Settings::simpl_host();
+        $request["merchant_client_id"] = $this->clientId;
+        $request["store_url"] = $this->storeUrl;
         
-        $client_credentials = WC_Simpl_Settings::merchant_credentials();
-        $request["merchant_client_id"] = $client_credentials["client_id"];
-        $request["store_url"] = WC_Simpl_Settings::store_url();
-        
-        $simplHttpResponse = wp_remote_post("https://" . $simpl_host . "/hook", array(
+        $simplHttpResponse = wp_remote_post("https://" . $this->simplHost . "/hook", array(
             "body" => json_encode($request),
             "headers" => array(
                 "content-type" => "application/json",
@@ -33,5 +33,3 @@ class SimplCheckout3ppClient {
         return $simplHttpResponse;
     }
 }
-
-SimplCheckout3ppClient::init();
