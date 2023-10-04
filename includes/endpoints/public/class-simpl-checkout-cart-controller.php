@@ -7,9 +7,13 @@ class SimplCheckoutCartController {
             $productID = $request->get_params()["product_id"];
             $variantID = $request->get_params()["variant_id"];
             $quantity = $request->get_params()["quantity"];
-            //TODO: we needs to add validation
+            $variation = array();
+            if (isset($request->get_params()["attributes"])) {
+                $variation = $request->get_params()["attributes"];
+            }
+            
             WC()->cart->empty_cart();
-            WC()->cart->add_to_cart($productID, $quantity, $variantID);
+            WC()->cart->add_to_cart($productID, $quantity, $variantID, $variation);
         }
     
     
