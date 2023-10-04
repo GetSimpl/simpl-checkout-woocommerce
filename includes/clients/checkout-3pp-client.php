@@ -26,7 +26,6 @@ class SimplCheckout3ppClient {
             $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
         } else {
             $error_message = $simplHttpResponse->get_error_message();
-            error_log(print_r($error_message, TRUE)); 
             throw new Exception( $error_message );
         }
 
