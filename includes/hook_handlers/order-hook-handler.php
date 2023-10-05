@@ -14,13 +14,9 @@ function order_hook($order_id)
     $request["event"] = "updated";
     $request["data"] = $order_data;
 
-    $client_credentials = WC_Simpl_Settings::merchant_credentials();
-    $store_url = WC_Simpl_Settings::store_url();
-    $simpl_host = WC_Simpl_Settings::simpl_host();
-
-    $checkout_3pp_client = new SimplCheckout3ppClient($store_url, $simpl_host, $client_credentials["client_id"]);
+    $checkout_3pp_client = new SimplCheckout3ppClient();
     try {
-        $simplHttpResponse = $checkout_3pp_client->simpl_post_hook_request($request);
+        $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
     } catch (\Throwable $th) { 
         error_log(print_r($th, TRUE)); 
     }

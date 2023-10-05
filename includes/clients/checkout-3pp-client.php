@@ -5,13 +5,14 @@ class SimplCheckout3ppClient {
     private $simplHost;
     private $storeUrl;
 
-    function __construct($storeUrl, $simplHost, $clientId) {
-        $this->storeUrl = $storeUrl;
-        $this->simplHost = $simplHost;
-        $this->clientId = $clientId;
+    function __construct() {
+        $client_credentials = WC_Simpl_Settings::merchant_credentials();
+        $this->clientId = $client_credentials["client_id"];
+        $this->storeUrl = WC_Simpl_Settings::store_url();;
+        $this->simplHost = WC_Simpl_Settings::simpl_host();
     }
 
-    function simpl_post_hook_request($request) {
+    function post_hook_request($request) {
         $request["merchant_client_id"] = $this->clientId;
         $request["store_url"] = $this->storeUrl;
         
