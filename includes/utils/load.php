@@ -30,4 +30,13 @@ class SimplUtil
         $supported_countries = array("IN" => "India");
         return $supported_countries[$country_code];
     }
+
+    static function get_data($obj) {
+        $response = array();
+        foreach( $obj as $obj_item ){
+            array_push($response, $obj_item->get_data());
+        }
+    
+        return $response;
+    }
 }
