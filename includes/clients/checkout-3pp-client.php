@@ -16,7 +16,7 @@ class SimplCheckout3ppClient {
         $request["merchant_client_id"] = $this->clientId;
         $request["store_url"] = $this->storeUrl;
         
-        $simplHttpResponse = wp_remote_post("https://" . $this->simplHost . "/hook", array(
+        $simplHttpResponse = wp_remote_post("https://" . $this->simplHost . "/wc/hook", array(
             "body" => json_encode($request),
             "headers" => array(
                 "content-type" => "application/json",

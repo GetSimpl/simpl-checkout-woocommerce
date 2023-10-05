@@ -112,6 +112,4 @@ function simpl_checkout_int() {
     add_action( 'plugins_loaded', 'simpl_init_gateway_class' );
     register_activation_hook( __FILE__, 'my_plugin_activate' );
     register_deactivation_hook( __FILE__, 'my_plugin_deactivate' );
-
-    add_action( 'woocommerce_order_refunded', 'order_hook', 10, 1 );
 }
