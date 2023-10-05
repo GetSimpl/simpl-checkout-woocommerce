@@ -47,10 +47,22 @@ class WC_Simpl_Settings {
 	public static function simpl_host() {
 		$staging_env = get_option( "wc_settings_tab_simpl_test_env" );
 		if ( $staging_env == "yes" ) {
-			return SIMPL_CONFIG_STAGING_URL;
+
+			return self::get_simpl_host_based_on_url();
 		}
 
 		return SIMPL_CONFIG_PRODUCTION_URL;
+	}
+
+	public static function get_simpl_host_based_on_url() {
+		switch ( self::store_url() ) {
+			case SIMPL_SANDBOX_STORE_URL:
+				return SIMPL_CONFIG_SANBOX_URL;
+			case SIMPL_QA_STORE_URL:
+				return SIMPL_CONFIG_QA_URL;
+			default:
+				return SIMPL_CONFIG_STAGING_URL;
+		}
 	}
 
 	public static function test_mode_enabled() {
