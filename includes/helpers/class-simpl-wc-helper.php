@@ -87,14 +87,15 @@ class SimplWcCartHelper {
     }
 
     static function set_utm_info_in_order($request, $order) {
-        $order->update_meta_data("landing_page", $request['utm_info']["_landing_page"]);
-        $order->update_meta_data("utm_source", $request['utm_info']["utm_source"]);
-        $order->update_meta_data("utm_content", $request['utm_info']["utm_content"]);
-        $order->update_meta_data("utm_campaign", $request['utm_info']["utm_campaign"]);
-        $order->update_meta_data("utm_medium", $request['utm_info']["utm_medium"]);
-        $order->update_meta_data("utm_term", $request['utm_info']["utm_term"]);
-        $order->update_meta_data("fbclid", $request['utm_info']["fbclid"]);
-        $order->update_meta_data("gclid", $request['utm_info']["gclid"]);
+        if (isset($request['utm_info']["_landing_page"])) $order->update_meta_data("_landing_page", $request['utm_info']["_landing_page"]);
+        if (isset($request['utm_info']["utm_source"])) $order->update_meta_data("utm_source", $request['utm_info']["utm_source"]);
+        if (isset($request['utm_info']["utm_content"])) $order->update_meta_data("utm_content", $request['utm_info']["utm_content"]);
+        if (isset($request['utm_info']["utm_campaign"])) $order->update_meta_data("utm_campaign", $request['utm_info']["utm_campaign"]);
+        if (isset($request['utm_info']["utm_medium"])) $order->update_meta_data("utm_medium", $request['utm_info']["utm_medium"]);
+        if (isset($request['utm_info']["utm_term"])) $order->update_meta_data("utm_term", $request['utm_info']["utm_term"]);
+        if (isset($request['utm_info']["fbclid"])) $order->update_meta_data("fbclid", $request['utm_info']["fbclid"]);
+        if (isset($request['utm_info']["gclid"])) $order->update_meta_data("gclid", $request['utm_info']["gclid"]);
+
         $order->save();
     }
 
