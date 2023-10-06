@@ -79,8 +79,8 @@ function simpl_checkout_int() {
         return;
     }
     define('SIMPL_PLUGIN_DIR', plugin_dir_path( __FILE__ ));
-    define ('SIMPL_SANDBOX_STORE_URL', 'sandbox.1bill.in');
-    define ('SIMPL_QA_STORE_URL', 'qa.1bll.in');
+    define('SIMPL_SANDBOX_STORE_URL', 'sandbox.1bill.in');
+    define('SIMPL_QA_STORE_URL', 'qa.1bll.in');
     define('SIMPL_CONFIG_STAGING_URL', 'checkout-3pp.stagingsimpl.com');
     define('SIMPL_CONFIG_SANDBOX_URL', 'sandbox-checkout-3pp.getsimpl.com');
     define('SIMPL_CONFIG_QA_URL', 'qa-checkout-3pp.stagingsimpl.com');
