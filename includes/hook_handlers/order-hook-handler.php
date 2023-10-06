@@ -21,12 +21,12 @@ function order_hook($order_id, $refund_id)
     try {
         $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
     } catch (\Throwable $th) {
-        log_hook_status($order_id, $refund_id, $topic, $resource, $event, current_filter(), $th->getMessage(), "failed");
+        save_hook_request_status($order_id, $refund_id, $topic, $resource, $event, current_filter(), $th->getMessage(), "failed");
     }
 }
 
 
-function log_hook_status($order_id, $refund_id, $topic, $resource, $event, $hook, $data, $status) {
+function save_hook_request_status($order_id, $refund_id, $topic, $resource, $event, $hook, $data, $status) {
     global $wpdb;
     $hook_status_table = $wpdb->prefix . "hook_status";
 
