@@ -96,7 +96,7 @@ class SimplCartResponse
         $cart_payload["applied_shipping_method"] = $this->get_applied_shipping_method($cart);
         $cart_content = $cart->get_cart();
         $cart_payload["items"] = $this->getCartLineItem($cart_content);
-        $cart_payload['attributes'] = array('a' => '2');
+        $cart_payload['attributes'] = array();
         $cart_payload["merchant_additional_details"] = $merchant_additional_details;
         return $cart_payload;
     }
@@ -267,7 +267,7 @@ class SimplCartResponse
             $data[$i]['price'] = wc_format_decimal((empty($product->get_price()) === false) ? $price / $item['quantity'] : 0, 2);
             $data[$i]['variant_id'] = $item['variation_id'];
             $data[$i]['product_id'] = $item['product_id'];
-            $data[$i]['attributes'] = empty($item['variation_id']) ? null : wc_get_product_variation_attributes($item['variation_id']);
+            $data[$i]['attributes'] = empty($item['variation']) ? null : $item['variation'];
             $data[$i]['offer_price'] = wc_format_decimal((empty($productDetails['sale_price']) === false) ? (float) $productDetails['sale_price'] : $price / $item['quantity'], 2);
             $i++;
         }
