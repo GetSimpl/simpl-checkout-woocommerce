@@ -54,15 +54,6 @@ function log_hook_status($order_id, $refund_id, $topic, $resource, $event, $hook
                 'hook'      => $hook,
             )
         );
-
-        if ($wpdb->last_error) {
-            $response['status']  = false;
-            $response['message'] = $wpdb->last_error;
-        } else {
-            $response['status']  = true;
-            $response['message'] = 'Data successfully updated for wooCommerce cart abandonment recovery';
-        }
-
     } else {
         $now = new DateTime(null, new DateTimeZone('Asia/Kolkata'));
         $checkout_details = array(
@@ -83,16 +74,15 @@ function log_hook_status($order_id, $refund_id, $topic, $resource, $event, $hook
             $checkout_details
         );
 
-        if ($wpdb->last_error) {
-            $response['status']  = false;
-            $response['message'] = $wpdb->last_error;
-            $statusCode          = 400;
-        } else {
-            $response['status']  = true;
-            $response['message'] = 'Data successfully inserted for wooCommerce hook log';
-            $statusCode          = 200;
-        }
-
         error_log(print_r($response, TRUE));
+    }
+
+    if ($wpdb->last_error) {
+        $response['status']  = false;
+        $response['message'] = $wpdb->last_error;
+        $statusCode          = 400;
+    } else {
+        $response['status']  = true;
+        $response['message'] = 'Data successfully updated for wooCommerce hook log';
     }
 }
