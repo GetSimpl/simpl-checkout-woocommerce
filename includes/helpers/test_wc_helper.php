@@ -25,7 +25,7 @@
         $variation->set_regular_price( 10 );
         $variation->save();
         
-        return array("product_id" => $product->get_id(), "variant_id" => $variation->get_id());
+        return array("product_id" => $product->get_id(), "variant_id" => $variation->get_id(), "variation" => $variation->get_attributes());
     }
 
     function simpl_test_create_user() {

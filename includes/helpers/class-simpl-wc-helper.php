@@ -14,7 +14,7 @@ class SimplWcCartHelper {
     static function add_to_cart($items) {
         WC()->cart->empty_cart();
         foreach($items as $item_id => $item) {
-            WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"]);
+            WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"], $item["attributes"]);
         }
         if(WC()->cart->is_empty()) {
             throw new SimplCustomHttpBadRequest("invalid cart items");
