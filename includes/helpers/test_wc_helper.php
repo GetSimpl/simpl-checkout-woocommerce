@@ -1,6 +1,6 @@
 <?php
 
-    function create_product() {
+    function simpl_test_create_product() {
         $product = new WC_Product_Variable();
         // Name and image would be enough
         $product->set_name( 'Wizard Hat' );
@@ -28,7 +28,7 @@
         return array("product_id" => $product->get_id(), "variant_id" => $variation->get_id());
     }
 
-    function create_test_user() {
+    function simpl_test_create_user() {
         $username = 'test_username';
         $email    = 'test@gmail.com';
         $password = 'test_password';
@@ -37,4 +37,52 @@
         $user->set_role( 'customer' );
         $user->save();
         return $user;
+    }
+
+    function simpl_test_create_cart($data) {
+        WC()->cart->add_to_cart($data['product_id'], 1, $data['variant_id']);
+        $shipping_address = array(
+            "first_name" => "Donald",
+            "last_name" => "Trump",
+            "phone" => "9999999999",
+            "address_1" => "4444",
+            "address_2" => "SC, DC",
+            "city" => "Washington",
+            "state" => "Delhi",
+            "country" => "India",
+            "postcode" => "111111"
+        );
+        $billing_address = array(
+            "first_name" => "Donald",
+            "last_name" => "Trump",
+            "phone" => "9999999999",
+            "address_1" => "4444",
+            "address_2" => "SC, DC",
+            "city" => "Washington",
+            "state" => "Delhi",
+            "country" => "India",
+            "postcode" => "111111"
+        );
+        SimplWcCartHelper::set_address_in_cart($shipping_address, $billing_address);
+    }
+
+    function simpl_test_set_default_shipping_method_in_order($order) {
+        $shipping = array(
+            "slug" => "test_id",
+            "name" => "DEFAULT SHIPPING",
+            "amount" => 10
+        );
+        SimplWcCartHelper::simpl_set_shipping_method_in_order($order, $shipping);
+        $order->save();
+    }
+
+    function simpl_test_get_shipping_method($order) {
+        foreach ($order->get_shipping_methods() as $item_id => $item) {
+            $shipping_methods_array["id"] = $item->get_id();
+            $shipping_methods_array["slug"] = $item->get_method_id();
+            $shipping_methods_array["name"] = $item->get_name();
+            $shipping_methods_array["amount"] = wc_format_decimal($item->get_total(), 2);
+            $shipping_methods_array["total_tax"] = wc_format_decimal($item->get_total_tax(), 2);
+        }
+        return $shipping_methods_array;
     }
