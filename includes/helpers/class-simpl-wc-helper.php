@@ -56,15 +56,6 @@ class SimplWcCartHelper {
         WC()->checkout->create_order_coupon_lines( $order, WC()->cart );
     }
 
-    static protected function update_data_from_cart( &$order ) {
-        $order->set_shipping_total( WC()->cart->get_shipping_total() );
-        $order->set_discount_total( WC()->cart->get_discount_total() );
-        $order->set_discount_tax( WC()->cart->get_discount_tax() );
-        $order->set_cart_tax( WC()->cart->get_cart_contents_tax() + WC()->cart->get_fee_tax() );
-        $order->set_shipping_tax( WC()->cart->get_shipping_tax() );
-        $order->set_total( WC()->cart->get_total( 'edit' ) );
-    }
-
     static function set_address_in_cart($shipping_address, $billing_address) {
         $shipping_address = self::convert_address_payload($shipping_address);
         $billing_address = self::convert_address_payload($billing_address);  
@@ -144,18 +135,19 @@ class SimplWcCartHelper {
     
 
     static function update_shipping_line($order_id) {
-        $order = wc_get_order($order_id);        
+        $order = wc_get_order($order_id);
         $order->remove_order_items("shipping");
         $shipping_methods = WC()->cart->calculate_shipping();
         if(count($shipping_methods) > 0) {
             $item = new WC_Order_Item_Shipping();
+
             $item->set_method_id($shipping_methods[0]->get_id());
             $item->set_method_title($shipping_methods[0]->get_label());
             $item->set_total($shipping_methods[0]->get_cost());
-            $item->calculate_taxes($shipping_methods[0]->get_taxes());
-            $order->add_item($item);        
+ 
+            $order->add_item($item);
+            $order->calculate_totals();
         }
-        self::update_data_from_cart($order);
         $order->save();
         return $order;
     }
