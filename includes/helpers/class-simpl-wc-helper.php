@@ -14,7 +14,7 @@ class SimplWcCartHelper {
     static function add_to_cart($items) {
         WC()->cart->empty_cart();
         foreach($items as $item_id => $item) {
-            WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"]);
+            WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"], $item["attributes"]);
         }
         if(WC()->cart->is_empty()) {
             throw new SimplCustomHttpBadRequest("invalid cart items");
@@ -77,15 +77,39 @@ class SimplWcCartHelper {
         }
     }
 
-    static function set_utm_info_in_order($request, $order) {
-        $order->update_meta_data("landing_page", $request['utm_info']["_landing_page"]);
-        $order->update_meta_data("utm_source", $request['utm_info']["utm_source"]);
-        $order->update_meta_data("utm_content", $request['utm_info']["utm_content"]);
-        $order->update_meta_data("utm_campaign", $request['utm_info']["utm_campaign"]);
-        $order->update_meta_data("utm_medium", $request['utm_info']["utm_medium"]);
-        $order->update_meta_data("utm_term", $request['utm_info']["utm_term"]);
-        $order->update_meta_data("fbclid", $request['utm_info']["fbclid"]);
-        $order->update_meta_data("gclid", $request['utm_info']["gclid"]);
+    static function simpl_update_order_metadata($request, $order)
+    {
+        $order->update_meta_data("simpl_cart_token", $request->get_params()["simpl_cart_token"]);
+        $order->update_meta_data("simpl_payment_id", $request->get_params()["simpl_payment_id"]);
+        $order->update_meta_data("simpl_order_id", $request->get_params()["simpl_order_id"]);
+        if ($request->get_params()["simpl_payment_type"] == PAYMENT_TYPE_COD) {
+            $order->set_payment_method(PAYMENT_METHOD_COD);
+            $order->set_payment_method_title(PAYMENT_METHOD_TITLE_COD);
+        } else {
+            $order->set_payment_method(PAYMENT_METHOD_SIMPL);
+            $order->set_payment_method_title($request->get_params()["simpl_payment_type"]);
+        }
+
+        if (self::simpl_is_utm_info_present($request)) {
+            self::simpl_set_utm_info_in_order($request, $order);
+        }
+    }
+
+    static protected function simpl_is_utm_info_present($request)
+    {
+        return (isset($request->get_params()["utm_info"]) && count($request->get_params()["utm_info"]) > 0);
+    }
+
+    static protected function simpl_set_utm_info_in_order($request, $order) {
+        if (isset($request['utm_info']["_landing_page"])) $order->update_meta_data("_landing_page", $request['utm_info']["_landing_page"]);
+        if (isset($request['utm_info']["utm_source"])) $order->update_meta_data("utm_source", $request['utm_info']["utm_source"]);
+        if (isset($request['utm_info']["utm_content"])) $order->update_meta_data("utm_content", $request['utm_info']["utm_content"]);
+        if (isset($request['utm_info']["utm_campaign"])) $order->update_meta_data("utm_campaign", $request['utm_info']["utm_campaign"]);
+        if (isset($request['utm_info']["utm_medium"])) $order->update_meta_data("utm_medium", $request['utm_info']["utm_medium"]);
+        if (isset($request['utm_info']["utm_term"])) $order->update_meta_data("utm_term", $request['utm_info']["utm_term"]);
+        if (isset($request['utm_info']["fbclid"])) $order->update_meta_data("fbclid", $request['utm_info']["fbclid"]);
+        if (isset($request['utm_info']["gclid"])) $order->update_meta_data("gclid", $request['utm_info']["gclid"]);
+
         $order->save();
     }
 
@@ -162,17 +186,17 @@ class SimplWcCartHelper {
         return WC()->cart;
     }
 
-    static function set_customer_info_in_order($order) {
+    static function simpl_set_customer_info_in_order($order) {
         if(!empty($order->get_billing_email())){
             $customer = simpl_get_customer_by_email($order->get_billing_email());
             if(empty($customer->get_id())) {
-                $customer = self::create_new_customer($order);
+                $customer = self::simpl_create_new_customer($order);
             }
             $order->set_customer_id($customer->get_id());
         }
     }
 
-    static protected function create_new_customer($order) {
+    static protected function simpl_create_new_customer($order) {
         $customer = WC()->customer;
         $customer->set_email($order->get_billing_email());
         $customer->set_first_name($order->get_shipping_first_name());
@@ -181,6 +205,18 @@ class SimplWcCartHelper {
         $customer->save();
 
         return $customer;
+    }
+
+    static function simpl_set_shipping_method_in_order($order, $shipping_method) {
+        $method = new WC_Order_Item_Shipping();
+
+        $method->set_method_id($shipping_method['slug']);
+        $method->set_name($shipping_method['name']);
+        $method->set_total($shipping_method['amount']);
+
+        // Add Shipping item to the order.
+        $order->add_item( $method );
+        $order->calculate_totals();
     }
 }
 
