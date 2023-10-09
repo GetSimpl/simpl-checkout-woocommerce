@@ -2,9 +2,22 @@
     add_action( 'woocommerce_order_refunded', 'order_hook', 10, 2 );
     add_action('add_hook_status_table', 'add_hook_status_table_into_db');
 
+    function is_valid_version($version_to_run) {
+      $current_hook_table_version = get_option( "hook_table_version" );
+
+      if ($current_hook_table_version == null || $current_hook_table_version < $version_to_run ) {
+        return true;
+      }
+
+      return false;
+    }
+
     function add_hook_status_table_into_db(){
-        global $wpdb;
+      $table_version = 1;
       
+      global $wpdb;
+
+      if (is_valid_version($table_version)) {
         // set the default character set and collation for the table
         $charset_collate = $wpdb->get_charset_collate();
       
@@ -29,6 +42,9 @@
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta( $sql );
         $is_error = empty( $wpdb->last_error );
+
+        update_option( "hook_table_version", $table_version );
       
         return $is_error;
       }
+    }
