@@ -111,6 +111,10 @@ class WC_Simpl_Settings {
 		return get_option( "wc_settings_tab_simpl_button_cart_activated" ) == 'yes';
 	}
 
+	public static function can_display_in_mini_cart() {
+		return get_option( "wc_settings_tab_simpl_button_mini_cart_activated" ) == 'yes';
+	}
+
 	public static function cta_position_in_pdp() {
 		return get_option( "wc_settings_tab_simpl_button_position_pdp" );
 	}
@@ -138,6 +142,7 @@ class WC_Simpl_Settings {
 	}
 
 	public static function store_url() {
+		return 'shop.1bill.in';
 		return parse_url( get_site_url(), PHP_URL_HOST );
 	}
 
@@ -158,6 +163,7 @@ class WC_Simpl_Settings {
 			"button_activated"      => ! isset( $_POST["wc_settings_tab_simpl_button_activated"] ) ? 0 : 1,
 			"button_pdp_activated"  => ! isset( $_POST["wc_settings_tab_simpl_button_pdp_activated"] ) ? 0 : 1,
 			"button_cart_activated" => ! isset( $_POST["wc_settings_tab_simpl_button_cart_activated"] ) ? 0 : 1,
+			"button_mini_cart_activated" => ! isset( $_POST["wc_settings_tab_simpl_button_mini_cart_activated"] ) ? 0 : 1,
 			"enabled_to_admin"      => ! isset( $_POST["wc_settings_tab_simpl_enabled_to_admin"] ) ? 0 : 1,
 		);
 
@@ -194,6 +200,7 @@ class WC_Simpl_Settings {
 			"button_activated"       => get_option( "wc_settings_tab_simpl_button_activated" ) == 'yes' ? 1 : 0,
 			"button_pdp_activated"   => get_option( "wc_settings_tab_simpl_button_pdp_activated" ) == 'yes' ? 1 : 0,
 			"button_cart_activated"  => get_option( "wc_settings_tab_simpl_button_cart_activated" ) == 'yes' ? 1 : 0,
+			"button_mini_cart_activated"  => get_option( "wc_settings_tab_simpl_button_mini_cart_activated" ) == 'yes' ? 1 : 0,
 			"enabled_to_admin"       => get_option( "wc_settings_tab_simpl_enabled_to_admin" ) == 'yes' ? 1 : 0,
 		);
 	}
@@ -342,6 +349,13 @@ class WC_Simpl_Settings {
 				'type' => 'checkbox',
 				'desc' => __( 'Show simpl checkout button in Cart page', 'woocommerce-settings-tab-simpl' ),
 				'id'   => 'wc_settings_tab_simpl_button_cart_activated'
+			);
+			
+			$settings[] = array(
+				'name' => __( 'Mini Cart', 'woocommerce-settings-tab-simpl' ),
+				'type' => 'checkbox',
+				'desc' => __( 'Show simpl checkout button in Mini cart', 'woocommerce-settings-tab-simpl' ),
+				'id'   => 'wc_settings_tab_simpl_button_mini_cart_activated'
 			);
 
 			$settings[] = array(
