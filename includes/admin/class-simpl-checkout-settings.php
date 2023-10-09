@@ -57,7 +57,7 @@ class WC_Simpl_Settings {
 	public static function get_simpl_host_based_on_url() {
 		switch ( self::store_url() ) {
 			case SIMPL_SANDBOX_STORE_URL:
-				return SIMPL_CONFIG_SANBOX_URL;
+				return SIMPL_CONFIG_SANDBOX_URL;
 			case SIMPL_QA_STORE_URL:
 				return SIMPL_CONFIG_QA_URL;
 			default:
@@ -81,13 +81,23 @@ class WC_Simpl_Settings {
 		}
 	}
 
+	public static function get_widget_url_based_on_url() {
+		switch ( self::store_url() ) {
+			case SIMPL_SANDBOX_STORE_URL:
+				return WIDGET_SCRIPT_SANDBOX_URL;
+			default:
+				return WIDGET_SCRIPT_STAGING_URL;
+		}
+	}
+
 	public static function widget_script_url() {
 		if ( SIMPL_ENV == "localhost" ) {
 			return WIDGET_SCRIPT_LOCALHOST;
 		}
-		$staging_env = get_option( "wc_settings_tab_simpl_test_env" );
-		if ( $staging_env == "yes" ) {
-			return WIDGET_SCRIPT_STAGING_URL;
+		$test_env = get_option( "wc_settings_tab_simpl_test_env" );
+		if ( $test_env == "yes" ) {
+
+			return self::get_widget_url_based_on_url();
 		}
 
 		return WIDGET_SCRIPT_PRODUCTION_URL;
