@@ -159,14 +159,14 @@ class SimplWcCartHelper {
                 
                 WC()->cart->add_to_cart($productId, $quantity, $variationId, $variationAttributes, $customData);                
             }
-            $order_coupons = get_order_coupon_codes($order);
+            $order_coupons = simpl_get_order_coupon_codes($order);
             if(count($order_coupons) > 0) {
                 foreach ($order_coupons as $item_id => $coupon_code) {
                     WC()->cart->add_discount($coupon_code);
                 }
             }
-            set_order_address_in_cart($order->get_address('shipping'), $order->get_address('billing'));
-            set_order_shipping_method_in_cart($order);
+            simpl_set_order_address_in_cart($order->get_address('shipping'), $order->get_address('billing'));
+            simpl_set_order_shipping_method_in_cart($order);
         }
         return WC()->cart;
     }
@@ -199,7 +199,7 @@ function simpl_get_customer_by_email($email) {
 }
 
 
-function set_order_address_in_cart($shipping_address, $billing_address) {
+function simpl_set_order_address_in_cart($shipping_address, $billing_address) {
     if(isset($shipping_address) && isset($billing_address)) {        
         foreach($shipping_address as $key => $value) {
             if(method_exists(WC()->customer, "set_shipping_".$key)) {
@@ -218,7 +218,7 @@ function set_order_address_in_cart($shipping_address, $billing_address) {
 }
 
 
-function set_order_shipping_method_in_cart($order) {
+function simpl_set_order_shipping_method_in_cart($order) {
     $order_shipping_methods = $order->get_shipping_methods();
     foreach ($order_shipping_methods as $key => $method) {
         $id = $method->get_method_id() . ':' . $method->get_instance_id();
@@ -230,7 +230,7 @@ function set_order_shipping_method_in_cart($order) {
     WC()->cart->calculate_totals();
 }
 
-function get_order_coupon_codes($order) {
+function simpl_get_order_coupon_codes($order) {
 	$coupon_codes = array();
 	$coupons      = $order->get_items( 'coupon' );
 
