@@ -189,7 +189,7 @@ class WC_Simpl_Settings {
 
 	// its for fetch all Config of simpl checkout
 	// TODO: check if any better option available and get this thing done.
-	protected static function simpl_get_all_latest_settings() {
+	public static function simpl_get_all_latest_settings() {
 		return array(
 			"merchant_client_id"     => get_option( "wc_settings_tab_simpl_merchant_client_id" ),
 			"merchant_client_secret" => get_option( "wc_settings_tab_simpl_merchant_client_secret" ),

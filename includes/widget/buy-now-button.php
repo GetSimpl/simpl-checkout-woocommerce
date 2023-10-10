@@ -13,9 +13,6 @@ if(WC_Simpl_Settings::can_display_in_cart_page()){
   // hook for cart page
   add_action( $buttonPosition_cart, 'simpl_add_to_cart_btn');
 }
-if(WC_Simpl_Settings::can_display_in_mini_cart()){
-  add_action( 'wp_head', 'simpl_enable_cta_in_mini_cart');
-}
 
 // footer hook to load script
 add_action('wp_footer', 'load_widget_script');
@@ -45,24 +42,4 @@ function simpl_add_to_cart_btn(){
 function load_widget_script(){
   $script_url = WC_Simpl_Settings::widget_script_url();
   echo '<script type="text/javascript" src=' .$script_url. '></script>';
-}
-
-function simpl_enable_cta_in_mini_cart() {
-  $queries = array();
-  parse_str($_SERVER['QUERY_STRING'], $queries);
-  $is_simpl_pre_qa_env = (isset($queries[SIMPL_PRE_QA_QUERY_PARAM_KEY]) && $queries[SIMPL_PRE_QA_QUERY_PARAM_KEY] == SIMPL_PRE_QA_QUERY_PARAM_VALUE);
-  $is_simpl_enabled_for_admin = WC_Simpl_Settings::is_simpl_enabled_for_admins() && current_user_can('manage_woocommerce');  
-
-  $is_simpl_cta_enabled = WC_Simpl_Settings::is_simpl_button_enabled() || $is_simpl_enabled_for_admin || $is_simpl_pre_qa_env;
-
-  if($is_simpl_cta_enabled) {
-    echo '<script>';
-    echo 'document.addEventListener("DOMContentLoaded", function() {';
-    echo '    var dataElement = document.createElement("div");';
-    echo '    dataElement.id = "simpl-custom-data";';
-    echo '    dataElement.setAttribute("data-is-mini-cart-cta-enabled", "true");';
-    echo '    document.head.appendChild(dataElement);';
-    echo '});';
-    echo '</script>';
-  } 
 }
