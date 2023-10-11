@@ -267,6 +267,8 @@ class SimplCartResponse
             $data[$i]['price'] = wc_format_decimal((empty($product->get_price()) === false) ? $price / $item['quantity'] : 0, 2);
             $data[$i]['variant_id'] = $item['variation_id'];
             $data[$i]['product_id'] = $item['product_id'];
+            $product_type = htmlspecialchars_decode(wp_get_post_terms($product->get_id(),'product_cat',array('fields'=>'names'))[0]);
+            $data[$i]['product_type'] = ($product_type == 'Uncategorized') ? "" : $product_type;
             $data[$i]['attributes'] = empty($item['variation']) ? null : $item['variation'];
             $data[$i]['offer_price'] = wc_format_decimal((empty($productDetails['sale_price']) === false) ? (float) $productDetails['sale_price'] : $price / $item['quantity'], 2);
             $i++;
