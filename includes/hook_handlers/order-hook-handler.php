@@ -1,4 +1,7 @@
 <?php
+
+$CHECKOUT_ID_EXPIRY = 24 * 3 * 60 * 60;
+
 function order_refunded_hook($order_id)
 {
     $order = wc_get_order($order_id);
@@ -34,16 +37,20 @@ function woocommerce_order_created_hook($order_id, $posted_data, $order)
     }
 
     // unset checkout_id when order is created
-    WC()->session->_unset();
+    WC()->session->_unset('checkout_id');
 }
 
 function woocommerce_checkout_update_order_hook($posted_data)
 {
+    // unsetting checkout_id if it is expired
+    unset_checkout_id_if_expired();
+
     // set checkout_id when we receive this hook first time
     $checkout_id = WC()->session->get('checkout_id');
     if ($checkout_id == null) {
         $checkout_id = get_uuid4();
         WC()->session->set('checkout_id', $checkout_id);
+        WC()->session->set('checkout_id_timestamp', current_time('timestamp'));
     }
 
     $request["topic"] = "checkout.updated";
@@ -72,4 +79,17 @@ function fetch_checkout_data($posted_data) {
     $posted_data = urldecode($posted_data);
     parse_str($posted_data, $params);
     return json_encode($params);
+}
+
+// Define the custom function to set an expiry for a field in the session.
+function unset_checkout_id_if_expired() {
+    // Get the WooCommerce session data.
+    $checkout_id = WC()->session->get('checkout_id');
+    $checkout_id_timestamp = WC()->session->get('checkout_id_timestamp');
+
+    // Check if the session field exists and if it's expired.
+    if (!empty($checkout_id) && $checkout_id_timestamp < (current_time('timestamp') - $CHECKOUT_ID_EXPIRY)) {
+        // Field has expired, so remove it.
+        WC()->session->_unset('checkout_id');
+    }
 }
