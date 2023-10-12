@@ -18,15 +18,37 @@ function order_refunded_hook($order_id)
     }
 }
 
-// pass following payload to 3pp
-// order create
-// cart create
-// cart update (or cart upsert)
-// raise event from 3pp using event publisher client for these payloads
 function woocommerce_checkout_order_created_hook($order_id, $posted_data, $order)
 {
+    $checkout_id = WC()->session->get('checkout_id');
+
     $request["topic"] = "order.created";
+    $request["checkout_id"] = $checkout_id;
     $request["data"] = fetch_order_data($order);;
+
+    $checkout_3pp_client = new SimplCheckout3ppClient();
+    try {
+        $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
+    } catch (\Throwable $th) {
+        error_log(print_r($th, TRUE)); 
+    }
+
+    // unset checkout_id when order is created
+    WC()->session->_unset();
+}
+
+function woocommerce_checkout_update_order_hook($posted_data)
+{
+    // set checkout_id when we receive this hook first time
+    $checkout_id = WC()->session->get('checkout_id');
+    if ($checkout_id == null) {
+        $checkout_id = get_uuid4();
+        WC()->session->set('checkout_id', $checkout_id);
+    }
+
+    $request["topic"] = "checkout.updated";
+    $request["checkout_id"] = $checkout_id;
+    $request["data"] = fetch_checkout_data($posted_data);
 
     $checkout_3pp_client = new SimplCheckout3ppClient();
     try {
@@ -43,4 +65,11 @@ function fetch_order_data($order) {
     $order_data["shipping_lines"] = SimplUtil::get_data($order->get_shipping_methods());
     $order_data["refunds"] = SimplUtil::get_data($order->get_refunds());
     return $order_data;
+}
+
+function fetch_checkout_data($posted_data) {
+    // doing this cause getting data as encoded query params
+    $posted_data = urldecode($posted_data);
+    parse_str($posted_data, $params);
+    return json_encode($params);
 }
