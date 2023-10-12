@@ -45,15 +45,17 @@ function woocommerce_checkout_update_order_hook($posted_data)
     // unsetting checkout_id if it is expired
     unset_checkout_id_if_expired();
 
+    $request["topic"] = "checkout.updated";
+
     // set checkout_id when we receive this hook first time
     $checkout_id = WC()->session->get('checkout_id');
     if ($checkout_id == null) {
         $checkout_id = get_uuid4();
         WC()->session->set('checkout_id', $checkout_id);
         WC()->session->set('checkout_id_timestamp', current_time('timestamp'));
+        $request["topic"] = "checkout.created";
     }
 
-    $request["topic"] = "checkout.updated";
     $request["checkout_id"] = $checkout_id;
     $request["data"] = fetch_checkout_data($posted_data);
 
