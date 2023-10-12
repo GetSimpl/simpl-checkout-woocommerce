@@ -14,6 +14,13 @@ function simpl_is_cta_enabled() {
 
 function simpl_set_plugin_config() {
 	
+	if (!wp_script_is( 'simpl-plugin-helper', 'enqueued' )) {
+		wp_register_script( 'simpl-plugin-helper', '' );
+		wp_enqueue_script( 'simpl-plugin-helper' );
+	}
+
+	wp_add_inline_script('simpl-plugin-helper', 'var SimplPluginConfig = {};', false);
+
 	if(simpl_is_cta_enabled()) {
 		$simpl_plugin_settings = WC_Simpl_Settings::simpl_get_all_latest_settings();
 
@@ -21,12 +28,7 @@ function simpl_set_plugin_config() {
 			unset($simpl_plugin_settings['merchant_client_secret']);
 		}
 
-		if (!wp_script_is( 'simpl-plugin-helper', 'enqueued' )) {
-			wp_register_script( 'simpl-plugin-helper', '' );
-			wp_enqueue_script( 'simpl-plugin-helper' );
-		}
-	
-		wp_add_inline_script('simpl-plugin-helper', 'var SimplPluginConfig = ' . json_encode($simpl_plugin_settings) . ';', false);
+		wp_add_inline_script('simpl-plugin-helper', 'var SimplPluginConfig = { ...SimplPluginConfig, ...' . json_encode($simpl_plugin_settings) . '};', false);
 
 	}
 }
