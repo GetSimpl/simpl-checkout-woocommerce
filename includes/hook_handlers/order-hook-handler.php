@@ -18,7 +18,7 @@ function order_refunded_hook($order_id)
     }
 }
 
-function woocommerce_checkout_order_created_hook($order_id, $posted_data, $order)
+function woocommerce_order_created_hook($order_id, $posted_data, $order)
 {
     $checkout_id = WC()->session->get('checkout_id');
 
