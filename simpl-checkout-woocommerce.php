@@ -79,7 +79,11 @@ function simpl_checkout_int() {
         return;
     }
     define('SIMPL_PLUGIN_DIR', plugin_dir_path( __FILE__ ));
+    define('SIMPL_SANDBOX_STORE_URL', 'sandbox.1bill.in');
+    define('SIMPL_QA_STORE_URL', 'qa.1bill.in');
     define('SIMPL_CONFIG_STAGING_URL', 'checkout-3pp.stagingsimpl.com');
+    define('SIMPL_CONFIG_SANDBOX_URL', 'sandbox-checkout-3pp.getsimpl.com');
+    define('SIMPL_CONFIG_QA_URL', 'qa-checkout-3pp.stagingsimpl.com');
     define('SIMPL_CONFIG_PRODUCTION_URL', 'checkout-3pp.getsimpl.com');
     define("SIMPL_ENV", getenv("SIMPL_ENV"));
     define("SIMPL_PRE_QA_QUERY_PARAM_KEY", "simpl-qa");
@@ -88,6 +92,8 @@ function simpl_checkout_int() {
     define("SIMPL_ORDER_STATUS_CHECKOUT", "checkout-draft");
     define("SIMPL_ORDER_METADATA", "is_simpl_checkout_order");
     define('WIDGET_SCRIPT_STAGING_URL', 'https://s3.ap-southeast-1.amazonaws.com/staging-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
+    define('WIDGET_SCRIPT_SANDBOX_URL', 'https://s3.ap-southeast-1.amazonaws.com/sandbox-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
+    define('WIDGET_SCRIPT_QA_URL', 'https://s3.ap-south-1.amazonaws.com/qa-cdn.stagingsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
     define('WIDGET_SCRIPT_PRODUCTION_URL', 'https://simpl-cdn.s3.amazonaws.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
 
     // Defined error CODE for API
