@@ -85,6 +85,8 @@ class WC_Simpl_Settings {
 		switch ( self::store_url() ) {
 			case SIMPL_SANDBOX_STORE_URL:
 				return WIDGET_SCRIPT_SANDBOX_URL;
+			case SIMPL_QA_STORE_URL:
+				return WIDGET_SCRIPT_QA_URL;
 			default:
 				return WIDGET_SCRIPT_STAGING_URL;
 		}
