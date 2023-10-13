@@ -26,8 +26,9 @@ function woocommerce_order_created_hook($order_id, $posted_data, $order)
     $checkout_id = WC()->session->get('checkout_id');
 
     $request["topic"] = "order.created";
-    $request["checkout_id"] = $checkout_id;
-    $request["data"] = fetch_order_data($order);;
+    $request["data"] = fetch_order_data($order);
+    $request["data"]["checkout_id"] = $checkout_id;
+    $request["data"]["merchant_session_token"] = $checkout_id;
 
     $checkout_3pp_client = new SimplCheckout3ppClient();
     try {
@@ -56,8 +57,9 @@ function woocommerce_checkout_update_order_hook($posted_data)
         $request["topic"] = "checkout.created";
     }
 
-    $request["checkout_id"] = $checkout_id;
     $request["data"] = fetch_checkout_data($posted_data);
+    $request["data"]["checkout_id"] = $checkout_id;
+    $request["data"]["merchant_session_token"] = $checkout_id;
 
     $checkout_3pp_client = new SimplCheckout3ppClient();
     try {
@@ -77,10 +79,22 @@ function fetch_order_data($order) {
 }
 
 function fetch_checkout_data($posted_data) {
-    // doing this cause getting data as encoded query params
     $posted_data = urldecode($posted_data);
     parse_str($posted_data, $params);
-    return json_encode($params);
+
+    $total_order_price = 0;
+    foreach( WC()->cart->get_cart() as $cart_item_key => $cart_item ){
+        $cart_line_total = $cart_item['line_total']; // Cart item line total
+        $cart_line_tax = $cart_item['line_tax']; // Cart item line tax total
+    
+        $total_order_price = $total_order_price + $cart_line_tax;
+        $total_order_price = $total_order_price + $cart_line_total;
+    }
+
+    $params['order_total_price'] = $total_order_price;
+    $params['customer_email'] = $params['billing_email'];
+    $params['customer_phone'] = $params['billing_phone'];
+    return $params;
 }
 
 // Define the custom function to set an expiry for a field in the session.
