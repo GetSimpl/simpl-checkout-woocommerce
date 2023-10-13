@@ -80,8 +80,10 @@ class SimplWcCartHelper {
     static function simpl_update_order_metadata($request, $order)
     {
         $order->update_meta_data("simpl_cart_token", $request->get_params()["simpl_cart_token"]);
-        $order->update_meta_data("simpl_payment_id", $request->get_params()["simpl_payment_id"]);
         $order->update_meta_data("simpl_order_id", $request->get_params()["simpl_order_id"]);
+        if(!empty($request->get_params()["simpl_payment_id"])) {
+            $order->update_meta_data("simpl_payment_id", $request->get_params()["simpl_payment_id"]);
+        }
         if ($request->get_params()["simpl_payment_type"] == PAYMENT_TYPE_COD) {
             $order->set_payment_method(PAYMENT_METHOD_COD);
             $order->set_payment_method_title(PAYMENT_METHOD_TITLE_COD);
