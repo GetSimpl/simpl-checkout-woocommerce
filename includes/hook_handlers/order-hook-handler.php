@@ -1,6 +1,8 @@
 <?php
 
-$CHECKOUT_ID_EXPIRY = 24 * 3 * 60 * 60;
+// define('CHECKOUT_TOKEN_EXPIRY', 3 * 24 * 60 * 60);
+// keeping it 1/2 hour for testing purpose
+define('CHECKOUT_TOKEN_EXPIRY', 30 * 60);
 
 function order_refunded_hook($order_id)
 {
@@ -23,12 +25,12 @@ function order_refunded_hook($order_id)
 
 function woocommerce_order_created_hook($order_id, $posted_data, $order)
 {
-    $checkout_id = WC()->session->get('checkout_id');
+    $checkout_token = WC()->session->get('checkout_token');
 
     $request["topic"] = "order.created";
     $request["data"] = fetch_order_data($order);
-    $request["data"]["checkout_id"] = $checkout_id;
-    $request["data"]["merchant_session_token"] = $checkout_id;
+    $request["data"]["checkout_token"] = $checkout_token;
+    $request["data"]["merchant_session_token"] = $checkout_token;
 
     $checkout_3pp_client = new SimplCheckout3ppClient();
     try {
@@ -37,29 +39,29 @@ function woocommerce_order_created_hook($order_id, $posted_data, $order)
         error_log(print_r($th, TRUE)); 
     }
 
-    // unset checkout_id when order is created
-    WC()->session->_unset('checkout_id');
+    // unset checkout_token when order is created
+    WC()->session->_unset('checkout_token');
 }
 
 function woocommerce_checkout_update_order_hook($posted_data)
 {
-    // unsetting checkout_id if it is expired
-    unset_checkout_id_if_expired();
+    // unsetting checkout_token if it is expired
+    unset_checkout_token_if_expired();
 
     $request["topic"] = "checkout.updated";
 
-    // set checkout_id when we receive this hook first time
-    $checkout_id = WC()->session->get('checkout_id');
-    if ($checkout_id == null) {
-        $checkout_id = get_uuid4();
-        WC()->session->set('checkout_id', $checkout_id);
-        WC()->session->set('checkout_id_timestamp', current_time('timestamp'));
+    // set checkout_token when we receive this hook first time
+    $checkout_token = WC()->session->get('checkout_token');
+    if ($checkout_token == null) {
+        $checkout_token = get_uuid4();
+        WC()->session->set('checkout_token', $checkout_token);
+        WC()->session->set('checkout_token_timestamp', current_time('timestamp'));
         $request["topic"] = "checkout.created";
     }
 
     $request["data"] = fetch_checkout_data($posted_data);
-    $request["data"]["checkout_id"] = $checkout_id;
-    $request["data"]["merchant_session_token"] = $checkout_id;
+    $request["data"]["checkout_token"] = $checkout_token;
+    $request["data"]["merchant_session_token"] = $checkout_token;
 
     $checkout_3pp_client = new SimplCheckout3ppClient();
     try {
@@ -98,14 +100,14 @@ function fetch_checkout_data($posted_data) {
 }
 
 // Define the custom function to set an expiry for a field in the session.
-function unset_checkout_id_if_expired() {
+function unset_checkout_token_if_expired() {
     // Get the WooCommerce session data.
-    $checkout_id = WC()->session->get('checkout_id');
-    $checkout_id_timestamp = WC()->session->get('checkout_id_timestamp');
+    $checkout_token = WC()->session->get('checkout_token');
+    $checkout_token_timestamp = WC()->session->get('checkout_token_timestamp');
 
     // Check if the session field exists and if it's expired.
-    if (!empty($checkout_id) && $checkout_id_timestamp < (current_time('timestamp') - $CHECKOUT_ID_EXPIRY)) {
+    if (!empty($checkout_token) && $checkout_token_timestamp < (current_time('timestamp') - CHECKOUT_TOKEN_EXPIRY)) {
         // Field has expired, so remove it.
-        WC()->session->_unset('checkout_id');
+        WC()->session->_unset('checkout_token');
     }
 }
