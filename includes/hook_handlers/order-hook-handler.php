@@ -40,7 +40,7 @@ function woocommerce_order_created_hook($order_id, $posted_data, $order)
     }
 
     // unset checkout_token when order is created
-    WC()->session->_unset('checkout_token');
+    WC()->session->__unset('checkout_token');
 }
 
 function woocommerce_checkout_update_order_hook($posted_data)
@@ -108,6 +108,6 @@ function unset_checkout_token_if_expired() {
     // Check if the session field exists and if it's expired.
     if (!empty($checkout_token) && $checkout_token_timestamp < (current_time('timestamp') - CHECKOUT_TOKEN_EXPIRY)) {
         // Field has expired, so remove it.
-        WC()->session->_unset('checkout_token');
+        WC()->session->__unset('checkout_token');
     }
 }
