@@ -36,7 +36,7 @@ function simpl_add_to_cart_btn(){
         $page = 'product';
     }
 
-    echo '<div class="simpl-checkout-cta-container simpl-button-container" data-background="' . esc_attr($color) . '" page=' . esc_attr($page) . ' data-product-id=' . $productID . ' data-text="' . esc_attr($buttonText) . '"></div>';
+    echo '<div class="simpl-checkout-cta-container simpl-button-container" data-background="' . esc_attr($color) . '" page=' . esc_attr($page) . ' data-product-id=' . esc_attr($productID) . ' data-text="' . esc_attr($buttonText) . '"></div>';
   }
 }
 
