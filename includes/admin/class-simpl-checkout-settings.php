@@ -67,10 +67,10 @@ if ( ! class_exists( 'Simpl_WC_Settings' ) ) {
 			// 	return SIMPL_WIDGET_SCRIPT_LOCALHOST;
 			// }
 			// this is used only to run locally
-			$staging_env = get_option( "wc_settings_tab_simpl_test_env" );
-			if ( $staging_env == "yes" ) {
-				return SIMPL_WIDGET_SCRIPT_STAGING_URL;
-			}
+			// $staging_env = get_option( "wc_settings_tab_simpl_test_env" );
+			// if ( $staging_env == "yes" ) {
+			// 	return SIMPL_WIDGET_SCRIPT_STAGING_URL;
+			// }
 
 			return SIMPL_WIDGET_SCRIPT_PRODUCTION_URL;
 		}

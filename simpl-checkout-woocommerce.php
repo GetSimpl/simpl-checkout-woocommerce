@@ -36,12 +36,12 @@ if ( ! class_exists( 'simpl_checkout_int' ) ) {
         define("SIMPL_ORDER_STATUS_CHECKOUT", "checkout-draft");
         define("SIMPL_ORDER_METADATA", "is_simpl_checkout_order");
         $https = 'https://';
-        $staging_base_url = 's3.ap-southeast-1.amazonaws.com/';
-        $staging_cdn_base_url = 'staging-cdn.getsimpl.com/';
+        //$staging_base_url = 's3.ap-southeast-1.amazonaws.com/';
+        //$staging_cdn_base_url = 'staging-cdn.getsimpl.com/';
         $widget_script = 'widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife';
         $js = '.js';
-        $widget_script_staging_url = $https.$staging_base_url.$staging_cdn_base_url.$widget_script.$js;
-        define('SIMPL_WIDGET_SCRIPT_STAGING_URL', $widget_script_staging_url);
+        //$widget_script_staging_url = $https.$staging_base_url.$staging_cdn_base_url.$widget_script.$js;
+        //define('SIMPL_WIDGET_SCRIPT_STAGING_URL', $widget_script_staging_url);
         $production_base_url = 'cdn.getsimpl.com/';
         $widget_script_production_url = $https.$production_base_url.$widget_script.$js;
         define('SIMPL_WIDGET_SCRIPT_PRODUCTION_URL', $widget_script_production_url);
