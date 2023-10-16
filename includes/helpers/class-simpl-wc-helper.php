@@ -190,8 +190,11 @@ class SimplWcCartHelper {
 
     static function simpl_set_customer_info_in_order($order) {
         if(!empty($order->get_billing_email())){
-            $customer = simpl_get_customer_by_email($order->get_billing_email());
-            if(empty($customer->get_id())) {
+            $customer = null;
+            $user = get_user_by('email', $order->get_billing_email());
+            if( $user ) {
+                $customer = new WC_Customer($user->ID);
+            } else {
                 $customer = self::simpl_create_new_customer($order);
             }
             $order->set_customer_id($customer->get_id());
@@ -204,6 +207,16 @@ class SimplWcCartHelper {
         $customer->set_first_name($order->get_shipping_first_name());
         $customer->set_last_name($order->get_shipping_last_name());
         $customer->set_display_name($order->get_shipping_first_name() . " " . $order->get_shipping_last_name());
+        $customer->set_username(
+            wc_create_new_customer_username(
+                $order->get_billing_email(),
+                array(
+                    "first_name"=>$order->get_shipping_first_name(),
+                    "last_name"=>$order->get_shipping_last_name()
+                )
+            )
+        );
+        $customer->set_password(wp_generate_password());
         $customer->save();
 
         return $customer;
@@ -220,11 +233,6 @@ class SimplWcCartHelper {
         $order->add_item( $method );
         $order->calculate_totals();
     }
-}
-
-function simpl_get_customer_by_email($email) {
-    $user = get_user_by('email', $email);
-    return new WC_Customer($user->ID);
 }
 
 

@@ -61,7 +61,9 @@ class SimplCheckoutOrderController
 
     static function simpl_update_order_details($request, $order) {
         SimplWcCartHelper::simpl_update_order_metadata($request, $order);
-        SimplWcCartHelper::simpl_set_customer_info_in_order($order);
+        if('yes' !== get_option( 'woocommerce_enable_guest_checkout' )) {
+            SimplWcCartHelper::simpl_set_customer_info_in_order($order);
+        }
 
         // Check if there is In-house Shipping
         $shipping_method = $request['shipping_method'];
