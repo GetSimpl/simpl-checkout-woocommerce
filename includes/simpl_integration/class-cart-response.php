@@ -82,7 +82,7 @@ class SimplCartResponse
         if ($cart->get_total_discount()) {
             $discount_amount = $totals['discount_total'] + $totals['discount_tax'];
         }
-        $cart_payload["total_discount"] = wc_format_decimal($discount_amount, 2);
+        $cart_payload["total_discount"] = round($discount_amount,2);
         if (wc_prices_include_tax()) {
             $cart_payload['tax_included'] = true;
         } else {
