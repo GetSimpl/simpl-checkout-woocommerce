@@ -5,7 +5,7 @@
  * Description: Simpl checkout offers an optimised checkout process, higher order conversions and RTO reduction. We offer Simpl Pay Later, Pay-in-3, UPI, Cards, and COD for seamless transactions while you focus on growing your business.
  * Author:  One Sigma Technologies Pvt. Ltd.
  * Author URI: http://www.getsimpl.com
- * Version: 1.2.6
+ * Version: 1.2.7
  */
 add_action('plugins_loaded', 'simpl_checkout_int', 0);
 define('SIMPL_SENTRY_DSN_KEY', 'simpl_sentry_dsn'); 
@@ -78,12 +78,6 @@ function simpl_checkout_int() {
         return;
     }
     define('SIMPL_PLUGIN_DIR', plugin_dir_path( __FILE__ ));
-    define('SIMPL_SANDBOX_STORE_URL', 'sandbox.1bill.in');
-    define('SIMPL_QA_STORE_URL', 'qa.1bill.in');
-    define('SIMPL_CONFIG_STAGING_URL', 'checkout-3pp.stagingsimpl.com');
-    define('SIMPL_CONFIG_SANDBOX_URL', 'sandbox-checkout-3pp.getsimpl.com');
-    define('SIMPL_CONFIG_QA_URL', 'qa-checkout-3pp.stagingsimpl.com');
-    define('SIMPL_CONFIG_PRODUCTION_URL', 'checkout-3pp.getsimpl.com');
     define("SIMPL_ENV", getenv("SIMPL_ENV"));
     define("SIMPL_PRE_QA_QUERY_PARAM_KEY", "simpl-qa");
     define("SIMPL_PRE_QA_QUERY_PARAM_VALUE", "ce50e3b0-641b-4b26-8bbb-8a240f03811b");
@@ -116,6 +110,20 @@ function simpl_checkout_int() {
     add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
     add_filter( 'woocommerce_shipping_chosen_method', '__return_false', 99); // this disables the application of default shipping method
     add_action( 'plugins_loaded', 'simpl_init_gateway_class' );
-    register_activation_hook( __FILE__, 'my_plugin_activate' );
-    register_deactivation_hook( __FILE__, 'my_plugin_deactivate' );
+    
+    // initiating logger instance
+    $logger = get_simpl_logger();
 }
+
+// registering hooks as soon as the plugin starts so that we are able listen to the data as soon as plugin installed
+// no matter it's activated or not
+define('SIMPL_SANDBOX_STORE_URL', 'sandbox.1bill.in');
+define('SIMPL_QA_STORE_URL', 'qa.1bill.in');
+define('SIMPL_CONFIG_STAGING_URL', 'checkout-3pp.stagingsimpl.com');
+define('SIMPL_CONFIG_SANDBOX_URL', 'sandbox-checkout-3pp.getsimpl.com');
+define('SIMPL_CONFIG_QA_URL', 'qa-checkout-3pp.stagingsimpl.com');
+define('SIMPL_CONFIG_PRODUCTION_URL', 'checkout-3pp.getsimpl.com');
+define('SIMPL_PLUGIN_FILE_URL',  __FILE__ );
+include_once 'includes/admin/class-simpl-checkout-settings.php';
+include_once 'includes/clients/load.php';
+include_once 'includes/hook_handlers/load.php';
