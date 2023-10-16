@@ -267,12 +267,22 @@ class SimplCartResponse
             $data[$i]['price'] = wc_format_decimal((empty($product->get_price()) === false) ? $price / $item['quantity'] : 0, 2);
             $data[$i]['variant_id'] = $item['variation_id'];
             $data[$i]['product_id'] = $item['product_id'];
+            $data[$i]['product_category'] = $this->simpl_get_product_category($product->get_id());
             $data[$i]['attributes'] = empty($item['variation']) ? null : $item['variation'];
             $data[$i]['offer_price'] = wc_format_decimal((empty($productDetails['sale_price']) === false) ? (float) $productDetails['sale_price'] : $price / $item['quantity'], 2);
             $i++;
         }
 
         return $data;
+    }
+
+    protected function simpl_get_product_category($product_id) {
+        $product_categories = wp_get_post_terms($product_id,'product_cat',array('fields'=>'names'));
+        if(isset($product_categories) && count($product_categories) > 0) {
+            $product_category = htmlspecialchars_decode($product_categories[0]);
+            return ($product_category == 'Uncategorized') ? "" : $product_category;
+        }
+        return "";
     }
 
     //This function will clear all type of notice or success
