@@ -35,7 +35,6 @@ function simpl_add_to_cart_btn(){
         $page = 'product';
     }
 
-
     echo '<div class="simpl-checkout-cta-container simpl-button-container" data-background="' . $color . '" page=' . $page . ' data-product-id=' . $productID . ' data-text="' . $buttonText . '"></div>';
   }
 }
