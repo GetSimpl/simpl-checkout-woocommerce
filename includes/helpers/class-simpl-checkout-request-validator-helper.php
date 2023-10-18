@@ -43,7 +43,7 @@ class SimplRequestValidator {
     static function  validate_order_request($request) {
         SimplRequestValidator::validate_checkout_order_id($request);
 
-        foreach(array("simpl_cart_token", "simpl_payment_id", "simpl_order_id") as $key => $value) {
+        foreach(array("simpl_cart_token", "simpl_order_id") as $key => $value) {
             $simpl_order_request_param = $request->get_params()[$value];
             if(!isset($simpl_order_request_param) || $simpl_order_request_param == "") {
                 throw new SimplCustomHttpBadRequest($value . " is mandatory");

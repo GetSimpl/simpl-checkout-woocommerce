@@ -47,10 +47,22 @@ class WC_Simpl_Settings {
 	public static function simpl_host() {
 		$staging_env = get_option( "wc_settings_tab_simpl_test_env" );
 		if ( $staging_env == "yes" ) {
-			return SIMPL_CONFIG_STAGING_URL;
+
+			return self::get_simpl_host_based_on_url();
 		}
 
 		return SIMPL_CONFIG_PRODUCTION_URL;
+	}
+
+	public static function get_simpl_host_based_on_url() {
+		switch ( self::store_url() ) {
+			case SIMPL_SANDBOX_STORE_URL:
+				return SIMPL_CONFIG_SANDBOX_URL;
+			case SIMPL_QA_STORE_URL:
+				return SIMPL_CONFIG_QA_URL;
+			default:
+				return SIMPL_CONFIG_STAGING_URL;
+		}
 	}
 
 	public static function test_mode_enabled() {
@@ -69,13 +81,25 @@ class WC_Simpl_Settings {
 		}
 	}
 
+	public static function get_widget_url_based_on_url() {
+		switch ( self::store_url() ) {
+			case SIMPL_SANDBOX_STORE_URL:
+				return WIDGET_SCRIPT_SANDBOX_URL;
+			case SIMPL_QA_STORE_URL:
+				return WIDGET_SCRIPT_QA_URL;
+			default:
+				return WIDGET_SCRIPT_STAGING_URL;
+		}
+	}
+
 	public static function widget_script_url() {
 		if ( SIMPL_ENV == "localhost" ) {
 			return WIDGET_SCRIPT_LOCALHOST;
 		}
-		$staging_env = get_option( "wc_settings_tab_simpl_test_env" );
-		if ( $staging_env == "yes" ) {
-			return WIDGET_SCRIPT_STAGING_URL;
+		$test_env = get_option( "wc_settings_tab_simpl_test_env" );
+		if ( $test_env == "yes" ) {
+
+			return self::get_widget_url_based_on_url();
 		}
 
 		return WIDGET_SCRIPT_PRODUCTION_URL;
@@ -109,6 +133,10 @@ class WC_Simpl_Settings {
 
 	public static function can_display_in_cart_page() {
 		return get_option( "wc_settings_tab_simpl_button_cart_activated" ) == 'yes';
+	}
+
+	public static function can_display_in_mini_cart() {
+		return get_option( "wc_settings_tab_simpl_button_mini_cart_activated" ) == 'yes';
 	}
 
 	public static function cta_position_in_pdp() {
@@ -158,6 +186,7 @@ class WC_Simpl_Settings {
 			"button_activated"      => ! isset( $_POST["wc_settings_tab_simpl_button_activated"] ) ? 0 : 1,
 			"button_pdp_activated"  => ! isset( $_POST["wc_settings_tab_simpl_button_pdp_activated"] ) ? 0 : 1,
 			"button_cart_activated" => ! isset( $_POST["wc_settings_tab_simpl_button_cart_activated"] ) ? 0 : 1,
+			"button_mini_cart_activated" => ! isset( $_POST["wc_settings_tab_simpl_button_mini_cart_activated"] ) ? 0 : 1,
 			"enabled_to_admin"      => ! isset( $_POST["wc_settings_tab_simpl_enabled_to_admin"] ) ? 0 : 1,
 		);
 
@@ -184,7 +213,7 @@ class WC_Simpl_Settings {
 
 	// its for fetch all Config of simpl checkout
 	// TODO: check if any better option available and get this thing done.
-	protected static function simpl_get_all_latest_settings() {
+	public static function simpl_get_all_latest_settings() {
 		return array(
 			"merchant_client_id"     => get_option( "wc_settings_tab_simpl_merchant_client_id" ),
 			"merchant_client_secret" => get_option( "wc_settings_tab_simpl_merchant_client_secret" ),
@@ -194,6 +223,7 @@ class WC_Simpl_Settings {
 			"button_activated"       => get_option( "wc_settings_tab_simpl_button_activated" ) == 'yes' ? 1 : 0,
 			"button_pdp_activated"   => get_option( "wc_settings_tab_simpl_button_pdp_activated" ) == 'yes' ? 1 : 0,
 			"button_cart_activated"  => get_option( "wc_settings_tab_simpl_button_cart_activated" ) == 'yes' ? 1 : 0,
+			"button_mini_cart_activated"  => get_option( "wc_settings_tab_simpl_button_mini_cart_activated" ) == 'yes' ? 1 : 0,
 			"enabled_to_admin"       => get_option( "wc_settings_tab_simpl_enabled_to_admin" ) == 'yes' ? 1 : 0,
 		);
 	}
@@ -342,6 +372,13 @@ class WC_Simpl_Settings {
 				'type' => 'checkbox',
 				'desc' => __( 'Show simpl checkout button in Cart page', 'woocommerce-settings-tab-simpl' ),
 				'id'   => 'wc_settings_tab_simpl_button_cart_activated'
+			);
+			
+			$settings[] = array(
+				'name' => __( 'Mini Cart', 'woocommerce-settings-tab-simpl' ),
+				'type' => 'checkbox',
+				'desc' => __( 'Show simpl checkout button in Mini cart', 'woocommerce-settings-tab-simpl' ),
+				'id'   => 'wc_settings_tab_simpl_button_mini_cart_activated'
 			);
 
 			$settings[] = array(

@@ -12,7 +12,7 @@ function simpl_init_gateway_class()
         public function __construct()
         {
 
-            $this->id = 'simpl_checkout_payment'; // payment gateway plugin ID
+            $this->id = PAYMENT_GATEWAY_SIMPL; // payment gateway plugin ID
             $this->icon = 'https://assets.getsimpl.com/images/banner-logo.png'; // URL of the icon that will be displayed on checkout page near your gateway name
             $this->has_fields = true;
             $this->method_title = 'Simpl checkout payment';
@@ -48,12 +48,12 @@ function simpl_init_gateway_class()
                 $order = wc_get_order((int)$simpl_order_id);
 
                 if (!$order) {
-                    unset($available_gateways['simpl_checkout_payment']);
+                    unset($available_gateways[PAYMENT_GATEWAY_SIMPL]);
                 }
                 if ($order) {
                     $status = $order->get_status();
                     if ($status != "checkout-draft") {
-                        unset($available_gateways['simpl_checkout_payment']);
+                        unset($available_gateways[PAYMENT_GATEWAY_SIMPL]);
                     }
                 }
             }
