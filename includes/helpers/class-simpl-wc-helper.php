@@ -229,13 +229,13 @@ class SimplWcCartHelper {
 
         if(isset($shipping_address) && isset($billing_address)) {        
             foreach($shipping_address as $key => $value) {
-                if(method_exists(WC()->customer, "set_shipping_".$key)) {
-                    WC()->customer->{"set_shipping_".$key}($value);   
+                if(method_exists($customer, "set_shipping_".$key)) {
+                    $customer->{"set_shipping_".$key}($value);   
                 }
             }
             foreach($billing_address as $key => $value) {
-                if(method_exists(WC()->customer, "set_billing_".$key)) {
-                    WC()->customer->{"set_billing_".$key}($value);    
+                if(method_exists($customer, "set_billing_".$key)) {
+                    $customer->{"set_billing_".$key}($value);    
                 }
             }
         }
