@@ -202,6 +202,7 @@ class SimplWcCartHelper {
     }
 
     static protected function simpl_create_new_customer($order) {
+        //TODO: Add metadata (billing & shipping details) to customer profile
         $customer = WC()->customer;
         $customer->set_email($order->get_billing_email());
         $customer->set_first_name($order->get_shipping_first_name());
