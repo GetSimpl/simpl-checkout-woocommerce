@@ -5,11 +5,27 @@ class SimplWcCartHelper {
         $order = new WC_Order();  
         self::set_data_from_cart( $order);        
         self::set_address_in_order($order);
+        self::set_payment_method_in_order($order);
         $order->update_meta_data(SIMPL_ORDER_METADATA, 'yes');
         $order->save();
         updateToSimplDraft($order->get_id());
         return $order;
-    }     
+    }
+
+    static protected function set_payment_method_in_order($order) {
+        $gateway = self::get_simpl_checkout_payment_gateway();
+        $order->set_payment_method($gateway->id);
+        $order->set_payment_method_title($gateway->get_method_title());
+    }
+
+    static protected function get_simpl_checkout_payment_gateway() {
+        $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
+        $gateway = $available_gateways["simpl_checkout_payment"];
+        if (!$gateway) {
+            throw new SimplCustomHttpBadRequest("simpl payment is not configured");
+        }
+        return $gateway;
+    }
 
     static function add_to_cart($items) {
         WC()->cart->empty_cart();
