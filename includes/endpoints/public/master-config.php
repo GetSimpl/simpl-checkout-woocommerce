@@ -30,7 +30,7 @@ function fetch_master_config() {
 			wp_add_inline_script('simpl-widget-session-token', 'localStorage.setItem("'. $simplTokenHeader. '", "'. $headers[ $simplTokenHeader ].'")');
 		}
 		$masterConfigData = isset( $body["success"] ) && isset( $body["data"] ) ? json_encode( $body["data"] ) : '{}';
-		echo( '<script type="text/javascript">var SimplMasterConfig = ' . $masterConfigData . '</script>' );
+		echo( '<script nowprocket type="text/javascript">var SimplMasterConfig = ' . $masterConfigData . '</script>' );
 	} else {
 		$error_message = $simplHttpResponse->get_error_message();
 		scwp_console_log( $error_message );
