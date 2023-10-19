@@ -48,6 +48,7 @@ class SimplCheckoutController
             }
             
             $order = SimplWcCartHelper::update_order_from_cart($request->get_params()["checkout_order_id"]);
+            SimplWcCartHelper::load_cart_from_order($order->get_id());
             $si = new SimplCartResponse();
             $cart_payload = $si->cart_payload(WC()->cart, $order->get_id());
             do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
