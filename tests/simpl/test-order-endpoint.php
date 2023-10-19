@@ -65,7 +65,7 @@ class Test_Order_Endpoint extends WP_UnitTestCase{
         $order = SimplWcCartHelper::create_order_from_cart();
 
         WC()->payment_gateways = $this->mock_gateways;
-        $this->mock_gateways->expects('get_available_payment_gateways')->once()->andReturn(array(PAYMENT_GATEWAY_SIMPL => false));
+        $this->mock_gateways->expects('get_available_payment_gateways')->once()->andReturn(array(SIMPL_PAYMENT_GATEWAY => false));
         
         $request = new WP_REST_Request( 'POST', '/wc-simpl/v1/order' );
         $params = array(
@@ -92,7 +92,7 @@ class Test_Order_Endpoint extends WP_UnitTestCase{
         simpl_test_set_default_shipping_method_in_order($order);
     
         WC()->payment_gateways = $this->mock_gateways;
-        $this->mock_gateways->expects('get_available_payment_gateways')->once()->andReturn(array(PAYMENT_GATEWAY_SIMPL => $this->mock_simpl_payment_gateway));
+        $this->mock_gateways->expects('get_available_payment_gateways')->once()->andReturn(array(SIMPL_PAYMENT_GATEWAY => $this->mock_simpl_payment_gateway));
         $this->mock_simpl_payment_gateway->expects('process_payment')->with($order->get_id())->andReturn(array("result" => "success", "redirect" => ""));
         
         $request = new WP_REST_Request( 'POST', '/wc-simpl/v1/order' );
@@ -125,7 +125,7 @@ class Test_Order_Endpoint extends WP_UnitTestCase{
         );
 
         WC()->payment_gateways = $this->mock_gateways;
-        $this->mock_gateways->expects('get_available_payment_gateways')->once()->andReturn(array(PAYMENT_GATEWAY_SIMPL => $this->mock_simpl_payment_gateway));
+        $this->mock_gateways->expects('get_available_payment_gateways')->once()->andReturn(array(SIMPL_PAYMENT_GATEWAY => $this->mock_simpl_payment_gateway));
         $this->mock_simpl_payment_gateway->expects('process_payment')->with($order->get_id())->andReturn(array("result" => "success", "redirect" => ""));
         
         $request = new WP_REST_Request( 'POST', '/wc-simpl/v1/order' );
