@@ -8,7 +8,6 @@
  * Version: 1.2.2
  */
 add_action('plugins_loaded', 'simpl_checkout_int', 0);
-add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
 define('SIMPL_SENTRY_DSN_KEY', 'simpl_sentry_dsn'); 
 
 include_once "sentry/lib/Raven/Autoloader.php";
