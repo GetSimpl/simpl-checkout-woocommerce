@@ -1,6 +1,7 @@
 <?php
 function order_hook($order_id)
 {
+    $logger = new SimplLogger();
     $order = wc_get_order($order_id);
 
     $order_data = $order->get_data();
@@ -18,6 +19,6 @@ function order_hook($order_id)
     try {
         $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
     } catch (\Throwable $th) { 
-        error_log(print_r($th, TRUE)); 
+        $logger->error(print_r($th, TRUE));
     }
 }
