@@ -203,12 +203,12 @@ class SimplWcCartHelper {
     }
 
     static protected function simpl_create_new_customer($order) {
-        //TODO: Add metadata (billing & shipping details) to customer profile
         $customer = WC()->customer;
         $customer->set_email($order->get_billing_email());
         $customer->set_first_name($order->get_shipping_first_name());
         $customer->set_last_name($order->get_shipping_last_name());
         $customer->set_display_name($order->get_shipping_first_name() . " " . $order->get_shipping_last_name());
+        self::simpl_set_customer_address_from_order($customer, $order);
         $customer->set_username(
             wc_create_new_customer_username(
                 $order->get_billing_email(),
@@ -222,6 +222,24 @@ class SimplWcCartHelper {
         $customer->save();
 
         return $customer;
+    }
+
+    static function simpl_set_customer_address_from_order($customer, $order) {
+        $billing_address = $order->get_address('billing');
+        $shipping_address = $order->get_address('shipping');
+
+        if(isset($shipping_address) && isset($billing_address)) {        
+            foreach($shipping_address as $key => $value) {
+                if(method_exists($customer, "set_shipping_".$key)) {
+                    $customer->{"set_shipping_".$key}($value);   
+                }
+            }
+            foreach($billing_address as $key => $value) {
+                if(method_exists($customer, "set_billing_".$key)) {
+                    $customer->{"set_billing_".$key}($value);    
+                }
+            }
+        }
     }
 
     static function simpl_set_shipping_method_in_order($order, $shipping_method) {
