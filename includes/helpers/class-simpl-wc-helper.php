@@ -77,8 +77,8 @@ class SimplWcCartHelper {
         }
     }
 
-    static function simpl_update_order_metadata($request, $order)
-    {
+    static function simpl_update_order_metadata($request, $order) {
+
         $order->update_meta_data("simpl_cart_token", $request->get_params()["simpl_cart_token"]);
         $order->update_meta_data("simpl_order_id", $request->get_params()["simpl_order_id"]);
         if(!empty($request->get_params()["simpl_payment_id"])) {
@@ -88,9 +88,10 @@ class SimplWcCartHelper {
             $order->set_payment_method(PAYMENT_METHOD_COD);
             $order->set_payment_method_title(PAYMENT_METHOD_TITLE_COD);
         } else {
-            $order->set_payment_method(PAYMENT_METHOD_SIMPL);
+            $order->set_payment_method(SIMPL_PAYMENT_GATEWAY);
             $order->set_payment_method_title($request->get_params()["simpl_payment_type"]);
         }
+        $order->set_transaction_id($request->get_params()["simpl_order_id"]);
 
         if (self::simpl_is_utm_info_present($request)) {
             self::simpl_set_utm_info_in_order($request, $order);
@@ -190,8 +191,11 @@ class SimplWcCartHelper {
 
     static function simpl_set_customer_info_in_order($order) {
         if(!empty($order->get_billing_email())){
-            $customer = simpl_get_customer_by_email($order->get_billing_email());
-            if(empty($customer->get_id())) {
+            $customer = null;
+            $user = get_user_by('email', $order->get_billing_email());
+            if( $user ) {
+                $customer = new WC_Customer($user->ID);
+            } else {
                 $customer = self::simpl_create_new_customer($order);
             }
             $order->set_customer_id($customer->get_id());
@@ -199,11 +203,22 @@ class SimplWcCartHelper {
     }
 
     static protected function simpl_create_new_customer($order) {
+        //TODO: Add metadata (billing & shipping details) to customer profile
         $customer = WC()->customer;
         $customer->set_email($order->get_billing_email());
         $customer->set_first_name($order->get_shipping_first_name());
         $customer->set_last_name($order->get_shipping_last_name());
         $customer->set_display_name($order->get_shipping_first_name() . " " . $order->get_shipping_last_name());
+        $customer->set_username(
+            wc_create_new_customer_username(
+                $order->get_billing_email(),
+                array(
+                    "first_name"=>$order->get_shipping_first_name(),
+                    "last_name"=>$order->get_shipping_last_name()
+                )
+            )
+        );
+        $customer->set_password(wp_generate_password());
         $customer->save();
 
         return $customer;
@@ -220,11 +235,6 @@ class SimplWcCartHelper {
         $order->add_item( $method );
         $order->calculate_totals();
     }
-}
-
-function simpl_get_customer_by_email($email) {
-    $user = get_user_by('email', $email);
-    return new WC_Customer($user->ID);
 }
 
 

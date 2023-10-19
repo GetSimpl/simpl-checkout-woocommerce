@@ -1,88 +1,106 @@
 <?php
-function simpl_add_gateway_class($gateways)
-{
-    $gateways[] = 'WC_Simpl_Gateway'; // your class name is here
-    return $gateways;
-}
 
 function simpl_init_gateway_class()
 {
-    class WC_Simpl_Gateway extends WC_Payment_Gateway
-    {
-        public function __construct()
-        {
+    if ( ! defined( 'ABSPATH' ) ) {
+        exit; // Exit if accessed directly.
+    }
+    
+    class WC_Simpl_Gateway extends WC_Payment_Gateway {
 
-            $this->id = PAYMENT_GATEWAY_SIMPL; // payment gateway plugin ID
-            $this->icon = 'https://assets.getsimpl.com/images/banner-logo.png'; // URL of the icon that will be displayed on checkout page near your gateway name
-            $this->has_fields = true;
-            $this->method_title = 'Simpl checkout payment';
-            $this->method_description = 'Payment mode for Simpl checkout'; // will be displayed on the options page
-
-            // gateways can support subscriptions, refunds, saved payment methods,
-            $this->supports = array(
-                'refunds'
-            );
-
-            // Method with all the options fields
-            $this->init_form_fields();
-
+        public function __construct() {
+            $this->id                 = SIMPL_PAYMENT_GATEWAY;
+            $this->icon               = 'https://assets.getsimpl.com/images/banner-logo.png';
+            $this->has_fields         = false;
+            $this->method_title       = SIMPL_PAYMENT_METHOD;
+            $this->method_description = 'Allows payments by Paylater, Pay-in-3, Credit/Debit Cards, NetBanking, UPI, and multiple Wallets';
+    
             // Load the settings.
+            $this->init_form_fields();
             $this->init_settings();
-            $this->title = $this->get_option('title');
-            $this->description = $this->get_option('description');
-            $this->enabled = $this->get_option('enabled');
-
-            // This action hook saves the settings
-            add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-            add_filter('woocommerce_available_payment_gateways', array(
-                $this,
-                'remove_simpl_gateway'
-            ), 10, 2);
-
-            // You can also register a webhook here
-            // add_action( 'woocommerce_api_{webhook name}', array( $this, 'webhook' ) );
+    
+            // Define user set variables.
+            $this->title        = $this->get_option( 'title' );
+    
+            // Actions.
+            add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );            
+            add_filter('woocommerce_available_payment_gateways', array( $this, 'remove_simpl_gateway'), 10, 2 );
         }
 
-        public function remove_simpl_gateway($available_gateways)
-        {
+        public $supports = array(
+            'products',
+            'refunds'
+        );
+
+        // Probably to restrict other plugins to use Simpl payment mode.
+        public function remove_simpl_gateway($available_gateways) {
+
             if (WC()->session) {
                 $simpl_order_id = WC()->session->get("simpl_order_id");
                 $order = wc_get_order((int)$simpl_order_id);
 
                 if (!$order) {
-                    unset($available_gateways[PAYMENT_GATEWAY_SIMPL]);
+                    unset($available_gateways[SIMPL_PAYMENT_GATEWAY]);
                 }
                 if ($order) {
                     $status = $order->get_status();
                     if ($status != "checkout-draft") {
-                        unset($available_gateways[PAYMENT_GATEWAY_SIMPL]);
+                        unset($available_gateways[SIMPL_PAYMENT_GATEWAY]);
                     }
                 }
             }
+            
             return $available_gateways;
         }
+    
+        /**
+         * Initialise Gateway Settings Form Fields.
+         */
+        public function init_form_fields() {
+    
+            $this->form_fields = array(
+                'enabled'      => array(
+                    'title'   => 'Enable/Disable',
+                    'type'    => 'checkbox',
+                    'label'   => 'Enable Simpl Checkout',
+                    'default' => 'yes',
+                ),
+                'title'        => array(
+                    'title'       => 'Title',
+                    'type'        => 'safe_text',
+                    'description' => 'This controls the title which the user sees during checkout.',
+                    'default'     => SIMPL_PAYMENT_METHOD,
+                    'desc_tip'    => true,
+                )
+            );
+        }
 
-        public function process_payment($order_id)
-        {
-
+        public function process_payment($order_id) {
+            
             $order = wc_get_order($order_id);
 
-            // // Mark as on-hold (we're awaiting the payment)
-            // $order->update_status( 'on-hold', __( 'Awaiting offline payment', 'wc-gateway-offline' ) );
-
-            // Reduce stock levels            
             $order->update_status('pending');
             $order->update_status('processing');
 
+            // Reduce stock levels 
             $order->reduce_order_stock();
+
             // Remove cart
             WC()->cart->empty_cart();
 
-            // Return thankyou redirect
+            // Return thankyou redirect - redirection doesn't happen yet. The URL is pushed to 3pp.
             return array(
                 'result'    => 'success',
                 'redirect'  => $this->get_return_url($order)
             );
         }
     }
+}
+
+/**
+ * Add the Gateway to WooCommerce
+ **/
+function simpl_add_gateway_class($methods) {
+    $methods[] = 'WC_Simpl_Gateway';
+    return $methods;
 }

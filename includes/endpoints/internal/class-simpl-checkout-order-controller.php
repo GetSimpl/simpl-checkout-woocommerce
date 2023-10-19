@@ -61,7 +61,9 @@ class SimplCheckoutOrderController
 
     static function simpl_update_order_details($request, $order) {
         SimplWcCartHelper::simpl_update_order_metadata($request, $order);
-        SimplWcCartHelper::simpl_set_customer_info_in_order($order);
+        if('yes' !== get_option( 'woocommerce_enable_guest_checkout' )) {
+            SimplWcCartHelper::simpl_set_customer_info_in_order($order);
+        }
 
         // Check if there is In-house Shipping
         $shipping_method = $request['shipping_method'];
@@ -82,6 +84,6 @@ class SimplCheckoutOrderController
     {
         WC()->session->set("simpl_order_id", $order_id);
         $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
-        return $available_gateways[PAYMENT_GATEWAY_SIMPL];
+        return $available_gateways[SIMPL_PAYMENT_GATEWAY];
     }
 }
