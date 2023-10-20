@@ -21,7 +21,7 @@ function order_refunded_hook($order_id)
     }
 }
 
-function woocommerce_order_created_hook($order_id, $posted_data, $order)
+function order_created_hook($order_id, $posted_data, $order)
 {
     $checkout_token = WC()->session->get('checkout_token');
 
@@ -41,7 +41,7 @@ function woocommerce_order_created_hook($order_id, $posted_data, $order)
     WC()->session->__unset('checkout_token');
 }
 
-function woocommerce_checkout_update_order_hook($posted_data)
+function checkout_update_order_hook($posted_data)
 {
     // unsetting checkout_token if it is expired
     unset_checkout_token_if_expired();
@@ -51,9 +51,7 @@ function woocommerce_checkout_update_order_hook($posted_data)
     // set checkout_token when we receive this hook first time
     $checkout_token = WC()->session->get('checkout_token');
     if ($checkout_token == null) {
-        $checkout_token = get_uuid4();
-        WC()->session->set('checkout_token', $checkout_token);
-        WC()->session->set('checkout_token_timestamp', current_time('timestamp'));
+        set_checkout_token();
         $request["topic"] = "checkout.created";
     }
 
@@ -81,20 +79,14 @@ function fetch_order_data($order) {
 function fetch_checkout_data($posted_data) {
     $posted_data = urldecode($posted_data);
     parse_str($posted_data, $params);
-
-    $total_order_price = 0;
-    foreach( WC()->cart->get_cart() as $cart_item_key => $cart_item ){
-        $cart_line_total = $cart_item['line_total']; // Cart item line total
-        $cart_line_tax = $cart_item['line_tax']; // Cart item line tax total
-    
-        $total_order_price = $total_order_price + $cart_line_tax;
-        $total_order_price = $total_order_price + $cart_line_total;
-    }
-
-    $params['order_total_price'] = $total_order_price;
-    $params['customer_email'] = $params['billing_email'];
-    $params['customer_phone'] = $params['billing_phone'];
+    $params['cart'] = WC()->cart->get_cart();
     return $params;
+}
+
+function set_checkout_token() {
+    $checkout_token = get_uuid4();
+    WC()->session->set('checkout_token', $checkout_token);
+    WC()->session->set('checkout_token_timestamp', current_time('timestamp'));
 }
 
 // Define the custom function to set an expiry for a field in the session.
