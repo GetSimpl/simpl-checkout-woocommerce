@@ -1,8 +1,6 @@
 <?php
 
-// define('CHECKOUT_TOKEN_EXPIRY', 3 * 24 * 60 * 60);
-// keeping it 1/2 hour for testing purpose
-define('CHECKOUT_TOKEN_EXPIRY', 30 * 60);
+define('CHECKOUT_TOKEN_EXPIRY', 3 * 24 * 60 * 60);
 
 function order_refunded_hook($order_id)
 {
