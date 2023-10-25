@@ -41,5 +41,5 @@ function simpl_add_to_cart_btn(){
 
 function load_widget_script(){
   $script_url = WC_Simpl_Settings::widget_script_url();
-  simpl_inject_script('<script {{attributes}} type="text/javascript" src=' .$script_url. '></script>');
+  simpl_inject_script($script_url);
 }
