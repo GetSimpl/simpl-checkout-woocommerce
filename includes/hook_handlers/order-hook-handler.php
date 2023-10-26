@@ -6,18 +6,20 @@ function order_updated_hook($order_id)
 {
     $order = wc_get_order($order_id);
 
-    $order_data = fetch_order_data($order);
+    if ($order->meta_exists('simpl_order_id')) {
+        $order_data = fetch_order_data($order);
 
-    $request["topic"] = "order.updated";
-    $request["resource"] = "order";
-    $request["event"] = "updated";
-    $request["data"] = $order_data;
+        $request["topic"] = "order.updated";
+        $request["resource"] = "order";
+        $request["event"] = "updated";
+        $request["data"] = $order_data;
 
-    $checkout_3pp_client = new SimplCheckout3ppClient();
-    try {
-        $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
-    } catch (\Throwable $th) { 
-        error_log(print_r($th, TRUE)); 
+        $checkout_3pp_client = new SimplCheckout3ppClient();
+        try {
+            $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
+        } catch (\Throwable $th) { 
+            error_log(print_r($th, TRUE)); 
+        }
     }
 }
 
