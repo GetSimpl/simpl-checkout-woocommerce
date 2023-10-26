@@ -155,10 +155,14 @@ class Simpl_Logger {
         );
     }
 
+
     function simpl_log($level, $message)
     {
-        if ($this->is_debug_mode_enabled()) {
-            self::$logger->log($level, $message, array('source' => SIMPL_LOG_NAME));
+        $is_debug_mode_enabled = $this->is_debug_mode_enabled();
+        if (!$is_debug_mode_enabled && !in_array($level, array('emergency', 'alert', 'critical', 'error'))) {
+            return;
         }
+
+        self::$logger->log($level, $message, array('source' => SIMPL_LOG_NAME));
     }
 }
