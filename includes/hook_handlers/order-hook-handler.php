@@ -4,7 +4,7 @@ define('CHECKOUT_TOKEN_EXPIRY', 3 * 24 * 60 * 60);
 
 function order_refunded_hook($order_id)
 {
-    $logger = new SimplLogger();
+    $logger = new Simpl_Logger();
     $order = wc_get_order($order_id);
 
     $order_data = fetch_order_data($order);

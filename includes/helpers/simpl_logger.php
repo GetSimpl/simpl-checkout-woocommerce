@@ -16,7 +16,22 @@
  */
 define('SIMPL_LOG_NAME', 'simpl-logs');
 
-class SimplLogger {
+class Simpl_Logger {
+    /**
+	 * The logger instance.
+	 *
+	 * @var WC_Logger|null
+	 */
+	protected static $logger;
+
+    final function __construct() {
+        if ( is_null( self::$logger ) ) {
+			self::$logger = wc_get_logger();
+		}
+
+		return self::$logger;
+    }
+    
     /**
      * Adds an emergency level message if simpl debug mode is enabled
      *
@@ -28,7 +43,7 @@ class SimplLogger {
      */
     public function emergency($message)
     {
-        simpl_log('emergency', $message);
+        $this->simpl_log('emergency', $message);
     }
 
     /**
@@ -43,7 +58,7 @@ class SimplLogger {
      */
     public function alert($message)
     {
-        simpl_log('alert', $message);
+        $this->simpl_log('alert', $message);
     }
 
     /**
@@ -58,7 +73,7 @@ class SimplLogger {
      */
     public function critical($message)
     {
-        simpl_log('critical', $message);
+        $this->simpl_log('critical', $message);
     }
 
     /**
@@ -73,7 +88,7 @@ class SimplLogger {
      */
     public function error($message)
     {
-        simpl_log('error', $message);
+        $this->simpl_log('error', $message);
     }
 
     /**
@@ -90,7 +105,7 @@ class SimplLogger {
      */
     public function warning($message)
     {
-        simpl_log('warning', $message);
+        $this->simpl_log('warning', $message);
     }
 
     /**
@@ -104,7 +119,7 @@ class SimplLogger {
      */
     public function notice($message)
     {
-        simpl_log('notice', $message);
+        $this->simpl_log('notice', $message);
     }
 
     /**
@@ -119,7 +134,7 @@ class SimplLogger {
      */
     public function info($message)
     {
-        simpl_log('info', $message);
+        $this->simpl_log('info', $message);
     }
 
     /**
@@ -130,21 +145,20 @@ class SimplLogger {
      */
     public function debug($message)
     {
-        simpl_log('debug', $message);
+        $this->simpl_log('debug', $message);
     }
-}
 
-function is_debug_mode_enabled()
-{
-    return (
-        'yes' == get_option('wc_settings_tab_simpl_debug_logs')
-    );
-}
+    function is_debug_mode_enabled()
+    {
+        return (
+            'yes' == get_option('wc_settings_tab_simpl_debug_logs')
+        );
+    }
 
-function simpl_log($level, $message)
-{
-    if (is_debug_mode_enabled()) {
-        $logger = wc_get_logger();
-        $logger->log($level, $message, array('source' => SIMPL_LOG_NAME));
+    function simpl_log($level, $message)
+    {
+        if ($this->is_debug_mode_enabled()) {
+            self::$logger->log($level, $message, array('source' => SIMPL_LOG_NAME));
+        }
     }
 }
