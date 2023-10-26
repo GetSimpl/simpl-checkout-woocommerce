@@ -2,7 +2,7 @@
 
 define('CHECKOUT_TOKEN_EXPIRY', 3 * 24 * 60 * 60);
 
-function order_refunded_hook($order_id)
+function order_updated_hook($order_id)
 {
     $order = wc_get_order($order_id);
 
