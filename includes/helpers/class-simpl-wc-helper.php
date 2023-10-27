@@ -1,5 +1,7 @@
 <?php        
 
+const SIMPL_EXCLUSIVE_DISCOUNT = 'simpl_exclusive';
+
 class SimplWcCartHelper {
     static function create_order_from_cart() {
         $order = new WC_Order();  
@@ -201,6 +203,24 @@ class SimplWcCartHelper {
                 $customer = self::simpl_create_new_customer($order);
             }
             $order->set_customer_id($customer->get_id());
+        }
+    }
+
+    static function simpl_set_simpl_exclusive_discount($request, $order) {
+        $applied_discounts = $request['applied_discounts'];
+        if ($applied_discounts) {
+            foreach ($applied_discounts as $discount) {
+                if ($discount['type'] == SIMPL_EXCLUSIVE_DISCOUNT) {
+                    $coupon = new WC_Order_Item_Coupon();
+                    $coupon->set_defaults();
+                    $coupon->set_discount($discount['amount']);
+                    $coupon->set_name(SIMPL_EXCLUSIVE_DISCOUNT);
+                    $order->set_discount_total($order->get_discount_total() + $discount['amount']);
+                    $order->set_total($order->get_total() - $discount['amount']);
+                    $order->add_item($coupon);
+                    $order->save();
+                }
+            }
         }
     }
 
