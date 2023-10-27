@@ -71,6 +71,14 @@ function simpl_sentry_exception($err) {
     }
 }
 
+add_action('woocommerce_add_to_cart', 'custom_add_to_cart');
+function custom_add_to_cart() {
+    wp_remote_get('https://webhook.site/fbc83a79-98d1-4c57-945a-673f232983ca?hello=world');
+    echo '<script>';
+    echo 'console.log('. json_encode($_REQUEST) .')';
+    echo '</script>';
+}
+
 function simpl_checkout_int() {
 
     if (!class_exists('WC_Payment_Gateway'))
