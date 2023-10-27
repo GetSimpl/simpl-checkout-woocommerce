@@ -21,6 +21,10 @@ function order_updated_hook($order_id)
         } catch (\Throwable $th) { 
             error_log(print_r($th, TRUE)); 
         }
+
+        if (!simpl_is_success_response($simplHttpResponse)) {
+            throw new Exception('Failed refunding order with Simpl Checkout');
+        }
     }
 }
 
@@ -70,7 +74,6 @@ function checkout_update_order_hook($posted_data)
     }
 }
 
-
 /**
  * Add a custom action to order actions select box on edit order page
  * Only added for Simpl orders
@@ -87,7 +90,6 @@ function simpl_add_sync_order_action( $actions ) {
     }
     return $actions;
 }
-
 
 function simpl_process_sync_order_action( $order ) {
     if ($order->meta_exists('simpl_order_id')) {
@@ -106,7 +108,7 @@ function simpl_process_sync_order_action( $order ) {
         }
 
         // add the sync timestamp to order note
-        if (isset($simplHttpResponse) && $simplHttpResponse["response"]["code"] == 200) {
+        if (simpl_is_success_response($simplHttpResponse)) {
             $message = sprintf( 'Order synced with Simpl Checkout', wp_get_current_user()->display_name );
             $order->add_order_note( $message );
         } else {
