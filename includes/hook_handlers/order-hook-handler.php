@@ -1,6 +1,7 @@
 <?php
 
 define('CHECKOUT_TOKEN_EXPIRY', 3 * 24 * 60 * 60);
+define('SYNC_ORDER_ACTION_TEXT', 'Sync Order - Simpl Checkout');
 
 function order_updated_hook($order_id)
 {
@@ -66,6 +67,52 @@ function checkout_update_order_hook($posted_data)
         $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
     } catch (\Throwable $th) {
         error_log(print_r($th, TRUE)); 
+    }
+}
+
+
+/**
+ * Add a custom action to order actions select box on edit order page
+ * Only added for Simpl orders
+ *
+ * @param array $actions order actions array to display
+ * @return array - updated actions
+ */
+function simpl_add_sync_order_action( $actions ) {
+	global $theorder;
+
+    // Render the option for simpl orders only
+    if('yes' == get_post_meta( $theorder->id, SIMPL_ORDER_METADATA, true ) ) {
+        $actions['wc_custom_order_action'] = SYNC_ORDER_ACTION_TEXT; // Remove hardcoding - create a constant    
+    }
+    return $actions;
+}
+
+
+function simpl_process_sync_order_action( $order ) {
+    if ($order->meta_exists('simpl_order_id')) {
+        $order_data = fetch_order_data($order);
+
+        $request["topic"] = "order.updated";
+        $request["resource"] = "order";
+        $request["event"] = "updated";
+        $request["data"] = $order_data;
+
+        $checkout_3pp_client = new SimplCheckout3ppClient();
+        try {
+            $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
+        } catch (\Throwable $th) { 
+            error_log(print_r($th, TRUE));
+        }
+
+        // add the sync timestamp to order note
+        if (isset($simplHttpResponse) && $simplHttpResponse["response"]["code"] == 200) {
+            $message = sprintf( 'Order synced with Simpl Checkout', wp_get_current_user()->display_name );
+            $order->add_order_note( $message );
+        } else {
+            $message = sprintf( 'Order sync with Simpl Checkout failed!', wp_get_current_user()->display_name );
+            $order->add_order_note( $message );
+        }
     }
 }
 
