@@ -10,4 +10,4 @@ add_action( 'woocommerce_checkout_update_order_review', 'checkout_update_order_h
 
 // Simpl sync order actions
 add_action( 'woocommerce_order_actions', 'simpl_add_sync_order_action' );
-add_action( 'woocommerce_order_action_wc_custom_order_action', 'simpl_process_sync_order_action' );
+add_action( 'woocommerce_order_action_simpl_sync_order_action', 'simpl_process_sync_order_action' );

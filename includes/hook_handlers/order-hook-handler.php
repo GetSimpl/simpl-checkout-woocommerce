@@ -86,7 +86,7 @@ function simpl_add_sync_order_action( $actions ) {
 
     // Render the option for simpl orders only
     if('yes' == get_post_meta( $theorder->id, SIMPL_ORDER_METADATA, true ) ) {
-        $actions['wc_custom_order_action'] = SYNC_ORDER_ACTION_TEXT; // Remove hardcoding - create a constant    
+        $actions['simpl_sync_order_action'] = SYNC_ORDER_ACTION_TEXT; // Remove hardcoding - create a constant    
     }
     return $actions;
 }
