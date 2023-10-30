@@ -44,8 +44,7 @@ class Simpl_Logger {
      *
      * @param string $message Message to log.
      */
-    public function critical($message)
-    {
+    public function critical($message) {
         $this->simpl_log('critical', $message);
     }
 
@@ -59,8 +58,7 @@ class Simpl_Logger {
      *
      * @param string $message Message to log.
      */
-    public function error($message)
-    {
+    public function error($message) {
         $this->simpl_log('error', $message);
     }
 
@@ -71,8 +69,7 @@ class Simpl_Logger {
      * @see WC_Logger::log
      * @param string $message Message to log
      */
-    public function debug($message)
-    {
+    public function debug($message) {
         $is_debug_mode_enabled = $this->is_debug_mode_enabled();
         if (!$is_debug_mode_enabled) {
             return;
@@ -81,16 +78,14 @@ class Simpl_Logger {
         $this->simpl_log('debug', $message);
     }
 
-    function is_debug_mode_enabled()
-    {
+    private function is_debug_mode_enabled() {
         return (
             'yes' == get_option('wc_settings_tab_simpl_debug_logs')
         );
     }
 
 
-    function simpl_log($level, $message)
-    {
+    private function simpl_log($level, $message) {
         $this->logger->log($level, $message, array('source' => SIMPL_LOG_NAME));
     }
 }
