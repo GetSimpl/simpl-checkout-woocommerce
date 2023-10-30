@@ -7,7 +7,7 @@ function order_updated_hook($order_id)
 {
     $order = wc_get_order($order_id);
 
-    if ($order->meta_exists('simpl_order_id')) {
+    if (!$order->meta_exists('simpl_order_id')) {
         return;
     }
 
@@ -86,6 +86,7 @@ function checkout_update_order_hook($posted_data)
 function simpl_add_sync_order_action( $actions ) {
 	global $theorder;
 
+    // Only show the sync order action for Simpl orders
     if('yes' == get_post_meta( $theorder->id, SIMPL_ORDER_METADATA, true ) ) {
         $actions['simpl_sync_order'] = SYNC_ORDER_ACTION_TEXT;   
     }
