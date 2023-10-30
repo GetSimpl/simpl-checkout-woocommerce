@@ -71,15 +71,6 @@ function simpl_sentry_exception($err) {
     }
 }
 
-$simpl_logger = null;
-function get_simpl_logger() {
-    if (!isset($simpl_logger)) {
-       $simpl_logger = new Simpl_Logger();
-    }
-
-    return $simpl_logger;
-}
-
 function simpl_checkout_int() {
 
     if (!class_exists('WC_Payment_Gateway'))
