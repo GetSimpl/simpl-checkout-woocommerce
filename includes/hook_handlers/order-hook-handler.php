@@ -5,6 +5,7 @@ define('SYNC_ORDER_ACTION_TEXT', 'Sync Order - Simpl Checkout');
 
 function order_refunded_hook($order_id)
 {
+    $logger = get_simpl_logger();
     $order = wc_get_order($order_id);
 
     if (!$order->meta_exists('simpl_order_id')) {
@@ -22,7 +23,7 @@ function order_refunded_hook($order_id)
     try {
         $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
     } catch (\Throwable $th) { 
-        error_log(print_r($th, TRUE)); 
+        $logger->error(print_r($th, TRUE));
     }
 
     if (!simpl_is_success_response($simplHttpResponse)) {
