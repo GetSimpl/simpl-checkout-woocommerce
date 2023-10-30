@@ -15,11 +15,11 @@ class Simpl_Logger {
     private static $instance;
     
     /**
-	 * The logger instance.
-	 *
-	 * @var WC_Logger|null
-	 */
-	private $logger;
+     * The logger instance.
+     *
+     * @var WC_Logger|null
+     */
+    private $logger;
 
     private function __construct() {
         $this->logger = wc_get_logger();
