@@ -114,7 +114,7 @@ function simpl_add_sync_order_action( $actions ) {
 	global $theorder;
 
     // Only show the sync order action for Simpl orders
-    if('yes' == get_post_meta( $theorder->id, SIMPL_ORDER_METADATA, true ) ) {
+    if('yes' == get_post_meta( $theorder->get_id(), SIMPL_ORDER_METADATA, true ) ) {
         $actions['simpl_sync_order'] = SYNC_ORDER_ACTION_TEXT;   
     }
     return $actions;
