@@ -327,6 +327,7 @@ class SimplWcEventHelper {
     }
 }
 
+// TODO: add a wrapper instead of a helper function
 function simpl_is_success_response($simplHTTPResponse) {
     if (isset($simplHTTPResponse) && $simplHTTPResponse["response"]["code"] == 200) {
         return true;
