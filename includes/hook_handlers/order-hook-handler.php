@@ -140,13 +140,14 @@ function simpl_sync_order_hook( $order ) {
     }
 
     // add the order sync note to order
-    if (simpl_is_success_response($simplHttpResponse)) {
-        $message = sprintf( 'Order synced with Simpl Checkout', wp_get_current_user()->display_name );
-        $order->add_order_note( $message );
-    } else {
+    if (!simpl_is_success_response($simplHttpResponse)) {
         $message = sprintf( 'Order sync with Simpl Checkout failed!', wp_get_current_user()->display_name );
         $order->add_order_note( $message );
+        return;
     }
+
+    $message = sprintf( 'Order synced with Simpl Checkout', wp_get_current_user()->display_name );
+    $order->add_order_note( $message );
 }
 
 function fetch_order_data($order) {
