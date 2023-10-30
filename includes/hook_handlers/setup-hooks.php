@@ -1,8 +1,8 @@
 <?php
 
 // Simpl order actions
-add_action( 'woocommerce_order_refunded', 'order_updated_hook' );
-add_action( 'woocommerce_order_status_cancelled', 'order_updated_hook' );
+add_action( 'woocommerce_order_refunded', 'order_refunded_hook' );
+add_action( 'woocommerce_order_status_cancelled', 'order_cancelled_hook' );
 
 // Native order actions
 add_action( 'woocommerce_checkout_order_processed', 'order_created_hook', 10, 3);

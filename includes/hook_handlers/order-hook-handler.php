@@ -3,7 +3,7 @@
 define('CHECKOUT_TOKEN_EXPIRY', 3 * 24 * 60 * 60);
 define('SYNC_ORDER_ACTION_TEXT', 'Sync Order - Simpl Checkout');
 
-function order_updated_hook($order_id)
+function order_refunded_hook($order_id)
 {
     $order = wc_get_order($order_id);
 
@@ -13,9 +13,9 @@ function order_updated_hook($order_id)
 
     $order_data = fetch_order_data($order);
 
-    $request["topic"] = "order.updated";
+    $request["topic"] = "order.refunded";
     $request["resource"] = "order";
-    $request["event"] = "updated";
+    $request["event"] = "refunded";
     $request["data"] = $order_data;
 
     $checkout_3pp_client = new SimplCheckout3ppClient();
@@ -27,6 +27,33 @@ function order_updated_hook($order_id)
 
     if (!simpl_is_success_response($simplHttpResponse)) {
         throw new Exception('Failed refunding order with Simpl Checkout');
+    }
+}
+
+function order_cancelled_hook($order_id)
+{
+    $order = wc_get_order($order_id);
+
+    if (!$order->meta_exists('simpl_order_id')) {
+        return;
+    }
+
+    $order_data = fetch_order_data($order);
+
+    $request["topic"] = "order.cancelled";
+    $request["resource"] = "order";
+    $request["event"] = "cancelled";
+    $request["data"] = $order_data;
+
+    $checkout_3pp_client = new SimplCheckout3ppClient();
+    try {
+        $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
+    } catch (\Throwable $th) { 
+        error_log(print_r($th, TRUE)); 
+    }
+
+    if (!simpl_is_success_response($simplHttpResponse)) {
+        throw new Exception('Failed cancelling order with Simpl Checkout');
     }
 }
 
