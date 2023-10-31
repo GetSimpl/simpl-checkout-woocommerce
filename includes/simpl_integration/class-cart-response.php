@@ -154,7 +154,12 @@ class SimplCartResponse
         $applied_discounts = array();
         $applied_discount_count = 0;
         foreach ($coupons as $coupon_code => $coupon) {
-            $applied_discounts[$applied_discount_count] = array("code" => $coupon_code, "amount" => wc_format_decimal($cart->get_coupon_discount_amount($coupon_code, false), 2), "free_shipping" => $coupon->enable_free_shipping());
+            $applied_discounts[$applied_discount_count] = array(
+                "code" => $coupon_code,
+                "amount" => wc_format_decimal($cart->get_coupon_discount_amount($coupon_code, false), 2),
+                "free_shipping" => $coupon->enable_free_shipping(),
+                "type" => is_auto_applied_coupon($coupon) ? "auto" : ""
+            );
             $applied_discount_count += 1;
         }
         return $applied_discounts;
@@ -180,7 +185,11 @@ class SimplCartResponse
                 $coupon_amount = $coupon->get_amount();
             }
 
-            $applied_discounts[$applied_discount_count] = array("code" => $coupon->get_code(), "amount" => wc_format_decimal($coupon_amount, 2));
+            $applied_discounts[$applied_discount_count] = array(
+                "code" => $coupon->get_code(),
+                "amount" => wc_format_decimal($coupon_amount, 2),
+                "type" => is_auto_applied_coupon($coupon) ? "auto" : ""
+            );
             $applied_discount_count += 1;
         }
         return $applied_discounts;
