@@ -5,7 +5,6 @@ define('SYNC_ORDER_ACTION_TEXT', 'Sync Order - Simpl Checkout');
 
 function order_refunded_hook($order_id)
 {
-    $logger = get_simpl_logger();
     $order = wc_get_order($order_id);
 
     if (!$order->meta_exists('simpl_order_id')) {
@@ -23,6 +22,7 @@ function order_refunded_hook($order_id)
     try {
         $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
     } catch (\Throwable $th) { 
+        $logger = get_simpl_logger();
         $logger->error(print_r($th, TRUE));
     }
 
@@ -58,7 +58,7 @@ function order_cancelled_hook($order_id)
     }
 }
 
-function order_created_hook($order_id, $posted_data, $order)
+function order_created_hook($order_id, $order)
 {
     $checkout_token = WC()->session->get('checkout_token');
 
@@ -71,7 +71,8 @@ function order_created_hook($order_id, $posted_data, $order)
     try {
         $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
     } catch (\Throwable $th) {
-        error_log(print_r($th, TRUE)); 
+        $logger = get_simpl_logger();
+        $logger->error("error while processing order_created_hook ".print_r($th, TRUE));
     }
 
     // unset checkout_token when order is created
