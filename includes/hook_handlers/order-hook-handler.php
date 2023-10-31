@@ -58,7 +58,7 @@ function order_cancelled_hook($order_id)
     }
 }
 
-function order_created_hook($order_id, $posted_data, $order)
+function order_created_hook($order_id, $order)
 {
     $checkout_token = WC()->session->get('checkout_token');
 
@@ -71,7 +71,9 @@ function order_created_hook($order_id, $posted_data, $order)
     try {
         $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
     } catch (\Throwable $th) {
-        error_log(print_r($th, TRUE)); 
+        error_log(print_r($th, TRUE));
+        $logger = get_simpl_logger();
+		$logger->error("error while processing order_created_hook ".print_r($th, TRUE));
     }
 
     // unset checkout_token when order is created
