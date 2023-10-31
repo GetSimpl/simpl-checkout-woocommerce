@@ -71,7 +71,6 @@ function order_created_hook($order_id, $order)
     try {
         $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
     } catch (\Throwable $th) {
-        error_log(print_r($th, TRUE));
         $logger = get_simpl_logger();
 		$logger->error("error while processing order_created_hook ".print_r($th, TRUE));
     }
