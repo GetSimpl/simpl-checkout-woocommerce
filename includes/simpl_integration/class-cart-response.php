@@ -52,6 +52,25 @@ class SimplCartResponse
         return $request;
     }
 
+    public function simpl_checkout_response_from_order($order)
+    {
+        $response = array("source" => "cart");
+        WC()->cart->calculate_shipping();
+        $cart_payload = $this->simpl_cart_common_payload_from_order($order, null);
+
+        $shipping_address = $order->get_address('shipping');
+        $billing_address = $order->get_address('billing');
+        if ($this->is_address_present($shipping_address, $billing_address)) {
+            $cart_payload["shipping_address"] = $this->convert_address_response($shipping_address);
+            $cart_payload["billing_address"] = $this->convert_address_response(($billing_address));
+        }
+
+        $cart_payload['checkout_order_id'] = $order->get_id();
+        $response["cart"] = $cart_payload;
+        self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
+        return $response;
+    }
+
     protected function is_address_present($shipping_address, $billing_address)
     {
         return (isset($shipping_address) && isset($billing_address) && count($shipping_address) > 0 && count($billing_address) > 0) && $shipping_address["country"] != "";
@@ -99,6 +118,36 @@ class SimplCartResponse
         $cart_payload['attributes'] = array();
         $cart_payload["merchant_additional_details"] = $merchant_additional_details;
         return $cart_payload;
+    }
+
+    function simpl_cart_common_payload_from_order($order, $merchant_additional_details)
+    {
+        $cart_payload = array();
+        $cart_payload["total_price"] = wc_format_decimal($order->get_total(), 2);
+        $cart_payload["applied_discounts"] = $this->formatted_order_coupons($order);
+        $discount_amount = 0;
+        if ($order->get_total_discount()) {
+            $discount_amount = round($$order->get_total_discount(false), 2);
+        }
+        $cart_payload["total_discount"] = wc_format_decimal($discount_amount, 2);
+        $cart_payload['tax_included'] = $order->get_prices_include_tax();
+        $cart_payload["item_subtotal_price"] = $this->simpl_get_order_item_subtotal_price($order);
+
+        $cart_payload["total_tax"] = wc_format_decimal($order->get_total_tax(), 2);
+        $cart_payload["checkout_url"] = wc_get_checkout_url();
+        $cart_payload["shipping_methods"] = $this->get_shipping_methods(WC()->cart);
+        $cart_payload["applied_shipping_method"] = $this->get_applied_shipping_method(WC()->cart);
+        $cart_payload["items"] = $this->getOrderLineItem($order);
+        $cart_payload['attributes'] = array();
+        $cart_payload["merchant_additional_details"] = $merchant_additional_details;
+        return $cart_payload;
+    }
+
+    protected function simpl_get_order_item_subtotal_price($order) {
+        foreach ( $order->get_items() as $item ) {
+            $subtotal += $item->get_subtotal() + (float)$item->get_subtotal_tax();
+        }
+        return wc_format_decimal($subtotal, 2);
     }
 
     protected function unique_device_id()

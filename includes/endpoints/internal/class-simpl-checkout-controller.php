@@ -14,7 +14,7 @@ class SimplCheckoutController
 
             $order = SimplWcCartHelper::create_order_from_cart();
             $si = new SimplCartResponse();
-            $cart_payload =  $si->cart_payload(WC()->cart, $order->get_id());
+            $cart_payload =  $si->simpl_checkout_response_from_order($order);
             do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
             return $cart_payload;
         } catch (SimplCustomHttpBadRequest $fe) {
@@ -32,25 +32,24 @@ class SimplCheckoutController
     function update(WP_REST_Request $request)
     {
         try {
-            $items = $request->get_params()["items"];
             simpl_cart_init_common();
             SimplRequestValidator::validate_shipping_address_or_items($request);
             SimplRequestValidator::validate_checkout_order_id($request);
+
+            $order = wc_get_order((int)$request->get_params()["checkout_order_id"]);
+            $items = $request->get_params()["items"];
+
             if (isset($items) && count($items) > 0) {
                 SimplRequestValidator::validate_line_items($request);
                 SimplWcCartHelper::add_to_cart($items);
-            } else {
-                $order_id = $request->get_params()["checkout_order_id"];
-                SimplWcCartHelper::load_cart_from_order($order_id);
             }
             if ($this->is_address_present($request)) {
                 SimplWcCartHelper::set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
             }
             
-            $order = SimplWcCartHelper::update_order_from_cart($request->get_params()["checkout_order_id"]);
-            SimplWcCartHelper::load_cart_from_order($order->get_id());
+            $order = SimplWcCartHelper::simpl_update_order_from_cart($order);
             $si = new SimplCartResponse();
-            $cart_payload = $si->cart_payload(WC()->cart, $order->get_id());
+            $cart_payload = $si->simpl_checkout_response_from_order($order);
             do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
             return $cart_payload;
         } catch (SimplCustomHttpBadRequest $fe) {
@@ -61,7 +60,7 @@ class SimplCheckoutController
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
             simpl_sentry_exception($fe);
-            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating checkout'), 500);
+            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in updating checkout'), 500);
         }
     }
 
@@ -71,10 +70,10 @@ class SimplCheckoutController
             SimplRequestValidator::validate_checkout_order_id($request);
             simpl_cart_init_common();
             WC()->cart->empty_cart();
-            $order_id = $request->get_params()["checkout_order_id"];
-            SimplWcCartHelper::load_cart_from_order($order_id);
+            $order = wc_get_order($request->get_params()["checkout_order_id"]);
+
             $si = new SimplCartResponse();
-            return $si->cart_payload(WC()->cart, $order_id);
+            return $si->simpl_checkout_response_from_order($order);
         } catch (SimplCustomHttpBadRequest $fe) {
             simpl_sentry_exception($fe);
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
