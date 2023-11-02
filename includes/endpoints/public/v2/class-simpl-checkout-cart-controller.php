@@ -7,19 +7,6 @@ class SimplCheckoutCartControllerV2 {
             $_POST[$key] = $value;
         }
 
-        if (isset($request->get_params()["is_pdp"]) && $request->get_params()["is_pdp"]) {
-            $product_id = $request->get_params()["product_id"];
-            $variant_id = $request->get_params()["variant_id"];
-            $quantity = $request->get_params()["quantity"];
-            $variation_attrs = array();
-            if (isset($request->get_params()["attributes"])) {
-                $variation_attrs = $request->get_params()["attributes"];
-            }
-            
-            WC()->cart->empty_cart();
-            WC()->cart->add_to_cart($product_id, $quantity, $variant_id, $variation_attrs);
-        }
-
         WC()->cart->empty_cart();
         WC_Form_Handler::add_to_cart_action();
         try {
