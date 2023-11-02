@@ -18,9 +18,5 @@ function my_plugin_deactivate() {
         "email" => $email
     );
     $simplHttpResponse = SimplWcEventHelper::publish_event($event_name, $event_data, $entity, $flow);
-    if (is_wp_error($simplHttpResponse)) {
-        $error_message = $simplHttpResponse->get_error_message();
-        simpl_sentry_exception($error_message);
-    }
 }
 ?>
