@@ -21,8 +21,7 @@ class SimplWcCartHelper {
         }
     }
 
-    static function update_order_from_cart($order_id) {
-        $order = wc_get_order($order_id);        
+    static function simpl_update_order_from_cart($order) {   
         $order->remove_order_items("line_item");
         WC()->checkout->create_order_line_items( $order, WC()->cart );
         self::set_address_in_order($order);
@@ -139,8 +138,7 @@ class SimplWcCartHelper {
     }
     
 
-    static function update_shipping_line($order_id) {
-        $order = wc_get_order($order_id);
+    static function update_shipping_line($order) {
         $order->remove_order_items("shipping");
         $shipping_methods = WC()->cart->calculate_shipping();
         if(count($shipping_methods) > 0) {
