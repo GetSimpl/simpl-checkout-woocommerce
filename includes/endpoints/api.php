@@ -10,7 +10,7 @@ add_action('rest_api_init', function () {
 
   register_rest_route('simpl/v2', '/cart', array(
     'methods' => 'POST',
-    'callback' => array(new SimplCheckoutCartControllerV2, 'create'),
+    'callback' => array(new SimplCheckoutCartController, 'create_v2'),
     'permission_callback' => function () {
       return true;
     }
