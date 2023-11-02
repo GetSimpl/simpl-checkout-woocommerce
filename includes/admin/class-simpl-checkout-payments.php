@@ -27,10 +27,11 @@ function simpl_init_gateway_class()
             add_filter('woocommerce_available_payment_gateways', array( $this, 'remove_simpl_gateway'), 10, 2 );
         }
 
-        public $supports = array(
-            'products',
-            'refunds'
-        );
+        // TODO: Need to handle. With this, refund with Simpl starts appearing in order refunds.
+        // public $supports = array(
+        //     'products',
+        //     'refunds'
+        // );
 
         // Probably to restrict other plugins to use Simpl payment mode.
         public function remove_simpl_gateway($available_gateways) {
