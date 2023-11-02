@@ -271,6 +271,14 @@ class WC_Simpl_Settings {
 		);
 
 		$settings[] = array(
+			'name'     => __( 'Enable debug logs', $simplTabDomain ),
+			'type'     => 'checkbox',
+			'id'       => 'wc_settings_tab_simpl_debug_logs',
+			'desc'     => 'It can be used to get simpl logs',
+			'desc_tip' => true,
+		);
+
+		$settings[] = array(
 			'title'    => esc_html__( 'Merchant Client ID', $simplTabDomain ),
 			'type'     => 'password',
 			'desc'     => 'This identifies the merchant and is obtained post merchant onboarding',
