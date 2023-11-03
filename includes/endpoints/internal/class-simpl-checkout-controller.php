@@ -42,7 +42,10 @@ class SimplCheckoutController
             if (isset($items) && count($items) > 0) {
                 SimplRequestValidator::validate_line_items($request);
                 SimplWcCartHelper::add_to_cart($items);
+            } else {
+                SimplWcCartHelper::simpl_load_cart_from_order($order);
             }
+
             if ($this->is_address_present($request)) {
                 SimplWcCartHelper::set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
             }
