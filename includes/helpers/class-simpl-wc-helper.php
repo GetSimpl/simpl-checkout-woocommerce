@@ -25,6 +25,10 @@ class SimplWcCartHelper {
         $order->remove_order_items("line_item");
         WC()->checkout->create_order_line_items( $order, WC()->cart );
         self::set_address_in_order($order);
+<<<<<<< HEAD
+=======
+        $order->calculate_totals();
+>>>>>>> main
         $order->recalculate_coupons();
         $order->save();
         return $order;
@@ -322,4 +326,12 @@ class SimplWcEventHelper {
         )); 
         return $simplHttpResponse;
     }
+}
+
+// TODO: add a wrapper instead of a helper function
+function simpl_is_success_response($simplHTTPResponse) {
+    if (isset($simplHTTPResponse) && $simplHTTPResponse["response"]["code"] == 200) {
+        return true;
+    }
+    return false;
 }
