@@ -8,7 +8,7 @@ class SimplCheckoutShippingController {
             WC()->cart->empty_cart();
             SimplRequestValidator::validate_shipping_method_request($request);
             $order = wc_get_order((int)$request->get_params()["checkout_order_id"]);
-            SimplWcCartHelper::load_cart_from_order($order->get_id());
+            SimplWcCartHelper::simpl_load_cart_from_order($order);
 
             WC()->session->set('chosen_shipping_methods', array($request->get_params()["shipping_method_id"]));
             WC()->cart->calculate_shipping();

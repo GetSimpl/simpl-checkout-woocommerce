@@ -55,7 +55,6 @@ class SimplCartResponse
     public function simpl_checkout_response_from_order($order)
     {
         $response = array("source" => "cart");
-        WC()->cart->calculate_shipping();
         $cart_payload = $this->simpl_cart_common_payload_from_order($order, null);
 
         $shipping_address = $order->get_address('shipping');
@@ -127,7 +126,7 @@ class SimplCartResponse
         $cart_payload["applied_discounts"] = $this->formatted_order_coupons($order);
         $discount_amount = 0;
         if ($order->get_total_discount()) {
-            $discount_amount = round($$order->get_total_discount(false), 2);
+            $discount_amount = $order->get_total_discount(false);
         }
         $cart_payload["total_discount"] = wc_format_decimal($discount_amount, 2);
         $cart_payload['tax_included'] = $order->get_prices_include_tax();
@@ -244,6 +243,7 @@ class SimplCartResponse
             $shipping_methods_array["name"] = $item->get_name();
             $shipping_methods_array["amount"] = wc_format_decimal($item->get_total(), 2);
             $shipping_methods_array["total_tax"] = wc_format_decimal($item->get_total_tax(), 2);
+            $shipping_methods_array["taxes"] = $item->get_taxes();
         }
         return $shipping_methods_array;
     }
@@ -279,6 +279,7 @@ class SimplCartResponse
         foreach ($order->get_items() as $item_id => $item) {
             $product =  wc_get_product($item['product_id']);
             $price = (float)$item['line_subtotal'] + (float)$item['line_subtotal_tax'];
+            $data[$i]['id'] = $item->get_id();
             $data[$i]['sku'] = $product->get_sku();
             $data[$i]['quantity'] = (int)$item['quantity'];
             $data[$i]['title'] = mb_substr($product->get_title(), 0, 125, "UTF-8");
@@ -289,7 +290,8 @@ class SimplCartResponse
             $data[$i]['price'] = wc_format_decimal((empty($product->get_price()) === false) ? $price / $item['quantity'] : 0, 2);
             $data[$i]['variant_id'] = $item['variation_id'];
             $data[$i]['product_id'] = $item['product_id'];
-            $data[$i]['id'] = $item->get_id();
+            $data[$i]['product_category'] = $this->simpl_get_product_category($product->get_id());
+            $data[$i]['attributes'] = empty($item['variation']) ? null : $item['variation'];
             $data[$i]['offer_price'] = (empty($productDetails['sale_price']) === false) ? wc_format_decimal((float)$productDetails['sale_price'], 2) : wc_format_decimal($price / $item['quantity'], 2);
             $i++;
         }

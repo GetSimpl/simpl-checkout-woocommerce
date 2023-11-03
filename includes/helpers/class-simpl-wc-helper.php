@@ -25,7 +25,6 @@ class SimplWcCartHelper {
         $order->remove_order_items("line_item");
         WC()->checkout->create_order_line_items( $order, WC()->cart );
         self::set_address_in_order($order);
-        $order->calculate_totals();
         $order->recalculate_coupons();
         $order->save();
         return $order;
@@ -132,12 +131,10 @@ class SimplWcCartHelper {
         return  $address;
     }
 
-    static function load_cart_from_order($order_id) {
-        $order = wc_get_order((int)$order_id);
+    static function simpl_load_cart_from_order($order) {
         return self::convert_wc_order_to_wc_cart($order);
     }
     
-
     static function update_shipping_line($order) {
         $order->remove_order_items("shipping");
         $shipping_methods = WC()->cart->calculate_shipping();

@@ -35,7 +35,7 @@ class SimplCheckoutController
             simpl_cart_init_common();
             SimplRequestValidator::validate_shipping_address_or_items($request);
             SimplRequestValidator::validate_checkout_order_id($request);
-
+            
             $order = wc_get_order((int)$request->get_params()["checkout_order_id"]);
             $items = $request->get_params()["items"];
 
@@ -69,8 +69,8 @@ class SimplCheckoutController
         try {
             SimplRequestValidator::validate_checkout_order_id($request);
             simpl_cart_init_common();
-            WC()->cart->empty_cart();
             $order = wc_get_order($request->get_params()["checkout_order_id"]);
+            SimplWcCartHelper::simpl_load_cart_from_order($order);
 
             $si = new SimplCartResponse();
             return $si->simpl_checkout_response_from_order($order);
@@ -82,7 +82,7 @@ class SimplCheckoutController
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
             simpl_sentry_exception($fe);
-            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating checkout'), 500);
+            return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in fetching checkout'), 500);
         }
     }
 
