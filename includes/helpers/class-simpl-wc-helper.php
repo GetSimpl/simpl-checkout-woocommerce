@@ -135,7 +135,7 @@ class SimplWcCartHelper {
         return self::convert_wc_order_to_wc_cart($order);
     }
     
-    static function update_shipping_line($order) {
+    static function simpl_update_shipping_line($order) {
         $order->remove_order_items("shipping");
         $shipping_methods = WC()->cart->calculate_shipping();
         if(count($shipping_methods) > 0) {

@@ -14,7 +14,7 @@ class SimplCheckoutShippingController {
             WC()->cart->calculate_shipping();
             WC()->cart->calculate_totals();
 
-            SimplWcCartHelper::update_shipping_line($order);
+            SimplWcCartHelper::simpl_update_shipping_line($order);
             $si = new SimplCartResponse();
             return $si->simpl_checkout_response_from_order($order);
         } catch (SimplCustomHttpBadRequest $fe) {
