@@ -49,7 +49,7 @@ class SimplCheckoutController
             if ($this->is_address_present($request)) {
                 SimplWcCartHelper::set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
             }
-            
+
             $order = SimplWcCartHelper::simpl_update_order_from_cart($order);
             $si = new SimplCartResponse();
             $cart_payload = $si->simpl_checkout_response_from_order($order);
