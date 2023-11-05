@@ -14,18 +14,22 @@ class SimplEventsController {
             }
             $req_body["event_data"]["Simpl-Widget-Session-Token"] = $unique_id;
             $req_body["event_data"]["Simpl-CTR-Unique-ID"] = $shop_domain."-".$req_body["event_data"]["Simpl-Widget-Session-Token"]."-".$req_body["trigger_timestamp"];
+
             $simplHttpResponse = wp_remote_post("https://".$simpl_host."/api/v1/wc/publish/events", array(
+                "blocking"    => false, //asynchronous calls - don't want to wait for events response
                 "body" => json_encode($req_body),
                 "headers" => array(            
-                        "content-type" => "application/json"
-                    ),
-            )); 
-            if ( ! is_wp_error( $simplHttpResponse ) ) {
-                $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
-            } else {
-                $error_message = $simplHttpResponse->get_error_message();
-                throw new Exception( $error_message );
-            }
+                    "content-type" => "application/json"
+                )
+            ));
+            
+            // Event calls are asynchronous - we must not wait for the response
+            // if ( ! is_wp_error( $simplHttpResponse ) ) {
+            //     $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
+            // } else {
+            //     $error_message = $simplHttpResponse->get_error_message();
+            //     throw new Exception( $error_message );
+            // }
         } catch (HttpBadRequest $fe) {
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {

@@ -98,6 +98,7 @@ class SimplCartResponse
         $cart_payload["items"] = $this->getCartLineItem($cart_content);
         $cart_payload['attributes'] = array();
         $cart_payload["merchant_additional_details"] = $merchant_additional_details;
+        $cart_payload["fees"] = $cart->get_fees();
         return $cart_payload;
     }
 
