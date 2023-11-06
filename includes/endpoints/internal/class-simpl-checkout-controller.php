@@ -42,6 +42,7 @@ class SimplCheckoutController
             if (isset($items) && count($items) > 0) {
                 SimplRequestValidator::validate_line_items($request);
                 SimplWcCartHelper::add_to_cart($items);
+                SimplWcCartHelper::simpl_load_cart_from_order($order, false);
             } else {
                 SimplWcCartHelper::simpl_load_cart_from_order($order);
             }
