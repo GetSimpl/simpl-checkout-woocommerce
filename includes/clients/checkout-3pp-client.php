@@ -57,14 +57,14 @@ class SimplCheckout3ppClient {
             )
         );
 
-        $body = json_decode( wp_remote_retrieve_body( $resp ), true );
+        $body = json_decode( wp_remote_retrieve_body( $resp )) ;
         if ( ! is_wp_error( $resp ) ) {
             $response = new WP_REST_Response($body, 200);
             $headers = wp_remote_retrieve_headers( $resp );
             if ( isset( $headers[ SIMPL_SESSION_HEADER_KEY ] ) ) {
                 $response->header(SIMPL_SESSION_HEADER_KEY, $headers[ SIMPL_SESSION_HEADER_KEY ]);
             }
-            if ( isset( $body["success"] ) && isset( $body["data"] ) ) {
+            if ( isset( $body->success ) && isset( $body->data ) ) {
                 return $response;
             }
             return $response;
@@ -74,4 +74,4 @@ class SimplCheckout3ppClient {
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $error_message), 500);
         }
     }
-}
+}1
