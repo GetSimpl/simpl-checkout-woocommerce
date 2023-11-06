@@ -1,5 +1,7 @@
 <?php        
 
+use Automattic\WooCommerce\StoreApi\Utilities\OrderController;
+
 class SimplWcCartHelper {
     static function create_order_from_cart() {
         $order = new WC_Order();  
@@ -7,7 +9,6 @@ class SimplWcCartHelper {
         self::set_address_in_order($order);
         $order->update_meta_data(SIMPL_ORDER_METADATA, 'yes');
         $order->save();
-        updateToSimplDraft($order->get_id());
         return $order;
     }     
 
