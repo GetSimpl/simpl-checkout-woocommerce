@@ -21,7 +21,7 @@ class SimplWcCartHelper {
         }
     }
 
-    static function simpl_update_order_from_cart($order) {   
+    static function simpl_update_order_from_cart($order) {
         $order->remove_order_items("line_item");
         WC()->checkout->create_order_line_items( $order, WC()->cart );
         self::set_address_in_order($order);

@@ -14,7 +14,7 @@ class SimplCheckoutController
 
             $order = SimplWcCartHelper::create_order_from_cart();
             $si = new SimplCartResponse();
-            $cart_payload =  $si->simpl_checkout_response_from_order($order);
+            $cart_payload = $si->cart_payload(WC()->cart, $order->get_id());
             do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
             return $cart_payload;
         } catch (SimplCustomHttpBadRequest $fe) {
@@ -53,7 +53,7 @@ class SimplCheckoutController
 
             $order = SimplWcCartHelper::simpl_update_order_from_cart($order);
             $si = new SimplCartResponse();
-            $cart_payload = $si->simpl_checkout_response_from_order($order);
+            $cart_payload = $si->cart_payload(WC()->cart, $order->get_id());
             do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
             return $cart_payload;
         } catch (SimplCustomHttpBadRequest $fe) {
@@ -77,7 +77,7 @@ class SimplCheckoutController
             SimplWcCartHelper::simpl_load_cart_from_order($order);
 
             $si = new SimplCartResponse();
-            return $si->simpl_checkout_response_from_order($order);
+            return $si->cart_payload(WC()->cart, $order->get_id());
         } catch (SimplCustomHttpBadRequest $fe) {
             simpl_sentry_exception($fe);
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
