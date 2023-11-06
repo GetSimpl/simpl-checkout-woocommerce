@@ -33,3 +33,5 @@ require PLUGIN_DIR . '/vendor/autoload.php';
 echo PHP_EOL;
 echo 'Using Wordpress core : ' . ABSPATH . PHP_EOL;
 echo PHP_EOL;
+
+use Automattic\WooCommerce\StoreApi\Utilities\OrderController;

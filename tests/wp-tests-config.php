@@ -69,5 +69,3 @@ define( 'WP_TESTS_TITLE', 'Test Blog' );
 define( 'WP_PHP_BINARY', 'php' );
 
 define( 'WPLANG', '' );
-
-use Automattic\WooCommerce\StoreApi\Utilities\OrderController;
