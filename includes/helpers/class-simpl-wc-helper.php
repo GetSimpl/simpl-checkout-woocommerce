@@ -4,13 +4,12 @@ use Automattic\WooCommerce\StoreApi\Utilities\OrderController;
 
 class SimplWcCartHelper {
     static function create_order_from_cart() {
-        $order = new WC_Order();  
-        self::set_data_from_cart( $order);        
-        self::set_address_in_order($order);
+        $oc = new OrderController();
+        $order = $oc->create_order_from_cart();
         $order->update_meta_data(SIMPL_ORDER_METADATA, 'yes');
         $order->save();
         return $order;
-    }     
+    }
 
     static function add_to_cart($items) {
         WC()->cart->empty_cart();
