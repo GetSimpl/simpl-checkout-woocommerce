@@ -29,10 +29,8 @@ $GLOBALS[ 'wp_tests_options' ] = array(
 // Start up the WP testing environment.
 require $test_lib_bootstrap_file;
 require PLUGIN_DIR . '/vendor/autoload.php';
+use Automattic\WooCommerce\StoreApi\Utilities\OrderController;
 
 echo PHP_EOL;
 echo 'Using Wordpress core : ' . ABSPATH . PHP_EOL;
 echo PHP_EOL;
-
-require_once ('..\vendor\autoload.php');
-use Automattic\WooCommerce\StoreApi\Utilities\OrderController;
