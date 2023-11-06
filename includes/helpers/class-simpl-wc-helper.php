@@ -14,7 +14,7 @@ class SimplWcCartHelper {
     static function add_to_cart($items) {
         WC()->cart->empty_cart();
         foreach($items as $item_id => $item) {
-            WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"], $item["attributes"]);
+            WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"], $item["attributes"], $item["item_data"]);
         }
         if(WC()->cart->is_empty()) {
             throw new SimplCustomHttpBadRequest("invalid cart items");
@@ -165,6 +165,7 @@ class SimplWcCartHelper {
                 $quantity    = $item->get_quantity();
                 
                 $customData['item_id'] = $item_id;
+
                 $product               = $item->get_product();
                 if ($product->is_type('variation')) {
                     $variation_attributes = $product->get_variation_attributes();
