@@ -1,4 +1,4 @@
 <?php 
     include_once 'abandoned_cart.php';
-    include_once 'woo_extended_coupon.php';
+    include_once 'automatic_discount.php';
 ?>

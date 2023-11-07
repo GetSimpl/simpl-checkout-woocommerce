@@ -158,7 +158,7 @@ class SimplCartResponse
                 "code" => $coupon_code,
                 "amount" => wc_format_decimal($cart->get_coupon_discount_amount($coupon_code, false), 2),
                 "free_shipping" => $coupon->enable_free_shipping(),
-                "type" => is_auto_applied_coupon($coupon) ? "auto" : ""
+                "type" => simpl_is_auto_applied_coupon($coupon) ? "auto" : ""
             );
             $applied_discount_count += 1;
         }
@@ -188,7 +188,7 @@ class SimplCartResponse
             $applied_discounts[$applied_discount_count] = array(
                 "code" => $coupon->get_code(),
                 "amount" => wc_format_decimal($coupon_amount, 2),
-                "type" => is_auto_applied_coupon($coupon) ? "auto" : ""
+                "type" => simpl_is_auto_applied_coupon($coupon) ? "auto" : ""
             );
             $applied_discount_count += 1;
         }
