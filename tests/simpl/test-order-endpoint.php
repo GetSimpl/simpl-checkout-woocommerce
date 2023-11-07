@@ -26,7 +26,7 @@ class Test_Order_Endpoint extends WP_UnitTestCase{
         global $wp_rest_server;
         $this->server = $wp_rest_server = new \WP_REST_Server;
         do_action( 'rest_api_init' );
-        require_once '/var/www/html/wp-content/plugins/woocommerce/vendor/autoload.php';
+        require_once PLUGIN_DIR . '/woocommerce/vendor/autoload.php';
         $this->mock_simpl_payment_gateway = Mockery::mock( WC_Simpl_Gateway::class );
         $this->mock_gateways = Mockery::mock( WC_Payment_Gateways::class );
 	}
