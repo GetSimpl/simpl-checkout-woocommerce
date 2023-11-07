@@ -35,5 +35,5 @@ class SimplCheckoutCartControllerV2 {
                 "message" => 'error in creating checkout'), 
                 500);
         }
-	}
+    }
 }
