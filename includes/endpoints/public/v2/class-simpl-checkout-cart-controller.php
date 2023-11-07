@@ -3,7 +3,7 @@
 class SimplCheckoutCartControllerV2 {
     function create(WP_REST_Request $request) {
         wc_clear_notices();
-        
+
         foreach ( $request->get_params() as $key => $value ) {
             $_REQUEST[$key] = $value;
             $_POST[$key] = $value;
@@ -19,16 +19,21 @@ class SimplCheckoutCartControllerV2 {
                 array_push($err_messages, strip_tags($err_message["notice"]));
             }
             
-            return new WP_REST_Response(array("success"=> false, "code" => SIMPL_HTTP_ERROR_CART_CREATE, "errors" => $err_messages), 400);
+            return new WP_REST_Response(array(
+                "success"=> false, 
+                "code" => SIMPL_HTTP_ERROR_CART_CREATE, 
+                "errors" => $err_messages), 
+                400);
         }
-
-
 
         try {
             $si = new SimplCartResponse();
             return array('redirection_url'=>$si->cart_redirection_url(WC()->cart, $request));
         } catch (Exception $fe) {
-	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_CART_CREATE, "message" => 'error in creating checkout'), 500);
+            return new WP_REST_Response(array(
+                "code" => SIMPL_HTTP_ERROR_CART_CREATE, 
+                "message" => 'error in creating checkout'), 
+                500);
         }
 	}
 }

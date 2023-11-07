@@ -1,5 +1,7 @@
 <?php
 
+const DEFAULT_WC_ORDER_FIELDS = ["key", "product_id", "variation_id", "variation", "quantity", "data", "data_hash", "line_tax_data", "line_subtotal", "line_subtotal_tax", "line_total", "line_tax"];
+
 class SimplCartResponse
 {
     public function cart_redirection_url($cart, $request)
@@ -282,9 +284,8 @@ class SimplCartResponse
 
     protected function get_item_data($item) {
         $item_data = [];
-        $default_wc_fields = ["key", "product_id", "variation_id", "variation", "quantity", "data", "data_hash", "line_tax_data", "line_subtotal", "line_subtotal_tax", "line_total", "line_tax"];
         foreach ($item as $item_key => $item_value) {
-            if (in_array($item_key, $default_wc_fields)) {
+            if (in_array($item_key, DEFAULT_WC_ORDER_FIELDS)) {
                 continue;
             }
 
