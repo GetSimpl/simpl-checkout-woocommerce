@@ -15,19 +15,19 @@ function simpl_wdr_is_auto_applied_coupon($coupon)
             if ($rule->hasProductDiscount()) {
                 $label = $rule->getProductAdjustments()->cart_label;
                 if ($label) {
-                    array_push($active_coupon_codes, $label);
+                    array_push($active_coupon_codes, strtolower($label));
                 }
             }
             if ($rule->hasCartDiscount()) {
                 $label = $rule->getCartAdjustments()->label;
                 if ($label) {
-                    array_push($active_coupon_codes, $label);
+                    array_push($active_coupon_codes, strtolower($label));
                 }
             }
             if ($rule->hasBulkDiscount()) {
                 $label = $rule->getBulkAdjustments()->cart_label;
                 if ($label) {
-                    array_push($active_coupon_codes, $label);
+                    array_push($active_coupon_codes, strtolower($label));
                 }
             }
         }
