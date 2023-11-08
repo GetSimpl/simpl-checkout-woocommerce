@@ -61,6 +61,7 @@ function simpl_cart_init_common()
         include_once WC_ABSPATH . 'includes/wc-cart-functions.php'; // nosemgrep: file-inclusion
         include_once WC_ABSPATH . 'includes/wc-notice-functions.php'; // nosemgrep: file-inclusion
         include_once WC_ABSPATH . 'includes/wc-template-hooks.php'; // nosemgrep: file-inclusion
+        include_once WC_ABSPATH . '/packages/woocommerce-blocks/src/StoreApi/Utilities/OrderController.php'; // nosemgrep: file-inclusion
         // include_once SIMPL_PLUGIN_DIR . "/includes/helpers/notice_helper.php";
     }
     
