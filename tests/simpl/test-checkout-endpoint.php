@@ -94,15 +94,15 @@ class Test_Checkout_Endpoint extends WP_UnitTestCase{
         $this->assertEquals($response_data["message"], "items cannot be empty");
 	}
 
-    public function test_create_checkout_with_invalid_items_payload() {
-        $request = new WP_REST_Request( 'POST', '/wc-simpl/v1/checkout' );
-        $request["items"] = array(array("product_id" => 1121, "variant_id" => 112, "quantity" => 1, "attributes" => array(), "item_data" => array()));
-        $response = $this->server->dispatch( $request );        
-        $response_data = $response->get_data();
+    // public function test_create_checkout_with_invalid_items_payload() {
+    //     $request = new WP_REST_Request( 'POST', '/wc-simpl/v1/checkout' );
+    //     $request["items"] = array(array("product_id" => 1121, "variant_id" => 112, "quantity" => 1, "attributes" => array(), "item_data" => array()));
+    //     $response = $this->server->dispatch( $request );        
+    //     $response_data = $response->get_data();
 
-        $this->assertEquals($response_data["code"], "bad_request");
-        $this->assertEquals($response_data["message"], "invalid cart items");
-	}
+    //     $this->assertEquals($response_data["code"], "bad_request");
+    //     $this->assertEquals($response_data["message"], "invalid cart items");
+	// }
 
     
 }

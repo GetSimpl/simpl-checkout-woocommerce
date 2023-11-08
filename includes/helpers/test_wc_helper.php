@@ -1,5 +1,4 @@
 <?php
-    require_once __DIR__ . '/wp-load.php';
     
     function simpl_test_create_product() {
         $product = new WC_Product_Variable();

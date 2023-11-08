@@ -1,7 +1,5 @@
 <?php
 
-use Automattic\WooCommerce\StoreApi\Utilities\OrderController;
-
 include_once PLUGIN_DIR . '/includes/helpers/test_wc_helper.php';
 
 class WC_Payment_Gateways {
