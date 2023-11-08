@@ -32,7 +32,7 @@
   },
   "autoload": {
     "psr-4": {
-        "Automattic\\WooCommerce\\StoreApi\\Utilities\\OrderController": "./vendor/woocommerce/packages/woocommerce-blocks/src/StoreApi/Utilities/OrderController.php"
+        "Automattic\\WooCommerce\\StoreApi\\Utilities\\OrderController": "./vendor/woocommerce/packages/woocommerce-blocks/src/StoreApi/Utilities/"
     }
   }
 }
