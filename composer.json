@@ -20,7 +20,7 @@
   },
   "autoload": {
     "psr-4": {
-        "Automattic\\WooCommerce\\StoreApi\\": "\\Utilities\\OrderController"
+        "Automattic\\WooCommerce\\StoreApi\\Utilities\\": "wp-content/plugins/woocommerce/packages/woocommerce-blocks/src/StoreApi/Utilities/"
     }
   }
 }
