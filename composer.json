@@ -17,10 +17,5 @@
   },
   "scripts": {
     "wp-install": "wp-install --full --env-file .env --wp-composer-file composer.wp-install.json"
-  },
-  "autoload": {
-    "psr-4": {
-        "Automattic\\WooCommerce\\StoreApi\\Utilities\\": "wp-content/plugins/woocommerce/packages/woocommerce-blocks/src/StoreApi/Utilities/"
-    }
   }
 }
