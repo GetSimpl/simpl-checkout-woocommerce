@@ -15,8 +15,6 @@ if ( ! file_exists( $test_lib_bootstrap_file ) ) {
 $GLOBALS[ 'wp_tests_options' ] = array(
     'active_plugins' => array(
         'woocommerce/woocommerce.php',
-        '/var/www/html/wp-content/plugins/woocommerce/vendor/autoload.php',
-        '/woocommerce/packages/woocommerce-blocks/src/StoreApi/Utilities/OrderController.php',
         basename(realpath(dirname(__FILE__) . '/../')) . '/simpl-checkout-woocommerce.php'
     ),
     'wpsp_test' => true
