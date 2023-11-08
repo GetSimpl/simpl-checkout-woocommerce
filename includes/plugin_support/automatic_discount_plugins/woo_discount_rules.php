@@ -11,7 +11,6 @@ function simpl_wdr_is_auto_applied_coupon($coupon)
     if (class_exists('Wdr\App\Controllers\ManageDiscount')) {
         $discount_manager = new ManageDiscount();
         foreach ($discount_manager->getDiscountRules() as $rule) {
-            array_push($active_coupon_codes, strtolower($rule->getTitle()));
             if ($rule->hasProductDiscount()) {
                 $label = $rule->getProductAdjustments()->cart_label;
                 if ($label) {
@@ -30,6 +29,9 @@ function simpl_wdr_is_auto_applied_coupon($coupon)
                     array_push($active_coupon_codes, strtolower($label));
                 }
             }
+            // If coupon label isn't configured, the plugin uses the rule's
+            // title as the defualt coupon label
+            array_push($active_coupon_codes, strtolower($rule->getTitle()));
         }
     }
     
