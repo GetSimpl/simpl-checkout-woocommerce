@@ -8,12 +8,16 @@ class SimplCartResponse
     {
         $merchant_additional_details = $request['merchant_additional_details'];
         $cart_request = self::static_cart_payload($cart, $merchant_additional_details);
+        $cart_request["unique_id"] = $request->get_header(SIMPL_WIDGET_SESSION_HEADER);
         $simpl_host = WC_Simpl_Settings::simpl_host();
 
         $simplHttpResponse = wp_remote_post("https://" . $simpl_host . "/api/v1/wc/cart", array(
             "body" => json_encode($cart_request),
             //TODO: merchantClientID
-            "headers" => array("shop-domain" => WC_Simpl_Settings::store_url(), "content-type" => "application/json"),
+            "headers" => array(
+                "shop-domain" => WC_Simpl_Settings::store_url(),
+                "content-type" => "application/json",
+            ),
         ));
 
         self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
@@ -32,7 +36,7 @@ class SimplCartResponse
 
     public function static_cart_payload($cart, $merchant_additional_details)
     {
-        $request = array("source" => "cart", "unique_id" => $this->unique_device_id());
+        $request = array("source" => "cart");
         $cart_payload = $this->cart_common_payload($cart, $merchant_additional_details);
         $request["cart"] = $cart_payload;
         return $request;
@@ -40,7 +44,7 @@ class SimplCartResponse
 
     public function cart_payload($cart, $order_id = NULL)
     {
-        $request = array("source" => "cart", "unique_id" => $this->unique_device_id());
+        $request = array("source" => "cart");
         $cart_payload = $this->cart_common_payload($cart, null);
         $shipping_address = WC()->customer->get_shipping('edit');
         $billing_address = WC()->customer->get_billing('edit');
@@ -101,19 +105,6 @@ class SimplCartResponse
         $cart_payload['attributes'] = array();
         $cart_payload["merchant_additional_details"] = $merchant_additional_details;
         return $cart_payload;
-    }
-
-    protected function unique_device_id()
-    {
-        $unique_device_id = WC()->session->get("simpl:session:id");
-        if ($unique_device_id) {
-            $unique_device_id = WC()->session->get("simpl:session:id");
-        } else {
-            $unique_device_id = md5(uniqid(wp_rand(), true));
-            WC()->session->set("simpl:session:id", $unique_device_id);
-        }
-
-        return $unique_device_id;
     }
 
 
