@@ -91,6 +91,7 @@ function simpl_checkout_int() {
     define('WIDGET_SCRIPT_SANDBOX_URL', 'https://s3.ap-southeast-1.amazonaws.com/sandbox-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
     define('WIDGET_SCRIPT_QA_URL', 'https://s3.ap-south-1.amazonaws.com/qa-cdn.stagingsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
     define('WIDGET_SCRIPT_PRODUCTION_URL', 'https://cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
+    define('SIMPL_WIDGET_SESSION_HEADER', 'simpl-widget-session-token');
 
     // Defined error CODE for API
     define('SIMPL_HTTP_ERROR_USER_NOTICE','user_error');
