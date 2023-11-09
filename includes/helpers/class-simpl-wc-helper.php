@@ -253,6 +253,23 @@ class SimplWcCartHelper {
         $order->add_item( $method );
         $order->calculate_totals();
     }
+
+    static function simpl_add_automatic_discounts_to_order($order) {
+        $coupons = WC()->cart->get_coupons();
+        $auto_applied_coupons = array();
+        foreach($coupons as $coupon) {
+            $code = $coupon->get_code();
+            $order->apply_coupon($code);
+            array_push($auto_applied_coupons, $code);
+        }
+
+        $order->add_meta_data('_simpl_auto_applied_coupons', $auto_applied_coupons);
+    }
+}
+
+function simpl_is_auto_applied_coupon($order, $coupon) {
+    $auto_applied_coupons = $order->get_meta('_simpl_auto_applied_coupons');
+    return in_array($coupon->get_code(), $auto_applied_coupons);
 }
 
 

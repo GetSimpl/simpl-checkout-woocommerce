@@ -17,7 +17,7 @@ class SimplCheckoutShippingController {
 
             SimplWcCartHelper::simpl_update_shipping_line($order);
             $si = new SimplCartResponse();
-            return $si->cart_payload(WC()->cart, $order_id);
+            return $si->cart_payload(WC()->cart, $order);
         } catch (SimplCustomHttpBadRequest $fe) {
             simpl_sentry_exception($fe);
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);

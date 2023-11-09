@@ -31,22 +31,22 @@ class SimplCartResponse
     public function static_cart_payload($cart, $merchant_additional_details)
     {
         $request = array("source" => "cart", "unique_id" => $this->unique_device_id());
-        $cart_payload = $this->cart_common_payload($cart, $merchant_additional_details);
+        $cart_payload = $this->cart_common_payload($cart, null, $merchant_additional_details);
         $request["cart"] = $cart_payload;
         return $request;
     }
 
-    public function cart_payload($cart, $order_id = NULL)
+    public function cart_payload($cart, $order = NULL)
     {
-        $request = array("source" => "cart");
-        $cart_payload = $this->cart_common_payload($cart, null);
+        $request = array("source" => "cart", "unique_id" => $this->unique_device_id());
+        $cart_payload = $this->cart_common_payload($cart, $order, null);
         $shipping_address = WC()->customer->get_shipping('edit');
         $billing_address = WC()->customer->get_billing('edit');
         if ($this->is_address_present($shipping_address, $billing_address)) {
             $cart_payload["shipping_address"] = $this->convert_address_response($shipping_address);
             $cart_payload["billing_address"] = $this->convert_address_response(($billing_address));
         }
-        $cart_payload['checkout_order_id'] = $order_id;
+        $cart_payload['checkout_order_id'] = $order->get_id();
         $request["cart"] = $cart_payload;
         self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
         return $request;
@@ -72,12 +72,12 @@ class SimplCartResponse
         return  $address;
     }
 
-    function cart_common_payload($cart, $merchant_additional_details)
+    function cart_common_payload($cart, $order, $merchant_additional_details)
     {
         $totals = $cart->get_totals();
         $cart_payload = array();
         $cart_payload["total_price"] = wc_format_decimal($cart->get_total('float'), 2);
-        $cart_payload["applied_discounts"] = $this->formatted_coupons($cart, $cart->get_coupons());
+        $cart_payload["applied_discounts"] = $this->formatted_coupons($cart, $cart->get_coupons(), $order);
         $discount_amount = 0;
         if ($cart->get_total_discount()) {
             $discount_amount = $totals['discount_total'] + $totals['discount_tax'];
@@ -149,12 +149,17 @@ class SimplCartResponse
         return "";
     }
 
-    protected function formatted_coupons($cart, $coupons)
+    protected function formatted_coupons($cart, $coupons, $order)
     {
         $applied_discounts = array();
         $applied_discount_count = 0;
         foreach ($coupons as $coupon_code => $coupon) {
-            $applied_discounts[$applied_discount_count] = array("code" => $coupon_code, "amount" => wc_format_decimal($cart->get_coupon_discount_amount($coupon_code, false), 2), "free_shipping" => $coupon->enable_free_shipping());
+            $applied_discounts[$applied_discount_count] = array(
+                "code" => $coupon_code,
+                "amount" => wc_format_decimal($cart->get_coupon_discount_amount($coupon_code, false), 2),
+                "free_shipping" => $coupon->enable_free_shipping(),
+                "type" => simpl_is_auto_applied_coupon($order, $coupon) ? "auto" : ""
+            );
             $applied_discount_count += 1;
         }
         return $applied_discounts;
