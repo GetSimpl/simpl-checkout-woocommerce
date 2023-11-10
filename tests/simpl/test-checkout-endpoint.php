@@ -96,7 +96,7 @@ class Test_Checkout_Endpoint extends WP_UnitTestCase{
 
     public function test_create_checkout_with_invalid_items_payload() {
         $request = new WP_REST_Request( 'POST', '/wc-simpl/v1/checkout' );
-        $request["items"] = array(array("product_id" => 121, "variant_id" => 112, "quantity" => 1, "attributes" => array()));
+        $request["items"] = array(array("product_id" => 1121, "variant_id" => 112, "quantity" => 1, "attributes" => array(), "item_data" => array()));
         $response = $this->server->dispatch( $request );        
         $response_data = $response->get_data();
 

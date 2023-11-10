@@ -1,32 +1,35 @@
 <?php        
 
+use Automattic\WooCommerce\StoreApi\Utilities\OrderController;
 const SIMPL_EXCLUSIVE_DISCOUNT = 'simpl_exclusive';
 
 class SimplWcCartHelper {
     static function create_order_from_cart() {
-        $order = new WC_Order();  
-        self::set_data_from_cart( $order);        
-        self::set_address_in_order($order);
+        $oc = new OrderController();
+        $order = $oc->create_order_from_cart();
         $order->update_meta_data(SIMPL_ORDER_METADATA, 'yes');
         $order->save();
-        updateToSimplDraft($order->get_id());
         return $order;
-    }     
+    }
 
     static function add_to_cart($items) {
         WC()->cart->empty_cart();
         foreach($items as $item_id => $item) {
-            WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"], $item["attributes"]);
+            WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"], $item["attributes"], $item["item_data"]);
         }
         if(WC()->cart->is_empty()) {
             throw new SimplCustomHttpBadRequest("invalid cart items");
         }
     }
 
-    static function update_order_from_cart($order_id) {
+    static function update_order_from_cart($order_id, $is_line_items_updated) {
         $order = wc_get_order($order_id);        
-        $order->remove_order_items("line_item");
-        WC()->checkout->create_order_line_items( $order, WC()->cart );
+
+        if ($is_line_items_updated) {
+            $order->remove_order_items("line_item");
+            WC()->checkout->create_order_line_items( $order, WC()->cart );
+        }
+
         self::set_address_in_order($order);
         $order->calculate_totals();
         $order->recalculate_coupons();
@@ -169,6 +172,7 @@ class SimplWcCartHelper {
                 $quantity    = $item->get_quantity();
                 
                 $customData['item_id'] = $item_id;
+
                 $product               = $item->get_product();
                 if ($product->is_type('variation')) {
                     $variation_attributes = $product->get_variation_attributes();

@@ -1,5 +1,7 @@
 <?php
 
+const DEFAULT_WC_ORDER_FIELDS = ["key", "product_id", "variation_id", "variation", "quantity", "data", "data_hash", "line_tax_data", "line_subtotal", "line_subtotal_tax", "line_total", "line_tax"];
+
 class SimplCartResponse
 {
     public function cart_redirection_url($cart, $request)
@@ -261,10 +263,27 @@ class SimplCartResponse
             $data[$i]['product_category'] = $this->simpl_get_product_category($product->get_id());
             $data[$i]['attributes'] = empty($item['variation']) ? null : $item['variation'];
             $data[$i]['offer_price'] = wc_format_decimal((empty($productDetails['sale_price']) === false) ? (float) $productDetails['sale_price'] : $price / $item['quantity'], 2);
+
+            $item_data = $this->get_item_data($item);
+            $data[$i]['item_data'] = $item_data;
+
             $i++;
         }
 
         return $data;
+    }
+
+    protected function get_item_data($item) {
+        $item_data = [];
+        foreach ($item as $item_key => $item_value) {
+            if (in_array($item_key, DEFAULT_WC_ORDER_FIELDS)) {
+                continue;
+            }
+
+            $item_data[$item_key] = $item_value;
+        }
+
+        return $item_data;
     }
 
     protected function simpl_get_product_category($product_id) {

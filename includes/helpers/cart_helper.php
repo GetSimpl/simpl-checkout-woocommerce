@@ -8,7 +8,7 @@ function maybe_load_cart() {
 			return;
 		}
 
-		$rest_prefix = 'simpl/v1';
+		$rest_prefix = 'simpl/';
 		$req_uri     = esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 
 		$is_my_endpoint = ( false !== strpos( $req_uri, $rest_prefix ) );
