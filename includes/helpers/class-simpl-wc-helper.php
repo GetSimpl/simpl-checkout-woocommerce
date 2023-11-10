@@ -22,10 +22,14 @@ class SimplWcCartHelper {
         }
     }
 
-    static function update_order_from_cart($order_id) {
+    static function update_order_from_cart($order_id, $is_line_items_updated) {
         $order = wc_get_order($order_id);        
-        $order->remove_order_items("line_item");
-        WC()->checkout->create_order_line_items( $order, WC()->cart );
+
+        if ($is_line_items_updated) {
+            $order->remove_order_items("line_item");
+            WC()->checkout->create_order_line_items( $order, WC()->cart );
+        }
+
         self::set_address_in_order($order);
         $order->calculate_totals();
         $order->recalculate_coupons();
