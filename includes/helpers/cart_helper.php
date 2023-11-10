@@ -51,6 +51,13 @@ function maybe_load_cart() {
 		if ( null === WC()->cart ) {
 			WC()->cart = new WC_Cart();
 		}
+
+		// Avoid discount not applicable for Simpl
+		WC()->session->set('chosen_payment_method', SIMPL_PAYMENT_GATEWAY);
+		// We set the chosen_payment_method above. In case of a change, everything needs to be recalculated to be safe
+		WC()->cart->calculate_fees();
+		// WC()->cart->calculate_shipping();
+		WC()->cart->calculate_totals();
 	}
 }
 
@@ -66,7 +73,9 @@ function simpl_cart_init_common()
     
 	$session_class = apply_filters('woocommerce_session_handler', 'WC_Session_Handler');
 	WC()->session  = new $session_class();
-    WC()->session->init();
+	WC()->session->init();
+	// Avoid discount not applicable for Simpl
+	WC()->session->set('chosen_payment_method', SIMPL_PAYMENT_GATEWAY);
 	WC()->customer = new WC_Customer();        
 	WC()->cart = new WC_Cart();
 	WC()->cart->empty_cart();

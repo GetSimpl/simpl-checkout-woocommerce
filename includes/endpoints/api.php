@@ -16,6 +16,14 @@ add_action('rest_api_init', function () {
     }
   ));
 
+  register_rest_route('simpl/v1', '/widget/master-config', array(
+    'methods' => 'GET',
+    'callback' => array(new SimplCheckout3ppClient, 'get_master_config'),
+    'permission_callback' => function () {
+      return true;
+    }
+  ));
+
   register_rest_route('wc-simpl/v1', '/checkout', array(
     'methods' => 'POST',
     'callback' => array(new SimplCheckoutController, 'create'),

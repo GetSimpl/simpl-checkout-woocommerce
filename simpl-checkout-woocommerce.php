@@ -5,7 +5,7 @@
  * Description: Simpl checkout offers an optimised checkout process, higher order conversions and RTO reduction. We offer Simpl Pay Later, Pay-in-3, UPI, Cards, and COD for seamless transactions while you focus on growing your business.
  * Author:  One Sigma Technologies Pvt. Ltd.
  * Author URI: http://www.getsimpl.com
- * Version: 1.2.9
+ * Version: 1.2.10
  */
 add_action('plugins_loaded', 'simpl_checkout_int', 0);
 define('SIMPL_SENTRY_DSN_KEY', 'simpl_sentry_dsn'); 
@@ -91,6 +91,7 @@ function simpl_checkout_int() {
     define('WIDGET_SCRIPT_SANDBOX_URL', 'https://s3.ap-southeast-1.amazonaws.com/sandbox-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
     define('WIDGET_SCRIPT_QA_URL', 'https://s3.ap-south-1.amazonaws.com/qa-cdn.stagingsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
     define('WIDGET_SCRIPT_PRODUCTION_URL', 'https://cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
+    define('SIMPL_WIDGET_SESSION_HEADER', 'simpl-widget-session-token');
 
     // Defined error CODE for API
     define('SIMPL_HTTP_ERROR_USER_NOTICE','user_error');
