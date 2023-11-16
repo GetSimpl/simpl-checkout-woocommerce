@@ -77,6 +77,7 @@ class SimplCheckoutController
         try {
             SimplRequestValidator::validate_checkout_order_id($request);
             simpl_cart_init_common();
+            WC()->cart->empty_cart();
             $order_id = $request->get_params()["checkout_order_id"];
             $order = wc_get_order($order_id);
             SimplWcCartHelper::simpl_load_cart_from_order($order);
