@@ -27,6 +27,8 @@ class SimplWcCartHelper {
 
         if ($is_line_items_updated) {
             $order->remove_order_items("line_item");
+            $order->remove_order_items("coupon");
+            $order->remove_order_items("fee");
             WC()->checkout->create_order_line_items( $order, WC()->cart );
         }
 
