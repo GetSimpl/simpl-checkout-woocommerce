@@ -9,8 +9,10 @@ class SimplCheckoutCartControllerV2 {
             $_POST[$key] = $value;
         }
 
-        WC()->cart->empty_cart();
-        WC_Form_Handler::add_to_cart_action();
+        if (isset($request->get_params()['add-to-cart'])) {
+            WC()->cart->empty_cart();
+            WC_Form_Handler::add_to_cart_action();
+        }
 
         $err = wc_get_notices('error');
         if (isset($err) && count($err) > 0) {
