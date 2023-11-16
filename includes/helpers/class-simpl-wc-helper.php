@@ -27,9 +27,11 @@ class SimplWcCartHelper {
 
         if ($is_line_items_updated) {
             $order->remove_order_items("line_item");
-            $order->remove_order_items("coupon");
-            $order->remove_order_items("fee");
+            $order->remove_order_items("coupon"); // Existing coupon may not be applicable on the new line items
+            $order->remove_order_items("fee"); // Existing fee may not be applicable on the new line items
             WC()->checkout->create_order_line_items( $order, WC()->cart );
+            WC()->checkout->create_order_coupon_lines( $order, WC()->cart );
+            //WC()->checkout->create_order_fee_lines( $order, $cart ); // Adding this here for future since we don't support fee as yet.
         }
 
         self::set_address_in_order($order);
