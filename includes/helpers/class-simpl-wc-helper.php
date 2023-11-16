@@ -1,29 +1,33 @@
 <?php        
 
+use Automattic\WooCommerce\StoreApi\Utilities\OrderController;
+const SIMPL_EXCLUSIVE_DISCOUNT = 'simpl_exclusive';
+
 class SimplWcCartHelper {
     static function create_order_from_cart() {
-        $order = new WC_Order();  
-        self::set_data_from_cart( $order);        
-        self::set_address_in_order($order);
+        $oc = new OrderController();
+        $order = $oc->create_order_from_cart();
         $order->update_meta_data(SIMPL_ORDER_METADATA, 'yes');
         $order->save();
-        updateToSimplDraft($order->get_id());
         return $order;
-    }     
+    }
 
     static function add_to_cart($items) {
         WC()->cart->empty_cart();
         foreach($items as $item_id => $item) {
-            WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"], $item["attributes"]);
+            WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"], $item["attributes"], $item["item_data"]);
         }
         if(WC()->cart->is_empty()) {
             throw new SimplCustomHttpBadRequest("invalid cart items");
         }
     }
 
-    static function simpl_update_order_from_cart($order) {
-        $order->remove_order_items("line_item");
-        WC()->checkout->create_order_line_items( $order, WC()->cart );
+    static function simpl_update_order_from_cart($order, $is_line_items_updated) {
+        if ($is_line_items_updated) {
+            $order->remove_order_items("line_item");
+            WC()->checkout->create_order_line_items( $order, WC()->cart );
+        }
+    
         self::set_address_in_order($order);
         $order->calculate_totals();
         $order->recalculate_coupons();
@@ -132,8 +136,8 @@ class SimplWcCartHelper {
         return  $address;
     }
 
-    static function simpl_load_cart_from_order($order, $load_line_items = true) {
-        return self::convert_wc_order_to_wc_cart($order, $load_line_items);
+    static function simpl_load_cart_from_order($order) {
+        return self::convert_wc_order_to_wc_cart($order);
     }
     
     static function simpl_update_shipping_line($order) {
@@ -153,25 +157,24 @@ class SimplWcCartHelper {
         return $order;
     }
 
-    static protected function convert_wc_order_to_wc_cart($order, $load_line_items = true) {
+    static protected function convert_wc_order_to_wc_cart($order) {
         $variationAttributes = [];
+        WC()->cart->empty_cart();
         if ($order && $order->get_item_count() > 0) {
-            if ($load_line_items) {
-                WC()->cart->empty_cart();
-                foreach ($order->get_items() as $item_id => $item) {
-                    $productId   = $item->get_product_id();
-                    $variationId = $item->get_variation_id();
-                    $quantity    = $item->get_quantity();
-                    
-                    $customData['item_id'] = $item_id;
-                    $product               = $item->get_product();
-                    if ($product->is_type('variation')) {
-                        $variation_attributes = $product->get_variation_attributes();
-                        foreach ($variation_attributes as $attribute_taxonomy => $term_slug) {
-                            $taxonomy                                 = str_replace('attribute_', '', $attribute_taxonomy);
-                            $value                                    = wc_get_order_item_meta($item_id, $taxonomy, true);
-                            $variationAttributes[$attribute_taxonomy] = $value;
-                        }
+            foreach ($order->get_items() as $item_id => $item) {
+                $productId   = $item->get_product_id();
+                $variationId = $item->get_variation_id();
+                $quantity    = $item->get_quantity();
+                
+                $customData['item_id'] = $item_id;
+
+                $product               = $item->get_product();
+                if ($product->is_type('variation')) {
+                    $variation_attributes = $product->get_variation_attributes();
+                    foreach ($variation_attributes as $attribute_taxonomy => $term_slug) {
+                        $taxonomy                                 = str_replace('attribute_', '', $attribute_taxonomy);
+                        $value                                    = wc_get_order_item_meta($item_id, $taxonomy, true);
+                        $variationAttributes[$attribute_taxonomy] = $value;
                     }
                     
                     WC()->cart->add_to_cart($productId, $quantity, $variationId, $variationAttributes, $customData);                
@@ -199,6 +202,23 @@ class SimplWcCartHelper {
                 $customer = self::simpl_create_new_customer($order);
             }
             $order->set_customer_id($customer->get_id());
+        }
+    }
+
+    static function simpl_set_simpl_exclusive_discount($request, $order) {
+        $applied_discounts = $request['applied_discounts'];
+        if (!$applied_discounts) return;
+        
+        foreach ($applied_discounts as $discount) {
+            if ($discount['type'] != SIMPL_EXCLUSIVE_DISCOUNT) continue;
+            
+            $coupon = new WC_Order_Item_Coupon();
+            $coupon->set_discount(wc_format_decimal($discount['amount'], 2));
+            $coupon->set_name(SIMPL_EXCLUSIVE_DISCOUNT);
+            $coupon->set_code(SIMPL_EXCLUSIVE_DISCOUNT);
+            $order->add_item($coupon);
+            $order->calculate_totals();
+            $order->recalculate_coupons();
         }
     }
 

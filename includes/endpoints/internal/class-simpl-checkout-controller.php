@@ -32,6 +32,8 @@ class SimplCheckoutController
     function update(WP_REST_Request $request)
     {
         try {
+            $items = $request->get_params()["items"];
+            $is_line_items_updated = false;
             simpl_cart_init_common();
             SimplRequestValidator::validate_shipping_address_or_items($request);
             SimplRequestValidator::validate_checkout_order_id($request);
@@ -43,7 +45,7 @@ class SimplCheckoutController
             if (isset($items) && count($items) > 0) {
                 SimplRequestValidator::validate_line_items($request);
                 SimplWcCartHelper::add_to_cart($items);
-                SimplWcCartHelper::simpl_load_cart_from_order($order, false);
+                $is_line_items_updated = true;
             } else {
                 SimplWcCartHelper::simpl_load_cart_from_order($order);
             }
@@ -52,7 +54,8 @@ class SimplCheckoutController
                 SimplWcCartHelper::set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
             }
 
-            $order = SimplWcCartHelper::simpl_update_order_from_cart($order);
+            $order = SimplWcCartHelper::simpl_update_order_from_cart($order, $is_line_items_updated);
+            
             $si = new SimplCartResponse();
             $cart_payload = $si->cart_payload(WC()->cart, $order);
             do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);

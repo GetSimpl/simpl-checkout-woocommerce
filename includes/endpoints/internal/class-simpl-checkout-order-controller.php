@@ -71,6 +71,8 @@ class SimplCheckoutOrderController
             SimplWcCartHelper::simpl_set_shipping_method_in_order($order, $shipping_method);
         }
 
+        // Add simpl exclusive discount if exists
+        SimplWcCartHelper::simpl_set_simpl_exclusive_discount($request, $order);
         $order->save();
     }
 

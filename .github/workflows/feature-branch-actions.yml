@@ -28,4 +28,5 @@ jobs:
       - run: sudo systemctl restart mysql
       - run: composer install
       - run: composer wp-install
+      - run: composer dump-autoload
       - run: ./vendor/phpunit/phpunit/phpunit
