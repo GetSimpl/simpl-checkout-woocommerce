@@ -188,9 +188,9 @@ class SimplWcCartHelper {
                         $value                                    = wc_get_order_item_meta($item_id, $taxonomy, true);
                         $variationAttributes[$attribute_taxonomy] = $value;
                     }
-                    
-                    WC()->cart->add_to_cart($productId, $quantity, $variationId, $variationAttributes, $customData);                
                 }
+
+                WC()->cart->add_to_cart($productId, $quantity, $variationId, $variationAttributes, $customData);                
             }
             $order_coupons = get_order_coupon_codes($order);
             if(count($order_coupons) > 0) {
