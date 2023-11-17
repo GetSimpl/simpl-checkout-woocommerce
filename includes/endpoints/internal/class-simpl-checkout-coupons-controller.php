@@ -12,27 +12,11 @@ class SimplCheckoutCouponController {
             $order_id = $request->get_params()["checkout_order_id"];
             $order = wc_get_order($order_id);
             $coupon_code = $request->get_params()["coupon_code"];
-
-            $cart = SimplWcCartHelper::load_cart_from_order($order_id);
-            // We first need to apply coupon on cart - to ensure coupon applicability
-            // Responds true when coupon was applied. However, we observed few cases where plugins are misbehaving
-            $coupon_applied = $cart->apply_coupon($coupon_code);
-            if ($coupon_applied) {
-                $coupon_applied = false;
-                // Additional check to see if the coupon was really applied or false positive by plugin
-                foreach($cart->get_coupons() as $coupon) {
-                    $code = $coupon->get_code();
-                    if($code == $coupon_code) {
-                        $coupon_applied = true;
-                    }
-                }                
-            }
-
-            // If coupon was applied on the cart, just apply the same on order as well
-            if ($coupon_applied) {
-                $order->apply_coupon($coupon_code);
-                $order->save();
-            }
+			
+			$cart = SimplWcCartHelper::simpl_load_cart_from_order($order);
+			// We first need to apply coupon on cart - to ensure coupon applicability
+            $cart->apply_coupon($coupon_code);
+			$order = SimplWcCartHelper::update_order_coupons_from_cart($order_id);
 
             $si = new SimplCartResponse();
             return $si->cart_payload($cart, $order);
@@ -59,13 +43,13 @@ class SimplCheckoutCouponController {
             $order_id = $request->get_params()["checkout_order_id"];
             $order = wc_get_order($order_id);
             $coupon_code = $request->get_params()["coupon_code"];
-    
-            $order->remove_coupon($coupon_code);
-            $order->save();
+			
+			$cart = SimplWcCartHelper::simpl_load_cart_from_order($order);
+			$cart->remove_coupon($coupon_code);
+			$order = SimplWcCartHelper::update_order_coupons_from_cart($order_id);
 
-            SimplWcCartHelper::simpl_load_cart_from_order($order);
             $si = new SimplCartResponse();
-            return $si->cart_payload(WC()->cart, $order);
+            return $si->cart_payload($cart, $order);
         } catch (SimplCustomHttpBadRequest $fe) {
             simpl_sentry_exception($fe);
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);

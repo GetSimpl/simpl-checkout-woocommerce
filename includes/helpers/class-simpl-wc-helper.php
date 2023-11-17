@@ -34,6 +34,18 @@ class SimplWcCartHelper {
         $order->save();
         return $order;
     }
+
+    static function update_order_coupons_from_cart($order_id) {
+        $order = wc_get_order($order_id);
+            
+        $order->remove_order_items("coupon");
+        WC()->checkout->create_order_coupon_lines( $order, WC()->cart );
+
+        $order->calculate_totals();
+        $order->recalculate_coupons();
+        $order->save();
+        return $order;
+    }
     
     static protected function set_address_in_order($order) {
         $shipping_address = WC()->customer->get_shipping('edit');
