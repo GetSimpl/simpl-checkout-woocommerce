@@ -16,7 +16,7 @@ class SimplCheckoutCouponController {
 			$cart = SimplWcCartHelper::simpl_load_cart_from_order($order);
 			// We first need to apply coupon on cart - to ensure coupon applicability
             $cart->apply_coupon($coupon_code);
-			$order = SimplWcCartHelper::update_order_coupons_from_cart($order_id);
+			$order = SimplWcCartHelper::simpl_update_order_coupons_from_cart($order);
 
             $si = new SimplCartResponse();
             return $si->cart_payload($cart, $order);
@@ -46,7 +46,7 @@ class SimplCheckoutCouponController {
 			
 			$cart = SimplWcCartHelper::simpl_load_cart_from_order($order);
 			$cart->remove_coupon($coupon_code);
-			$order = SimplWcCartHelper::update_order_coupons_from_cart($order_id);
+			$order = SimplWcCartHelper::simpl_update_order_coupons_from_cart($order);
 
             $si = new SimplCartResponse();
             return $si->cart_payload($cart, $order);

@@ -29,21 +29,23 @@ class SimplWcCartHelper {
         }
     
         self::set_address_in_order($order);
+
+        // recalculate_coupons internally invokes calculate_totals() which in turn calls save
+        // However, we still need to calculate totals before coupon or the coupons get added twice
         $order->calculate_totals();
         $order->recalculate_coupons();
-        $order->save();
         return $order;
     }
 
-    static function update_order_coupons_from_cart($order_id) {
-        $order = wc_get_order($order_id);
+    static function simpl_update_order_coupons_from_cart($order) {
             
         $order->remove_order_items("coupon");
         WC()->checkout->create_order_coupon_lines( $order, WC()->cart );
 
+        // recalculate_coupons internally invokes calculate_totals() which in turn calls save
+        // However, we still need to calculate totals before coupon or the coupons get added twice
         $order->calculate_totals();
         $order->recalculate_coupons();
-        $order->save();
         return $order;
     }
     
