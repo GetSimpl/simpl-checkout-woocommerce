@@ -301,7 +301,8 @@ class SimplWcCartHelper {
 }
 
 function simpl_is_auto_applied_coupon($order, $coupon) {
-    if ($order->meta_exists('_simpl_auto_applied_coupons')) {
+    // In the first call i.e. redirection url, order would be null
+    if ($order && $order->meta_exists('_simpl_auto_applied_coupons')) {
         $auto_applied_coupons = $order->get_meta('_simpl_auto_applied_coupons');
         return in_array($coupon->get_code(), $auto_applied_coupons);
     }
