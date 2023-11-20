@@ -22,9 +22,7 @@ class SimplWcCartHelper {
         }
     }
 
-    static function update_order_from_cart($order_id, $is_line_items_updated) {
-        $order = wc_get_order($order_id);        
-
+    static function simpl_update_order_from_cart($order, $is_line_items_updated) {
         if ($is_line_items_updated) {
             $order->remove_order_items("line_item");
             $order->remove_order_items("coupon"); // Existing coupon may not be applicable on the new line items
@@ -35,9 +33,23 @@ class SimplWcCartHelper {
         }
 
         self::set_address_in_order($order);
+
+        // recalculate_coupons internally invokes calculate_totals() which in turn calls save
+        // However, we still need to calculate totals before coupon or the coupons get added twice
         $order->calculate_totals();
         $order->recalculate_coupons();
-        $order->save();
+        return $order;
+    }
+
+    static function simpl_update_order_coupons_from_cart($order) {
+            
+        $order->remove_order_items("coupon");
+        WC()->checkout->create_order_coupon_lines( $order, WC()->cart );
+
+        // recalculate_coupons internally invokes calculate_totals() which in turn calls save
+        // However, we still need to calculate totals before coupon or the coupons get added twice
+        $order->calculate_totals();
+        $order->recalculate_coupons();
         return $order;
     }
     
@@ -142,14 +154,11 @@ class SimplWcCartHelper {
         return  $address;
     }
 
-    static function load_cart_from_order($order_id) {
-        $order = wc_get_order((int)$order_id);
+    static function simpl_load_cart_from_order($order) {
         return self::convert_wc_order_to_wc_cart($order);
     }
     
-
-    static function update_shipping_line($order_id) {
-        $order = wc_get_order($order_id);
+    static function simpl_update_shipping_line($order) {
         $order->remove_order_items("shipping");
         $shipping_methods = WC()->cart->calculate_shipping();
         if(count($shipping_methods) > 0) {
@@ -186,7 +195,7 @@ class SimplWcCartHelper {
                         $variationAttributes[$attribute_taxonomy] = $value;
                     }
                 }
-                
+
                 WC()->cart->add_to_cart($productId, $quantity, $variationId, $variationAttributes, $customData);                
             }
             $order_coupons = get_order_coupon_codes($order);
@@ -282,6 +291,28 @@ class SimplWcCartHelper {
         $order->add_item( $method );
         $order->calculate_totals();
     }
+
+    static function simpl_add_automatic_discounts_to_order($order) {
+        $coupons = WC()->cart->get_coupons();
+        $auto_applied_coupons = array();
+        foreach($coupons as $coupon) {
+            $code = $coupon->get_code();
+            $order->apply_coupon($code);
+            array_push($auto_applied_coupons, $code);
+        }
+        
+        $order->add_meta_data('_simpl_auto_applied_coupons', $auto_applied_coupons);
+        $order->save();
+    }
+}
+
+function simpl_is_auto_applied_coupon($order, $coupon) {
+    // In the first call i.e. redirection url, order would be null
+    if ($order && $order->meta_exists('_simpl_auto_applied_coupons')) {
+        $auto_applied_coupons = $order->get_meta('_simpl_auto_applied_coupons');
+        return in_array($coupon->get_code(), $auto_applied_coupons);
+    }
+    return false;
 }
 
 

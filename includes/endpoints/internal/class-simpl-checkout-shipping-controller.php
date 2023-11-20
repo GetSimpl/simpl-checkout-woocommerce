@@ -8,15 +8,16 @@ class SimplCheckoutShippingController {
             WC()->cart->empty_cart();
             SimplRequestValidator::validate_shipping_method_request($request);
             $order_id = $request->get_params()["checkout_order_id"];
-            SimplWcCartHelper::load_cart_from_order($order_id);
+            $order = wc_get_order($order_id);
 
+            SimplWcCartHelper::simpl_load_cart_from_order($order);
             WC()->session->set('chosen_shipping_methods', array($request->get_params()["shipping_method_id"]));
             WC()->cart->calculate_shipping();
             WC()->cart->calculate_totals();
 
-            SimplWcCartHelper::update_shipping_line($order_id);
+            SimplWcCartHelper::simpl_update_shipping_line($order);
             $si = new SimplCartResponse();
-            return $si->cart_payload(WC()->cart, $order_id);
+            return $si->cart_payload(WC()->cart, $order);
         } catch (SimplCustomHttpBadRequest $fe) {
             simpl_sentry_exception($fe);
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
@@ -29,5 +30,3 @@ class SimplCheckoutShippingController {
         }
     }
 }
-
-
