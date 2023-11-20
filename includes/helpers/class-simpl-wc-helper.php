@@ -27,7 +27,7 @@ class SimplWcCartHelper {
             $order->remove_order_items("line_item");
             WC()->checkout->create_order_line_items( $order, WC()->cart );
         }
-    
+
         self::set_address_in_order($order);
 
         // recalculate_coupons internally invokes calculate_totals() which in turn calls save
@@ -296,7 +296,7 @@ class SimplWcCartHelper {
             $order->apply_coupon($code);
             array_push($auto_applied_coupons, $code);
         }
-
+        
         $order->add_meta_data('_simpl_auto_applied_coupons', $auto_applied_coupons);
         $order->save();
     }

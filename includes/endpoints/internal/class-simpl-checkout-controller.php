@@ -40,7 +40,6 @@ class SimplCheckoutController
             
             $order_id = $request->get_params()["checkout_order_id"];
             $order = wc_get_order($order_id);
-            $items = $request->get_params()["items"];
 
             if (isset($items) && count($items) > 0) {
                 SimplRequestValidator::validate_line_items($request);

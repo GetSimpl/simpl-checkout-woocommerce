@@ -12,11 +12,11 @@ class SimplCheckoutCouponController {
             $order_id = $request->get_params()["checkout_order_id"];
             $order = wc_get_order($order_id);
             $coupon_code = $request->get_params()["coupon_code"];
-			
-			$cart = SimplWcCartHelper::simpl_load_cart_from_order($order);
-			// We first need to apply coupon on cart - to ensure coupon applicability
+
+            $cart = SimplWcCartHelper::simpl_load_cart_from_order($order);
+            // We first need to apply coupon on cart - to ensure coupon applicability
             $cart->apply_coupon($coupon_code);
-			$order = SimplWcCartHelper::simpl_update_order_coupons_from_cart($order);
+            $order = SimplWcCartHelper::simpl_update_order_coupons_from_cart($order);
 
             $si = new SimplCartResponse();
             return $si->cart_payload($cart, $order);
@@ -39,14 +39,14 @@ class SimplCheckoutCouponController {
             simpl_cart_init_common();
     
             SimplRequestValidator::validate_coupon_request($request);
-    
+            
             $order_id = $request->get_params()["checkout_order_id"];
             $order = wc_get_order($order_id);
             $coupon_code = $request->get_params()["coupon_code"];
-			
-			$cart = SimplWcCartHelper::simpl_load_cart_from_order($order);
-			$cart->remove_coupon($coupon_code);
-			$order = SimplWcCartHelper::simpl_update_order_coupons_from_cart($order);
+            
+            $cart = SimplWcCartHelper::simpl_load_cart_from_order($order);
+            $cart->remove_coupon($coupon_code);
+            $order = SimplWcCartHelper::simpl_update_order_coupons_from_cart($order);
 
             $si = new SimplCartResponse();
             return $si->cart_payload($cart, $order);
