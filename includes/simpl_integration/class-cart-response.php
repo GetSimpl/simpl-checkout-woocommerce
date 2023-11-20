@@ -2,11 +2,19 @@
 
 const DEFAULT_WC_ORDER_FIELDS = ["key", "product_id", "variation_id", "variation", "quantity", "data", "data_hash", "line_tax_data", "line_subtotal", "line_subtotal_tax", "line_total", "line_tax"];
 
+const HEADERUSERAGENT = "User-Agent";
+const HEADERPLATFORM = "Platform";
+const HEADERORIGIN = "Origin";
+
 class SimplCartResponse
 {
     public function cart_redirection_url($cart, $request)
     {
         $merchant_additional_details = $request['merchant_additional_details'];
+
+        $client_information = get_client_information($request);
+        $merchant_additional_details["client_information"] = $client_information;
+
         $cart_request = self::static_cart_payload($cart, $merchant_additional_details);
         $cart_request["unique_id"] = $request->get_header(SIMPL_WIDGET_SESSION_HEADER);
         $simpl_host = WC_Simpl_Settings::simpl_host();
@@ -33,6 +41,25 @@ class SimplCartResponse
         return "";
     }
 
+    public function get_client_information($request) {
+        $client_information = [];
+        $header_user_agent = $request->get_header(HEADERUSERAGENT);
+        if ($header_user_agent != "") {
+            $client_information["user_agent"] = $header_user_agent;
+        }
+
+        $header_platform = $request->get_header(HEADERPLATFORM);
+        if ($header_platform != "") {
+            $client_information["platform"] = $header_platform;
+        }
+
+        $header_origin = $request->get_header(HEADERORIGIN);
+        if ($header_origin != "") {
+            $client_information["origin"] = $header_origin;
+        }
+
+        return $client_information;
+    }
 
     public function static_cart_payload($cart, $merchant_additional_details)
     {
