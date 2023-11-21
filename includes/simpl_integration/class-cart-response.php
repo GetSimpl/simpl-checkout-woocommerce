@@ -12,7 +12,7 @@ class SimplCartResponse
     {
         $merchant_additional_details = $request['merchant_additional_details'];
 
-        $client_information = self::get_client_information($request);
+        $client_information = self::simpl_get_client_information($request);
         $merchant_additional_details["client_information"] = $client_information;
 
         $cart_request = self::static_cart_payload($cart, $merchant_additional_details);
@@ -41,7 +41,7 @@ class SimplCartResponse
         return "";
     }
 
-    public function get_client_information($request) {
+    public function simpl_get_client_information($request) {
         $client_information = [];
         $header_user_agent = $request->get_header(HEADER_USER_AGENT);
         if ($header_user_agent != "") {
