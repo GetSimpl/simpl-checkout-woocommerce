@@ -60,8 +60,10 @@ class WC_Simpl_Settings {
 				return SIMPL_CONFIG_SANDBOX_URL;
 			case SIMPL_QA_STORE_URL:
 				return SIMPL_CONFIG_QA_URL;
-			default:
+			case SIMPL_STAGING_STORE_URL:
 				return SIMPL_CONFIG_STAGING_URL;
+			default:
+				return SIMPL_CONFIG_SANDBOX_URL;
 		}
 	}
 
@@ -87,8 +89,10 @@ class WC_Simpl_Settings {
 				return WIDGET_SCRIPT_SANDBOX_URL;
 			case SIMPL_QA_STORE_URL:
 				return WIDGET_SCRIPT_QA_URL;
-			default:
+			case SIMPL_STAGING_STORE_URL:
 				return WIDGET_SCRIPT_STAGING_URL;
+			default:
+				return WIDGET_SCRIPT_SANDBOX_URL;;
 		}
 	}
 
