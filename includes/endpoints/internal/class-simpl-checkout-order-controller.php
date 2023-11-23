@@ -25,10 +25,10 @@ class SimplCheckoutOrderController
     function create(WP_REST_Request $request)
     {
         try {
-            simpl_cart_init_common();
             SimplRequestValidator::validate_order_request($request);
 
             $order = wc_get_order((int)$request->get_params()["checkout_order_id"]);
+            SimplWcCartHelper::simpl_load_cart_from_order($order);
             self::simpl_update_order_details($request, $order);
 
             WC()->session->order_awaiting_payment = $order->get_id();

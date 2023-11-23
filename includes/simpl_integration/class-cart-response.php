@@ -182,6 +182,19 @@ class SimplCartResponse
             );
             $applied_discount_count += 1;
         }
+
+        // add negative fee as applied_discount
+        foreach($cart->get_fees() as $fee_id => $fee) {
+            if ($fee->amount < 0) {
+                array_push($applied_discounts, array(
+                    "code" => $fee_id,
+                    "amount" => wc_format_decimal($fee->amount * -1, 2),
+                    "free_shipping" => false,
+                    "type" => "auto"
+                ));
+            }
+        }
+
         return $applied_discounts;
     }
 

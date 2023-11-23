@@ -4,8 +4,6 @@ class SimplCheckoutShippingController {
     function set_shipping_method(WP_REST_Request $request)
     {
         try {
-            simpl_cart_init_common();
-            WC()->cart->empty_cart();
             SimplRequestValidator::validate_shipping_method_request($request);
             $order_id = $request->get_params()["checkout_order_id"];
             $order = wc_get_order($order_id);

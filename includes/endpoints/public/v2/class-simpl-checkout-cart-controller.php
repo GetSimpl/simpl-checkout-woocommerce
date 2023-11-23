@@ -30,7 +30,21 @@ class SimplCheckoutCartControllerV2 {
 
         try {
             $si = new SimplCartResponse();
-            return array('redirection_url'=>$si->cart_redirection_url(WC()->cart, $request));
+            $redirection_url = $si->cart_redirection_url(WC()->cart, $request);
+
+            // parse cart_session_token from received redirection_url
+            $query = parse_url($redirection_url, PHP_URL_QUERY);
+            $cart_session_token = explode("=", $query)[1];
+
+            // fetch woocommerce session_cookies
+            $wc_session_cookie_key = apply_filters( 'woocommerce_cookie', 'wp_woocommerce_session_' . COOKIEHASH );
+            $wc_session_cookie = $_COOKIE[$wc_session_cookie_key];
+
+            // now set these session_cookies to cache against our cart_session_token
+            set_transient($cart_session_token, $wc_session_cookie, 1 * HOUR_IN_SECONDS);
+            set_transient($cart_session_token.":wc_session_cookie_key", $wc_session_cookie_key, 1 * HOUR_IN_SECONDS);
+
+            return array('redirection_url'=>$redirection_url);
         } catch (Exception $fe) {
             return new WP_REST_Response(array(
                 "code" => SIMPL_HTTP_ERROR_CART_CREATE, 

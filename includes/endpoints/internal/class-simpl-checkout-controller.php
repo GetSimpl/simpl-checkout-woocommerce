@@ -4,15 +4,22 @@ class SimplCheckoutController
     function create(WP_REST_Request $request)
     {
         try {
-            SimplRequestValidator::validate_line_items($request);
-            $items = $request->get_params()["items"];
-            simpl_cart_init_common();
-            SimplWcCartHelper::add_to_cart($items);
+            $cart_session_token = $request->get_params()["cart_token"];
+
+            $success = SimplWcCartHelper::init_woocommerce_session_with_cart_session_token($cart_session_token);
+
+            if (!$success) {
+                $items = $request->get_params()["items"];
+                simpl_cart_init_common();
+                SimplWcCartHelper::add_to_cart($items);
+            }
+
             if ($this->is_address_present($request)) {
                 SimplWcCartHelper::set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
             }
 
             $order = SimplWcCartHelper::create_order_from_cart();
+            SimplWcCartHelper::store_woocommerce_session_cookies_to_order($order, $cart_session_token);
             $si = new SimplCartResponse();
             $cart_payload = $si->cart_payload(WC()->cart, $order);
             do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
@@ -40,14 +47,7 @@ class SimplCheckoutController
             
             $order_id = $request->get_params()["checkout_order_id"];
             $order = wc_get_order($order_id);
-
-            if (isset($items) && count($items) > 0) {
-                SimplRequestValidator::validate_line_items($request);
-                SimplWcCartHelper::add_to_cart($items);
-                $is_line_items_updated = true;
-            } else {
-                SimplWcCartHelper::simpl_load_cart_from_order($order);
-            }
+            SimplWcCartHelper::simpl_load_cart_from_order($order);
 
             if ($this->is_address_present($request)) {
                 SimplWcCartHelper::set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);

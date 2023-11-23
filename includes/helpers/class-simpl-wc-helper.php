@@ -12,6 +12,36 @@ class SimplWcCartHelper {
         return $order;
     }
 
+    static function init_woocommerce_session_with_cart_session_token($cart_session_token) {
+        // fetch woocommerce session_cookies we stored against our cart_session_token
+        $wc_session_cookie = get_transient($cart_session_token);
+        $wc_session_cookie_key = get_transient($cart_session_token.":wc_session_cookie_key");
+
+        if ($wc_session_cookie != "") {
+            $_COOKIE[$wc_session_cookie_key] = $wc_session_cookie;
+            $customer_id = WC()->session->get_session_cookie()[0];
+
+            if (!self::is_customer_guest($customer_id)) {
+                wp_set_current_user($customer_id);
+            }
+            WC()->session->init();
+            WC()->cart->init();
+            return true;
+        }
+        return false;
+    }
+
+    static function store_woocommerce_session_cookies_to_order($order, $cart_session_token) {
+        // fetch woocommerce session_cookies we stored against our cart_session_token
+        $wc_session_cookie = get_transient($cart_session_token);
+        $wc_session_cookie_key = get_transient($cart_session_token.":wc_session_cookie_key");
+
+        $order->add_meta_data('_wc_session_cookie', $wc_session_cookie);
+        $order->add_meta_data('_wc_session_cookie_key', $wc_session_cookie_key);
+        $order->save();
+
+    }
+
     static function add_to_cart($items) {
         WC()->cart->empty_cart();
         foreach($items as $item_id => $item) {
@@ -23,33 +53,10 @@ class SimplWcCartHelper {
     }
 
     static function simpl_update_order_from_cart($order, $is_line_items_updated) {
-        if ($is_line_items_updated) {
-            $order->remove_order_items("line_item");
-            $order->remove_order_items("coupon"); // Existing coupon may not be applicable on the new line items
-            $order->remove_order_items("fee"); // Existing fee may not be applicable on the new line items
-            WC()->checkout->create_order_line_items( $order, WC()->cart );
-            WC()->checkout->create_order_coupon_lines( $order, WC()->cart );
-            //WC()->checkout->create_order_fee_lines( $order, $cart ); // Adding this here for future since we don't support fee as yet.
-        }
+        $oc = new OrderController();
+        $oc->update_order_from_cart($order);
 
         self::set_address_in_order($order);
-
-        // recalculate_coupons internally invokes calculate_totals() which in turn calls save
-        // However, we still need to calculate totals before coupon or the coupons get added twice
-        $order->calculate_totals();
-        $order->recalculate_coupons();
-        return $order;
-    }
-
-    static function simpl_update_order_coupons_from_cart($order) {
-            
-        $order->remove_order_items("coupon");
-        WC()->checkout->create_order_coupon_lines( $order, WC()->cart );
-
-        // recalculate_coupons internally invokes calculate_totals() which in turn calls save
-        // However, we still need to calculate totals before coupon or the coupons get added twice
-        $order->calculate_totals();
-        $order->recalculate_coupons();
         return $order;
     }
     
@@ -154,7 +161,43 @@ class SimplWcCartHelper {
         return  $address;
     }
 
+    static function init_woocommerce_session_from_order($order) {
+        if ($order->meta_exists('_wc_session_cookie_key')) {
+            $wc_session_cookie = $order->get_meta('_wc_session_cookie');
+            $wc_session_cookie_key = $order->get_meta('_wc_session_cookie_key');
+            $_COOKIE[$wc_session_cookie_key] = $wc_session_cookie;
+            $customer_id = WC()->session->get_session_cookie()[0];
+
+            if (!self::is_customer_guest($customer_id)) {
+                wp_set_current_user($customer_id);
+            }
+            WC()->session->init();
+            WC()->cart->init();
+            return WC()->cart;
+        }
+        return null;
+    }
+
+    static function is_customer_guest($customer_id) {
+        $customer_id = strval( $customer_id );
+
+        if ( empty( $customer_id ) ) {
+            return true;
+        }
+
+        if ( 't_' === substr( $customer_id, 0, 2 ) ) {
+            return true;
+        }
+        return false;
+    }
+
     static function simpl_load_cart_from_order($order) {
+        $cart = self::init_woocommerce_session_from_order($order);
+        
+        if ($cart != null) {
+            return $cart;
+        }
+
         return self::convert_wc_order_to_wc_cart($order);
     }
     
