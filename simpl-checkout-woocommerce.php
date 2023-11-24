@@ -112,7 +112,8 @@ function simpl_checkout_int() {
     include_once 'includes/hook_handlers/load.php';
 
     add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
-    add_filter( 'woocommerce_shipping_chosen_method', '__return_false', 99); // this disables the application of default shipping method
+    // The following was added to support in-house shipping. Commenting as we current do not support in-house shipping
+    //add_filter( 'woocommerce_shipping_chosen_method', '__return_false', 99); // this disables the application of default shipping method
     add_action( 'plugins_loaded', 'simpl_init_gateway_class' );
     
     // initiating logger instance
