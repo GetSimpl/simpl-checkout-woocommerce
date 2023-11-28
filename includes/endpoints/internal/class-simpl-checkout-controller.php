@@ -110,6 +110,7 @@ function internal_authenticate()
 
     $api = new WC_REST_Authentication();
     $authenticated = $api->authenticate("");
+    wp_set_current_user("");
     return $authenticated;
 }
 
