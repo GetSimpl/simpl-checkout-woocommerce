@@ -3,6 +3,12 @@
 define('CHECKOUT_TOKEN_EXPIRY', 3 * 24 * 60 * 60);
 define('SYNC_ORDER_ACTION_TEXT', 'Sync Order - Simpl Checkout');
 
+function init_wc_session() {
+    $session_class = apply_filters('woocommerce_session_handler', 'WC_Session_Handler');
+    WC()->session  = new $session_class();
+    WC()->session->init();
+}
+
 function order_refunded_hook($order_id)
 {
     $order = wc_get_order($order_id);
@@ -60,6 +66,10 @@ function order_cancelled_hook($order_id)
 
 function order_created_hook($order_id, $order)
 {
+    if (WC()->session == null) {
+        init_wc_session();
+    }
+
     $checkout_token = WC()->session->get('checkout_token');
 
     $request["topic"] = "order.created";
@@ -169,6 +179,10 @@ function fetch_checkout_data($posted_data) {
 }
 
 function set_checkout_token() {
+    if (WC()->session == null) {
+        init_wc_session();
+    }
+    
     $checkout_token = get_uuid4();
     WC()->session->set('checkout_token', $checkout_token);
     WC()->session->set('checkout_token_timestamp', current_time('timestamp'));
@@ -176,6 +190,9 @@ function set_checkout_token() {
 
 // Define the custom function to set an expiry for a field in the session.
 function unset_checkout_token_if_expired() {
+    if (WC()->session == null) {
+        init_wc_session();
+    }
     // Get the WooCommerce session data.
     $checkout_token = WC()->session->get('checkout_token');
     $checkout_token_timestamp = WC()->session->get('checkout_token_timestamp');
