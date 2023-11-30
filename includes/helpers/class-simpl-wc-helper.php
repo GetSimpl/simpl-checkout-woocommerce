@@ -176,10 +176,10 @@ class SimplWcCartHelper {
     }
 
     static protected function convert_wc_order_to_wc_cart($order) {
-        $variationAttributes = [];
         WC()->cart->empty_cart();
         if ($order && $order->get_item_count() > 0) {
             foreach ($order->get_items() as $item_id => $item) {
+                $variationAttributes = [];
                 $productId   = $item->get_product_id();
                 $variationId = $item->get_variation_id();
                 $quantity    = $item->get_quantity();
