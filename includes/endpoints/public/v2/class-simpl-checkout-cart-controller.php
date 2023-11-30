@@ -4,11 +4,6 @@ class SimplCheckoutCartControllerV2 {
     function create(WP_REST_Request $request) {
         wc_clear_notices();
 
-        foreach ( $request->get_params() as $key => $value ) {
-            $_REQUEST[$key] = $value;
-            $_POST[$key] = $value;
-        }
-
         if (isset($request->get_params()['add-to-cart'])) {
             WC()->cart->empty_cart();
             WC_Form_Handler::add_to_cart_action();
