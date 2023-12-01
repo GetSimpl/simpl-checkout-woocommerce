@@ -38,8 +38,8 @@ class SimplWcCartHelper {
         $wc_session_cookie = get_transient($cart_session_token);
         $wc_session_cookie_key = get_transient($cart_session_token.":wc_session_cookie_key");
 
-        $order->add_meta_data('_wc_session_cookie', $wc_session_cookie);
-        $order->add_meta_data('_wc_session_cookie_key', $wc_session_cookie_key);
+        $order->update_meta_data('_wc_session_cookie', $wc_session_cookie);
+        $order->update_meta_data('_wc_session_cookie_key', $wc_session_cookie_key);
         $order->save();
 
     }
