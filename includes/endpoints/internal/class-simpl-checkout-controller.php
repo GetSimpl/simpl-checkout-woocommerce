@@ -18,7 +18,7 @@ class SimplCheckoutController
                 SimplWcCartHelper::set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
             }
 
-            $order = SimplWcCartHelper::create_order_from_cart();
+            $order = SimplWcCartHelper::create_order_from_cart($cart_session_token);
             SimplWcCartHelper::store_woocommerce_session_cookies_to_order($order, $cart_session_token);
             $si = new SimplCartResponse();
             $cart_payload = $si->cart_payload(WC()->cart, $order);
@@ -47,7 +47,14 @@ class SimplCheckoutController
             
             $order_id = $request->get_params()["checkout_order_id"];
             $order = wc_get_order($order_id);
-            SimplWcCartHelper::simpl_load_cart_from_order($order);
+
+            $cart_session_token = $order->get_meta("simpl_cart_token");
+            $success = SimplWcCartHelper::init_woocommerce_session_with_cart_session_token($cart_session_token);
+            if ($success) {
+                SimplWcCartHelper::store_woocommerce_session_cookies_to_order($order, $cart_session_token);
+            } else {
+                SimplWcCartHelper::simpl_load_cart_from_order($order);
+            }
 
             if ($this->is_address_present($request)) {
                 SimplWcCartHelper::set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);

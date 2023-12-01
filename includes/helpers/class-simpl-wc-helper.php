@@ -4,10 +4,11 @@ use Automattic\WooCommerce\StoreApi\Utilities\OrderController;
 const SIMPL_EXCLUSIVE_DISCOUNT = 'simpl_exclusive';
 
 class SimplWcCartHelper {
-    static function create_order_from_cart() {
+    static function create_order_from_cart($cart_session_token) {
         $oc = new OrderController();
         $order = $oc->create_order_from_cart();
         $order->update_meta_data(SIMPL_ORDER_METADATA, 'yes');
+        $order->update_meta_data("simpl_cart_token", $cart_session_token);
         $order->save();
         return $order;
     }
@@ -26,6 +27,7 @@ class SimplWcCartHelper {
             }
             WC()->session->init();
             WC()->cart->init();
+            WC()->customer = new WC_Customer( get_current_user_id(), true );
             return true;
         }
         return false;
@@ -173,6 +175,7 @@ class SimplWcCartHelper {
             }
             WC()->session->init();
             WC()->cart->init();
+            WC()->customer = new WC_Customer( get_current_user_id(), true );
             return WC()->cart;
         }
         return null;
