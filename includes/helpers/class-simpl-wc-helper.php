@@ -240,6 +240,21 @@ class SimplWcCartHelper {
         }
     }
 
+    static function simpl_set_simpl_fee($request, $order) {
+        $fees = $request['fees'];
+        if (!$fees) return;
+        
+        foreach ($fees as $fee) {
+            $item_fee = new WC_Order_Item_Fee();
+            $item_fee->set_name($fee['name']);
+            $item_fee->set_amount( $fee['amount'] );
+            $item_fee->set_tax_status( 'none' ); // since not taxable
+
+            $order->add_item($item_fee);
+            $order->calculate_totals();
+        }
+    }
+
     static protected function simpl_create_new_customer($order) {
         $customer = WC()->customer;
         $customer->set_email($order->get_billing_email());
