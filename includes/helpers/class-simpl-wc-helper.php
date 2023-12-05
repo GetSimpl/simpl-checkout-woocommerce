@@ -56,11 +56,38 @@ class SimplWcCartHelper {
 
     static function simpl_update_order_from_cart($order, $is_line_items_updated) {
         $oc = new OrderController();
+		$order->set_cart_hash( '' );
+// 		$order->update_meta_data( '_fees_hash', '' );
+// 		$order->remove_order_items( 'line_item' );
+// 		$order->remove_order_items( 'fee' );
+// 		$order->remove_order_items( 'coupon' );
+		$order->remove_order_items( 'shipping' );
+		$order->update_meta_data( '_shipping_hash', '' );
+
+// 		$all_fees = wc()->cart->fees_api()->get_fees();
+// 		if ( isset( $all_fees['_via_wallet_partial_payment'] ) ) {
+// 			unset( $all_fees['_via_wallet_partial_payment'] );
+// 			wc()->cart->fees_api()->set_fees( $all_fees );
+// 		}
+		
         $oc->update_order_from_cart($order);
 
         self::set_address_in_order($order);
         return $order;
     }
+	
+	static function simpl_wallet_payment_gateway() {
+		//include_once WOO_WALLET_ABSPATH . 'includes/helper/woo-wallet-util.php';
+		if ( function_exists( 'is_full_payment_through_wallet' ) ) {
+			if(is_full_payment_through_wallet()) {
+				$available_gateways = WC()->payment_gateways->get_available_payment_gateways();
+
+				if($available_gateways['wallet']) {
+					WC()->session->set('chosen_payment_method', 'wallet');
+				}
+			}
+		}
+	}
     
     static protected function set_address_in_order($order) {
         $shipping_address = WC()->customer->get_shipping('edit');
@@ -89,6 +116,7 @@ class SimplWcCartHelper {
     }
 
     static function set_address_in_cart($shipping_address, $billing_address) {
+		//TODO: If the customer is pre-logged-in, we must just fill the shipping. Billing must come from profile
         $shipping_address = self::convert_address_payload($shipping_address);
         $billing_address = self::convert_address_payload($billing_address);  
     
@@ -103,6 +131,7 @@ class SimplWcCartHelper {
                     WC()->customer->{"set_billing_".$key}($value);    
                 }
             }
+			WC()->customer->save();
 
             WC()->cart->calculate_shipping();
             WC()->cart->calculate_totals();
@@ -207,6 +236,7 @@ class SimplWcCartHelper {
     static function simpl_update_shipping_line($order) {
         $order->remove_order_items("shipping");
         $shipping_methods = WC()->cart->calculate_shipping();
+
         if(count($shipping_methods) > 0) {
             $item = new WC_Order_Item_Shipping();
 
@@ -276,13 +306,27 @@ class SimplWcCartHelper {
         foreach ($applied_discounts as $discount) {
             if ($discount['type'] != SIMPL_EXCLUSIVE_DISCOUNT) continue;
             
+			$sed = wc_format_decimal($discount['amount'], 2);
             $coupon = new WC_Order_Item_Coupon();
-            $coupon->set_discount(wc_format_decimal($discount['amount'], 2));
+            $coupon->set_discount($sed);
             $coupon->set_name(SIMPL_EXCLUSIVE_DISCOUNT);
             $coupon->set_code(SIMPL_EXCLUSIVE_DISCOUNT);
             $order->add_item($coupon);
-            $order->calculate_totals();
-            $order->recalculate_coupons();
+			$order->set_total($order->get_total('edit') - $sed);
+
+// Get a new instance of the WC_Order_Item_Fee Object
+// $item_fee = new WC_Order_Item_Fee();
+
+// $item_fee->set_name( "SED" ); // Generic fee name
+// $item_fee->set_amount( -52 ); // Fee amount
+// $item_fee->set_tax_class( 0 ); // default for ''
+// $item_fee->set_tax_status( 'none' ); // or 'none'
+// $item_fee->set_total( -52 ); // Fee amount
+// $item_fee->set_total_tax( 0 );
+// $order->add_item( $item_fee );
+// $order->set_total($order->get_total('edit') - 52);
+			
+// $order->save();			
         }
     }
 

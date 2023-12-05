@@ -11,13 +11,13 @@ class SimplCheckoutOrderController
             $order_payload = $si->order_payload($order);
             return $order_payload;
         } catch (SimplCustomHttpBadRequest $fe) {
-            simpl_sentry_exception($fe);
+            //TODO: Logger
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
-            simpl_sentry_exception($fe);
+            //TODO: Logger
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
-            simpl_sentry_exception($fe);
+            //TODO: Logger
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in fetching order'), 500);
         }
     }
@@ -33,11 +33,28 @@ class SimplCheckoutOrderController
 
             WC()->session->order_awaiting_payment = $order->get_id();
 
-            $gateway = $this->simpl_gateway($order->get_id());
-            if (!$gateway) {
-                throw new SimplCustomHttpBadRequest("simpl payment is not configured");
-            }
-            $result = $gateway->process_payment($order->get_id());
+			if ( function_exists( 'is_full_payment_through_wallet' ) ) {
+				if(is_full_payment_through_wallet()) {
+					$available_gateways = WC()->payment_gateways->get_available_payment_gateways();
+					$gateway = $available_gateways['wallet'];
+
+					if($gateway) {
+						$logger = wc_get_logger();		
+						$source = array('source' => 'pj-simpl-logs');
+						$message = '**** MILESTONE PAY WITH WALLET *****';
+						$logger->log('critical', $message, $source);
+						
+						WC()->session->set('chosen_payment_method', 'wallet');
+						$result = $gateway->process_payment($order->get_id());
+					}
+				}
+			} else {
+				$gateway = $this->simpl_gateway($order->get_id());
+				if (!$gateway) {
+					throw new SimplCustomHttpBadRequest("simpl payment is not configured");
+				}
+				$result = $gateway->process_payment($order->get_id());
+			}
 
             $this->reset_session();
 
@@ -48,13 +65,13 @@ class SimplCheckoutOrderController
             $order_payload["order_status_url"] = $result["redirect"];
             return $order_payload;
         } catch (SimplCustomHttpBadRequest $fe) {
-            simpl_sentry_exception($fe);
+            //TODO: Logger
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
-            simpl_sentry_exception($fe);
+            //TODO: Logger
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
-            simpl_sentry_exception($fe);
+            //TODO: Logger
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in creating order'), 500);
         }
     }
@@ -66,10 +83,10 @@ class SimplCheckoutOrderController
         }
 
         // Check if there is In-house Shipping
-        $shipping_method = $request['shipping_method'];
-        if(!empty($shipping_method)) {
-            SimplWcCartHelper::simpl_set_shipping_method_in_order($order, $shipping_method);
-        }
+//         $shipping_method = $request['shipping_method'];
+//         if(!empty($shipping_method)) {
+//             SimplWcCartHelper::simpl_set_shipping_method_in_order($order, $shipping_method);
+//         }
 
         // Add simpl exclusive discount if exists
         SimplWcCartHelper::simpl_set_simpl_exclusive_discount($request, $order);

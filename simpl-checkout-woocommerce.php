@@ -5,74 +5,9 @@
  * Description: Simpl checkout offers an optimised checkout process, higher order conversions and RTO reduction. We offer Simpl Pay Later, Pay-in-3, UPI, Cards, and COD for seamless transactions while you focus on growing your business.
  * Author:  One Sigma Technologies Pvt. Ltd.
  * Author URI: http://www.getsimpl.com
- * Version: 1.3.6
+ * Version: 2.0.1
  */
 add_action('plugins_loaded', 'simpl_checkout_int', 0);
-define('SIMPL_SENTRY_DSN_KEY', 'simpl_sentry_dsn'); 
-
-include_once "sentry/lib/Raven/Autoloader.php";
-Raven_Autoloader::register();
-
-function captureSimplPluginLastError($sentry_client) {
-    if (null === $error = error_get_last()) {
-        return null;
-    }
-
-    if(!str_contains($error['file'], 'simpl-checkout-woocommerce')) {
-        return null;
-    }
-
-    $e = new ErrorException(
-        @$error['message'], 0, @$error['type'],
-        @$error['file'], @$error['line']
-    );
-
-    return $sentry_client->captureException($e);
-}
-
-$sentry_client = simpl_sentry_client();
-if(isset($sentry_client)) {
-    captureSimplPluginLastError($sentry_client);
-}
-
-function simpl_sentry_client() {
-    $sentry_dsn = get_option(SIMPL_SENTRY_DSN_KEY);
-    if($sentry_dsn == "") {
-        return null;        
-    }
-    include_once 'includes/admin/load.php';
-    if( ! function_exists('get_plugin_data') ){
-        require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-    }
-    $plugin_data = get_plugin_data( __FILE__ );
-    $plugin_version = $plugin_data['Version'];
-    if (!defined('SIMPL_PLUGIN_VERSION')) {
-        define('SIMPL_PLUGIN_VERSION', $plugin_version);    
-    }
-    
-    $client = new Raven_Client($sentry_dsn, array('environment' => WC_Simpl_Settings::sentry_environment(), 'release' => $plugin_version));
-    $client->install();
-    return $client;
-}
-
-function simpl_set_sentry_client($dsn) {
-    try {
-        add_option(SIMPL_SENTRY_DSN_KEY, $dsn);
-        $sentry_client = simpl_sentry_client();
-        if(isset($sentry_client)) {
-            captureSimplPluginLastError($sentry_client);
-        }
-    } catch (Exception $fe) {
-        return;
-    }
-}
-
-function simpl_sentry_exception($err) {
-    $client = simpl_sentry_client();
-    if(isset($client)) {
-        $client->captureException($err);
-    }
-}
 
 function simpl_checkout_int() {
 
