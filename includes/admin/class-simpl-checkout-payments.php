@@ -81,12 +81,9 @@ function simpl_init_gateway_class()
             $order = wc_get_order($order_id);
 
             $order->update_status('pending');
-            $order->update_status('processing');
+            do_action( 'woocommerce_checkout_order_processed', $order_id, array(), $order );
+            $order->payment_complete();
 
-            // Reduce stock levels 
-            $order->reduce_order_stock();
-
-            // Remove cart
             WC()->cart->empty_cart();
 
             // Return thankyou redirect - redirection doesn't happen yet. The URL is pushed to 3pp.

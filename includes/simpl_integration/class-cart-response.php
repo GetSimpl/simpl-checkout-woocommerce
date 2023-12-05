@@ -110,7 +110,7 @@ class SimplCartResponse
         $totals = $cart->get_totals();
         $cart_payload = array();
         $cart_payload["total_price"] = wc_format_decimal($cart->get_total('float'), 2);
-        $cart_payload["applied_discounts"] = $this->formatted_coupons($cart, $cart->get_coupons(), $order);
+        $cart_payload = $this->formatted_coupons($cart_payload, $cart, $cart->get_coupons(), $order);
         $discount_amount = 0;
         if ($cart->get_total_discount()) {
             $discount_amount = $totals['discount_total'] + $totals['discount_tax'];
@@ -131,6 +131,7 @@ class SimplCartResponse
         $cart_payload["items"] = $this->getCartLineItem($cart_content);
         $cart_payload['attributes'] = array();
         $cart_payload["merchant_additional_details"] = $merchant_additional_details;
+		
         return $cart_payload;
     }
 
@@ -169,7 +170,7 @@ class SimplCartResponse
         return "";
     }
 
-    protected function formatted_coupons($cart, $coupons, $order)
+    protected function formatted_coupons($cart_payload, $cart, $coupons, $order)
     {
         $applied_discounts = array();
         $applied_discount_count = 0;
@@ -182,7 +183,32 @@ class SimplCartResponse
             );
             $applied_discount_count += 1;
         }
-        return $applied_discounts;
+
+        // add negative fee as applied_discount
+        foreach($cart->get_fees() as $fee_id => $fee) {
+            if ($fee->amount < 0) {
+                array_push($applied_discounts, array(
+                    "code" => $fee_id,
+                    "amount" => wc_format_decimal($fee->amount * -1, 2),
+                    "free_shipping" => false,
+                    "type" => "auto"
+                ));
+            }
+        }
+		
+		if(WC()->session->get('chosen_payment_method') == 'wallet') {
+			array_push($applied_discounts, array(
+				"code" => 'Store Credits',
+				"amount" => $cart->get_total('float'),
+				"free_shipping" => false,
+				"type" => "percent"
+			));
+			$cart_payload["total_price"] = 0;
+		}
+		
+		$cart_payload["applied_discounts"] = $applied_discounts;
+
+        return $cart_payload;
     }
 
     protected function formatted_order_coupons($order)

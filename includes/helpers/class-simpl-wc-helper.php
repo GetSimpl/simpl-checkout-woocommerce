@@ -4,12 +4,44 @@ use Automattic\WooCommerce\StoreApi\Utilities\OrderController;
 const SIMPL_EXCLUSIVE_DISCOUNT = 'simpl_exclusive';
 
 class SimplWcCartHelper {
-    static function create_order_from_cart() {
+    static function create_order_from_cart($cart_session_token) {
         $oc = new OrderController();
         $order = $oc->create_order_from_cart();
         $order->update_meta_data(SIMPL_ORDER_METADATA, 'yes');
+        $order->update_meta_data("simpl_cart_token", $cart_session_token);
         $order->save();
         return $order;
+    }
+
+    static function init_woocommerce_session_with_cart_session_token($cart_session_token) {
+        // fetch woocommerce session_cookies we stored against our cart_session_token
+        $wc_session_cookie = get_transient($cart_session_token);
+        $wc_session_cookie_key = get_transient($cart_session_token.":wc_session_cookie_key");
+
+        if ($wc_session_cookie != "") {
+            $_COOKIE[$wc_session_cookie_key] = $wc_session_cookie;
+            $customer_id = WC()->session->get_session_cookie()[0];
+
+            if (!self::is_customer_guest($customer_id)) {
+                wp_set_current_user($customer_id);
+            }
+            WC()->session->init();
+            WC()->cart->init();
+            WC()->customer = new WC_Customer( get_current_user_id(), true );
+            return true;
+        }
+        return false;
+    }
+
+    static function store_woocommerce_session_cookies_to_order($order, $cart_session_token) {
+        // fetch woocommerce session_cookies we stored against our cart_session_token
+        $wc_session_cookie = get_transient($cart_session_token);
+        $wc_session_cookie_key = get_transient($cart_session_token.":wc_session_cookie_key");
+
+        $order->update_meta_data('_wc_session_cookie', $wc_session_cookie);
+        $order->update_meta_data('_wc_session_cookie_key', $wc_session_cookie_key);
+        $order->save();
+
     }
 
     static function add_to_cart($items) {
@@ -23,35 +55,39 @@ class SimplWcCartHelper {
     }
 
     static function simpl_update_order_from_cart($order, $is_line_items_updated) {
-        if ($is_line_items_updated) {
-            $order->remove_order_items("line_item");
-            $order->remove_order_items("coupon"); // Existing coupon may not be applicable on the new line items
-            $order->remove_order_items("fee"); // Existing fee may not be applicable on the new line items
-            WC()->checkout->create_order_line_items( $order, WC()->cart );
-            WC()->checkout->create_order_coupon_lines( $order, WC()->cart );
-            //WC()->checkout->create_order_fee_lines( $order, $cart ); // Adding this here for future since we don't support fee as yet.
-        }
+        $oc = new OrderController();
+		$order->set_cart_hash( '' );
+// 		$order->update_meta_data( '_fees_hash', '' );
+// 		$order->remove_order_items( 'line_item' );
+// 		$order->remove_order_items( 'fee' );
+// 		$order->remove_order_items( 'coupon' );
+		$order->remove_order_items( 'shipping' );
+		$order->update_meta_data( '_shipping_hash', '' );
+
+// 		$all_fees = wc()->cart->fees_api()->get_fees();
+// 		if ( isset( $all_fees['_via_wallet_partial_payment'] ) ) {
+// 			unset( $all_fees['_via_wallet_partial_payment'] );
+// 			wc()->cart->fees_api()->set_fees( $all_fees );
+// 		}
+		
+        $oc->update_order_from_cart($order);
 
         self::set_address_in_order($order);
-
-        // recalculate_coupons internally invokes calculate_totals() which in turn calls save
-        // However, we still need to calculate totals before coupon or the coupons get added twice
-        $order->calculate_totals();
-        $order->recalculate_coupons();
         return $order;
     }
+	
+	static function simpl_wallet_payment_gateway() {
+		//include_once WOO_WALLET_ABSPATH . 'includes/helper/woo-wallet-util.php';
+		if ( function_exists( 'is_full_payment_through_wallet' ) ) {
+			if(is_full_payment_through_wallet()) {
+				$available_gateways = WC()->payment_gateways->get_available_payment_gateways();
 
-    static function simpl_update_order_coupons_from_cart($order) {
-            
-        $order->remove_order_items("coupon");
-        WC()->checkout->create_order_coupon_lines( $order, WC()->cart );
-
-        // recalculate_coupons internally invokes calculate_totals() which in turn calls save
-        // However, we still need to calculate totals before coupon or the coupons get added twice
-        $order->calculate_totals();
-        $order->recalculate_coupons();
-        return $order;
-    }
+				if($available_gateways['wallet']) {
+					WC()->session->set('chosen_payment_method', 'wallet');
+				}
+			}
+		}
+	}
     
     static protected function set_address_in_order($order) {
         $shipping_address = WC()->customer->get_shipping('edit');
@@ -80,6 +116,7 @@ class SimplWcCartHelper {
     }
 
     static function set_address_in_cart($shipping_address, $billing_address) {
+		//TODO: If the customer is pre-logged-in, we must just fill the shipping. Billing must come from profile
         $shipping_address = self::convert_address_payload($shipping_address);
         $billing_address = self::convert_address_payload($billing_address);  
     
@@ -94,6 +131,7 @@ class SimplWcCartHelper {
                     WC()->customer->{"set_billing_".$key}($value);    
                 }
             }
+			WC()->customer->save();
 
             WC()->cart->calculate_shipping();
             WC()->cart->calculate_totals();
@@ -154,13 +192,51 @@ class SimplWcCartHelper {
         return  $address;
     }
 
+    static function init_woocommerce_session_from_order($order) {
+        if ($order->meta_exists('_wc_session_cookie_key')) {
+            $wc_session_cookie = $order->get_meta('_wc_session_cookie');
+            $wc_session_cookie_key = $order->get_meta('_wc_session_cookie_key');
+            $_COOKIE[$wc_session_cookie_key] = $wc_session_cookie;
+            $customer_id = WC()->session->get_session_cookie()[0];
+
+            if (!self::is_customer_guest($customer_id)) {
+                wp_set_current_user($customer_id);
+            }
+            WC()->session->init();
+            WC()->cart->init();
+            WC()->customer = new WC_Customer( get_current_user_id(), true );
+            return WC()->cart;
+        }
+        return null;
+    }
+
+    static function is_customer_guest($customer_id) {
+        $customer_id = strval( $customer_id );
+
+        if ( empty( $customer_id ) ) {
+            return true;
+        }
+
+        if ( 't_' === substr( $customer_id, 0, 2 ) ) {
+            return true;
+        }
+        return false;
+    }
+
     static function simpl_load_cart_from_order($order) {
+        $cart = self::init_woocommerce_session_from_order($order);
+        
+        if ($cart != null) {
+            return $cart;
+        }
+
         return self::convert_wc_order_to_wc_cart($order);
     }
     
     static function simpl_update_shipping_line($order) {
         $order->remove_order_items("shipping");
         $shipping_methods = WC()->cart->calculate_shipping();
+
         if(count($shipping_methods) > 0) {
             $item = new WC_Order_Item_Shipping();
 
@@ -230,13 +306,27 @@ class SimplWcCartHelper {
         foreach ($applied_discounts as $discount) {
             if ($discount['type'] != SIMPL_EXCLUSIVE_DISCOUNT) continue;
             
+			$sed = wc_format_decimal($discount['amount'], 2);
             $coupon = new WC_Order_Item_Coupon();
-            $coupon->set_discount(wc_format_decimal($discount['amount'], 2));
+            $coupon->set_discount($sed);
             $coupon->set_name(SIMPL_EXCLUSIVE_DISCOUNT);
             $coupon->set_code(SIMPL_EXCLUSIVE_DISCOUNT);
             $order->add_item($coupon);
-            $order->calculate_totals();
-            $order->recalculate_coupons();
+			$order->set_total($order->get_total('edit') - $sed);
+
+// Get a new instance of the WC_Order_Item_Fee Object
+// $item_fee = new WC_Order_Item_Fee();
+
+// $item_fee->set_name( "SED" ); // Generic fee name
+// $item_fee->set_amount( -52 ); // Fee amount
+// $item_fee->set_tax_class( 0 ); // default for ''
+// $item_fee->set_tax_status( 'none' ); // or 'none'
+// $item_fee->set_total( -52 ); // Fee amount
+// $item_fee->set_total_tax( 0 );
+// $order->add_item( $item_fee );
+// $order->set_total($order->get_total('edit') - 52);
+			
+// $order->save();			
         }
     }
 
