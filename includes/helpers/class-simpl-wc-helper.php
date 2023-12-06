@@ -246,7 +246,13 @@ class SimplWcCartHelper {
 		
         foreach ($fees as $fee) {						
             $item_fee = new WC_Order_Item_Fee();
-            $item_fee->set_name($fee['name']);
+            $name = $fee['name'];
+            // we can create a map for this if we need more values in the future
+            if ($name == "internal_cod_fee") {
+                $name = "COD Charges";
+            }
+
+            $item_fee->set_name($name);
             $item_fee->set_amount( wc_format_decimal($fee['amount'] / 100) );
             $item_fee->set_total( wc_format_decimal($fee['amount'] / 100) );
             $item_fee->set_tax_status( 'none' ); // since not taxable
