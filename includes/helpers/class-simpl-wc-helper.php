@@ -240,6 +240,27 @@ class SimplWcCartHelper {
         }
     }
 
+    static function simpl_set_simpl_fee($request, $order) {
+        $fees = $request['fees'];
+        if (!$fees) return;
+		
+        foreach ($fees as $fee) {						
+            $item_fee = new WC_Order_Item_Fee();
+            $name = $fee['name'];
+            // we can create a map for this if we need more values in the future
+            if ($name == "internal_cod_fee") {
+                $name = "COD Charges";
+            }
+
+            $item_fee->set_name($name);
+            $item_fee->set_amount( wc_format_decimal($fee['amount']) );
+            $item_fee->set_total( wc_format_decimal($fee['amount']) );
+            $item_fee->set_tax_status( 'none' ); // since not taxable
+            $order->add_item($item_fee);
+            $order->calculate_totals();
+        }
+    }
+
     static protected function simpl_create_new_customer($order) {
         $customer = WC()->customer;
         $customer->set_email($order->get_billing_email());

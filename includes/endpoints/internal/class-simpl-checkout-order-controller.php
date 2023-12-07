@@ -73,6 +73,10 @@ class SimplCheckoutOrderController
 
         // Add simpl exclusive discount if exists
         SimplWcCartHelper::simpl_set_simpl_exclusive_discount($request, $order);
+
+        // Add fees if exists
+        SimplWcCartHelper::simpl_set_simpl_fee($request, $order);
+
         $order->save();
     }
 
