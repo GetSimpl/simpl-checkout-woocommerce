@@ -253,8 +253,8 @@ class SimplWcCartHelper {
             }
 
             $item_fee->set_name($name);
-            $item_fee->set_amount( wc_format_decimal($fee['amount'] / 100) );
-            $item_fee->set_total( wc_format_decimal($fee['amount'] / 100) );
+            $item_fee->set_amount( wc_format_decimal($fee['amount']) );
+            $item_fee->set_total( wc_format_decimal($fee['amount']) );
             $item_fee->set_tax_status( 'none' ); // since not taxable
             $order->add_item($item_fee);
             $order->calculate_totals();
