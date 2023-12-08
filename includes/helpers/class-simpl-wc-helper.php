@@ -198,14 +198,16 @@ class SimplWcCartHelper {
 
                 WC()->cart->add_to_cart($productId, $quantity, $variationId, $variationAttributes, $customData);                
             }
+
+            set_order_address_in_cart($order->get_address('shipping'), $order->get_address('billing'));
+            set_order_shipping_method_in_cart($order);
+
             $order_coupons = get_order_coupon_codes($order);
             if(count($order_coupons) > 0) {
                 foreach ($order_coupons as $item_id => $coupon_code) {
                     WC()->cart->add_discount($coupon_code);
                 }
             }
-            set_order_address_in_cart($order->get_address('shipping'), $order->get_address('billing'));
-            set_order_shipping_method_in_cart($order);
         }
         return WC()->cart;
     }
