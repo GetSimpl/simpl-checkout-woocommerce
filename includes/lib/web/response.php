@@ -11,27 +11,31 @@ const STATUS_SUCCESS = 200;
 class Response {
   private array $data;
   private int $status;
+  private array $headers;
   
-  private function __construct(array $data, int $status) {
+  private function __construct(array $data, int $status, $headers = array()) {
     $this->data = $data;
     $this->status = $status;
+    $this->headers = $headers;
   }
 
   public function to_wp_rest_response() {
     return new \WP_REST_Response(
       $this->data,
       $this->status,
+      $this->headers,
     );
   }
 
-  public static function success($data, string $version) {
+  public static function success($data, string $version, $headers = array()) {
     return new Response(
       array(
         "success" => true,
         "data" => $data,
         "version" => $version
       ),
-      STATUS_SUCCESS
+      STATUS_SUCCESS,
+      $headers,
     );
   }
 

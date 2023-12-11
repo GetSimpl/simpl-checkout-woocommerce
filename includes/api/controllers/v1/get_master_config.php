@@ -29,7 +29,9 @@ class GetMasterConfigController implements Controller {
 
     try {
       $config = $this->service->get_master_config($widget_session_token);
-      return Response::success($config["data"], V1_API);
+      return Response::success($config['data'], V1_API, array(
+        SIMPL_SESSION_HEADER_KEY => $config['widget_session_token'],
+      ));
     } catch(\Exception $e) {
       return Response::err_internal_server($e->getMessage(), V1_API);
     }
