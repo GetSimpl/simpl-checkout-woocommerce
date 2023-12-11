@@ -31,7 +31,7 @@ class Router {
       foreach($this->routes as $routes) {
         foreach($routes as $route) {
           register_rest_route($route['namespace'], $route['path'], array(
-            'method' => $route['method'],
+            'methods' => $route['method'],
             'callback' => [new Handler($route['callback'], $route['middlewares']), 'serve'],
             'permission_callback' => function() {
               return true;
