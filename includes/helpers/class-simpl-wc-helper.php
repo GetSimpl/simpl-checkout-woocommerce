@@ -16,7 +16,7 @@ class SimplWcCartHelper {
     static function init_woocommerce_session_with_cart_session_token($cart_session_token) {
         // fetch woocommerce session_cookies we stored against our cart_session_token
         $wc_session_cookie = get_transient($cart_session_token);
-        $wc_session_cookie_key = get_transient($cart_session_token.":wc_session_cookie_key");
+        $wc_session_cookie_key = apply_filters( 'woocommerce_cookie', 'wp_woocommerce_session_' . COOKIEHASH );
 
         if ($wc_session_cookie != "") {
             $_COOKIE[$wc_session_cookie_key] = $wc_session_cookie;
@@ -36,16 +36,24 @@ class SimplWcCartHelper {
     static function store_woocommerce_session_cookies_to_order($order, $cart_session_token) {
         // fetch woocommerce session_cookies we stored against our cart_session_token
         $wc_session_cookie = get_transient($cart_session_token);
-        $wc_session_cookie_key = get_transient($cart_session_token.":wc_session_cookie_key");
+        $wc_session_cookie_key = apply_filters( 'woocommerce_cookie', 'wp_woocommerce_session_' . COOKIEHASH );
 
         $order->update_meta_data('_wc_session_cookie', $wc_session_cookie);
-        $order->update_meta_data('_wc_session_cookie_key', $wc_session_cookie_key);
+
         $order->save();
 
     }
 
     static function add_to_cart($items) {
         WC()->cart->empty_cart();
+
+        //When iframe is triggered again after closing, previously applied coupons gets removed from cart but is visible on iframe.
+        //Here we try to apply those coupons from order to cart - it will fail if the coupon is not applicable
+        //Later while populating order from cart, we anyways remove all the coupons from order.
+        // if($order) {
+        //     self::simpl_apply_order_coupons_to_cart($order);
+        // }
+
         foreach($items as $item_id => $item) {
             WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"], $item["attributes"], $item["item_data"]);
         }
@@ -56,6 +64,20 @@ class SimplWcCartHelper {
 
     static function simpl_update_order_from_cart($order, $is_line_items_updated) {
         $oc = new OrderController();
+		$order->set_cart_hash( '' );
+// 		$order->update_meta_data( '_fees_hash', '' );
+// 		$order->remove_order_items( 'line_item' );
+// 		$order->remove_order_items( 'fee' );
+// 		$order->remove_order_items( 'coupon' );
+		$order->remove_order_items( 'shipping' );
+		$order->update_meta_data( '_shipping_hash', '' );
+
+// 		$all_fees = wc()->cart->fees_api()->get_fees();
+// 		if ( isset( $all_fees['_via_wallet_partial_payment'] ) ) {
+// 			unset( $all_fees['_via_wallet_partial_payment'] );
+// 			wc()->cart->fees_api()->set_fees( $all_fees );
+// 		}
+		
         $oc->update_order_from_cart($order);
 
         self::set_address_in_order($order);
@@ -89,6 +111,7 @@ class SimplWcCartHelper {
     }
 
     static function set_address_in_cart($shipping_address, $billing_address) {
+		//TODO: If the customer is pre-logged-in, we must just fill the shipping. Billing must come from profile
         $shipping_address = self::convert_address_payload($shipping_address);
         $billing_address = self::convert_address_payload($billing_address);  
     
@@ -103,6 +126,7 @@ class SimplWcCartHelper {
                     WC()->customer->{"set_billing_".$key}($value);    
                 }
             }
+			WC()->customer->save();
 
             WC()->cart->calculate_shipping();
             WC()->cart->calculate_totals();
@@ -116,14 +140,22 @@ class SimplWcCartHelper {
         if(!empty($request->get_params()["simpl_payment_id"])) {
             $order->update_meta_data("simpl_payment_id", $request->get_params()["simpl_payment_id"]);
         }
-        if ($request->get_params()["simpl_payment_type"] == PAYMENT_TYPE_COD) {
+
+        //To support Tera Wallet - If the order is getting paid by wallet entirely - wallet is the payment method
+        //Bail for guest user
+        if ( !SimplWcCartHelper::is_customer_guest(get_current_user_id()) && function_exists( 'is_full_payment_through_wallet' ) && is_full_payment_through_wallet() ) {
+            $order->set_payment_method("wallet"); //TODO: Remove hardcoding
+            $order->set_payment_method_title("WALLET"); //TODO: Remove hardcoding
+            //Transaction id has to be blank for the debit to happen. It is put by Tera Wallet
+        } elseif ($request->get_params()["simpl_payment_type"] == PAYMENT_TYPE_COD) {
             $order->set_payment_method(PAYMENT_METHOD_COD);
             $order->set_payment_method_title(PAYMENT_METHOD_TITLE_COD);
+            $order->set_transaction_id($request->get_params()["simpl_order_id"]);
         } else {
             $order->set_payment_method(SIMPL_PAYMENT_GATEWAY);
             $order->set_payment_method_title($request->get_params()["simpl_payment_type"]);
+            $order->set_transaction_id($request->get_params()["simpl_order_id"]);
         }
-        $order->set_transaction_id($request->get_params()["simpl_order_id"]);
 
         if (self::simpl_is_utm_info_present($request)) {
             self::simpl_set_utm_info_in_order($request, $order);
@@ -164,9 +196,10 @@ class SimplWcCartHelper {
     }
 
     static function init_woocommerce_session_from_order($order) {
-        if ($order->meta_exists('_wc_session_cookie_key')) {
+        if ($order->meta_exists('_wc_session_cookie')) {
             $wc_session_cookie = $order->get_meta('_wc_session_cookie');
-            $wc_session_cookie_key = $order->get_meta('_wc_session_cookie_key');
+            $wc_session_cookie_key = apply_filters( 'woocommerce_cookie', 'wp_woocommerce_session_' . COOKIEHASH );
+
             $_COOKIE[$wc_session_cookie_key] = $wc_session_cookie;
             $customer_id = WC()->session->get_session_cookie()[0];
 
@@ -207,6 +240,7 @@ class SimplWcCartHelper {
     static function simpl_update_shipping_line($order) {
         $order->remove_order_items("shipping");
         $shipping_methods = WC()->cart->calculate_shipping();
+
         if(count($shipping_methods) > 0) {
             $item = new WC_Order_Item_Shipping();
 
@@ -244,16 +278,31 @@ class SimplWcCartHelper {
 
                 WC()->cart->add_to_cart($productId, $quantity, $variationId, $variationAttributes, $customData);                
             }
+
+            //First we add address and shipping method on cart followed by cart
+            //This is done to handle the edge case where coupon minimum value requirement is breached by shipping charges
+            set_order_address_in_cart($order->get_address('shipping'), $order->get_address('billing'));
+            set_order_shipping_method_in_cart($order);
+
+            simpl_apply_order_coupons_to_cart($order);
+
             $order_coupons = get_order_coupon_codes($order);
             if(count($order_coupons) > 0) {
                 foreach ($order_coupons as $item_id => $coupon_code) {
                     WC()->cart->add_discount($coupon_code);
                 }
-            }
-            set_order_address_in_cart($order->get_address('shipping'), $order->get_address('billing'));
-            set_order_shipping_method_in_cart($order);
+            }            
         }
         return WC()->cart;
+    }
+
+    static protected function simpl_apply_order_coupons_to_cart($order) {
+        $order_coupons = get_order_coupon_codes($order);
+        if(count($order_coupons) > 0) {
+            foreach ($order_coupons as $item_id => $coupon_code) {
+                WC()->cart->add_discount($coupon_code);
+            }
+        }
     }
 
     static function simpl_set_customer_info_in_order($order) {
@@ -276,13 +325,13 @@ class SimplWcCartHelper {
         foreach ($applied_discounts as $discount) {
             if ($discount['type'] != SIMPL_EXCLUSIVE_DISCOUNT) continue;
             
+			$sed = wc_format_decimal($discount['amount'], 2);
             $coupon = new WC_Order_Item_Coupon();
-            $coupon->set_discount(wc_format_decimal($discount['amount'], 2));
+            $coupon->set_discount($sed);
             $coupon->set_name(SIMPL_EXCLUSIVE_DISCOUNT);
             $coupon->set_code(SIMPL_EXCLUSIVE_DISCOUNT);
             $order->add_item($coupon);
-            $order->calculate_totals();
-            $order->recalculate_coupons();
+			$order->set_total($order->get_total('edit') - $sed);			
         }
     }
 

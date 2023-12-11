@@ -110,12 +110,12 @@ class SimplCartResponse
         $totals = $cart->get_totals();
         $cart_payload = array();
         $cart_payload["total_price"] = wc_format_decimal($cart->get_total('float'), 2);
-        $cart_payload["applied_discounts"] = $this->formatted_coupons($cart, $cart->get_coupons(), $order);
         $discount_amount = 0;
         if ($cart->get_total_discount()) {
             $discount_amount = $totals['discount_total'] + $totals['discount_tax'];
         }
         $cart_payload["total_discount"] = round($discount_amount, 2);
+        $this->formatted_coupons($cart_payload, $cart, $cart->get_coupons(), $order);
         if (wc_prices_include_tax()) {
             $cart_payload['tax_included'] = true;
         } else {
@@ -131,6 +131,7 @@ class SimplCartResponse
         $cart_payload["items"] = $this->getCartLineItem($cart_content);
         $cart_payload['attributes'] = array();
         $cart_payload["merchant_additional_details"] = $merchant_additional_details;
+		
         return $cart_payload;
     }
 
@@ -157,6 +158,7 @@ class SimplCartResponse
         $response["status"] = $order->get_status();
         $response["is_paid"] = $order->is_paid();
         self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
+        
         return $response;
     }
 
@@ -169,33 +171,59 @@ class SimplCartResponse
         return "";
     }
 
-    protected function formatted_coupons($cart, $coupons, $order)
-    {
+    protected function formatted_coupons(&$cart_payload, $cart, $coupons, $order) {
         $applied_discounts = array();
-        $applied_discount_count = 0;
+
         foreach ($coupons as $coupon_code => $coupon) {
-            $applied_discounts[$applied_discount_count] = array(
+            array_push($applied_discounts, array(
                 "code" => $coupon_code,
                 "amount" => wc_format_decimal($cart->get_coupon_discount_amount($coupon_code, false), 2),
                 "free_shipping" => $coupon->enable_free_shipping(),
                 "type" => simpl_is_auto_applied_coupon($order, $coupon) ? "auto" : ""
-            );
-            $applied_discount_count += 1;
+            ));
         }
 
-        // add negative fee as applied_discount
+        // Add Tera Wallet Store credit (if applicable) - partial payment
         foreach($cart->get_fees() as $fee_id => $fee) {
-            if ($fee->amount < 0) {
-                array_push($applied_discounts, array(
-                    "code" => $fee_id,
-                    "amount" => wc_format_decimal($fee->amount * -1, 2),
-                    "free_shipping" => false,
-                    "type" => "auto"
-                ));
+
+            if ( '_via_wallet_partial_payment' == $fee_id ) {
+                // Bail for guest users
+                if( !SimplWcCartHelper::is_customer_guest(get_current_user_id()) ) {
+
+                    array_push($applied_discounts, array(
+                        "code" => $fee_id, //TODO: Change the coupon code generated for Tera Wallet
+                        "amount" => wc_format_decimal($fee->amount * -1, 2),
+                        "free_shipping" => false,
+                        "type" => "auto"
+                    ));
+
+                    //Need not update the total as store credit is already applied on cart as fee
+                    // $cart_payload["total_discount"] += $woo_wallet_discount;
+                    // $cart_payload["total_price"] -= $woo_wallet_discount;
+                }
             }
         }
 
-        return $applied_discounts;
+        // Add Tera Wallet Store credit (if applicable) - full payment
+        // Bail for guest users
+        if( !SimplWcCartHelper::is_customer_guest(get_current_user_id()) ) {
+            if ( function_exists( 'is_full_payment_through_wallet' ) && is_full_payment_through_wallet() ) {            
+
+                array_push($applied_discounts, array(  
+                    "code" => '_via_wallet_partial_payment', //TODO: Change the coupon code generated for Tera Wallet
+                    "amount" => $cart_payload["total_price"],
+                    "free_shipping" => false,
+                    "type" => "auto"
+                ));
+
+                //Since this gets applied as payment method, it would not be available on the cart.
+                //We need to specifically adjust discount and total to be displayed on checkout
+                $cart_payload["total_discount"] += $cart_payload["total_price"];
+                $cart_payload["total_price"] = 0;
+            }
+        }
+
+        $cart_payload["applied_discounts"] = $applied_discounts;
     }
 
     protected function formatted_order_coupons($order)

@@ -42,7 +42,6 @@ class SimplCheckoutCartControllerV2 {
 
             // now set these session_cookies to cache against our cart_session_token
             set_transient($cart_session_token, $wc_session_cookie, 1 * HOUR_IN_SECONDS);
-            set_transient($cart_session_token.":wc_session_cookie_key", $wc_session_cookie_key, 1 * HOUR_IN_SECONDS);
 
             return array('redirection_url'=>$redirection_url);
         } catch (Exception $fe) {

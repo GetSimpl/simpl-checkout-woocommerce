@@ -25,13 +25,13 @@ class SimplCheckoutController
             do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
             return $cart_payload;
         } catch (SimplCustomHttpBadRequest $fe) {
-            simpl_sentry_exception($fe);
+            //TODO: Logger
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
-            simpl_sentry_exception($fe);
+            //TODO: Logger
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
-            simpl_sentry_exception($fe);
+            //TODO: Logger
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         }
     }
@@ -57,7 +57,7 @@ class SimplCheckoutController
             }
 
             if ($this->is_address_present($request)) {
-                SimplWcCartHelper::set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
+			    SimplWcCartHelper::set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
             }
 
             $order = SimplWcCartHelper::simpl_update_order_from_cart($order, $is_line_items_updated);
@@ -67,13 +67,13 @@ class SimplCheckoutController
             do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
             return $cart_payload;
         } catch (SimplCustomHttpBadRequest $fe) {
-            simpl_sentry_exception($fe);
+            //TODO: Logger
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
-            simpl_sentry_exception($fe);
+            //TODO: Logger
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
-            simpl_sentry_exception($fe);
+            //TODO: Logger
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in updating checkout'), 500);
         }
     }
@@ -91,13 +91,13 @@ class SimplCheckoutController
             $si = new SimplCartResponse();
             return $si->cart_payload(WC()->cart, $order);
         } catch (SimplCustomHttpBadRequest $fe) {
-            simpl_sentry_exception($fe);
+            //TODO: Logger
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
-            simpl_sentry_exception($fe);
+            //TODO: Logger
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
-            simpl_sentry_exception($fe);
+            //TODO: Logger
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in fetching checkout'), 500);
         }
     }
