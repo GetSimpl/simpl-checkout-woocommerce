@@ -49,7 +49,7 @@ class Cart {
     return $coupons;
   }
 
-  private function shipping_methods() {
+  public function shipping_methods() {
     $this->cart->calculate_shipping();
     $shipping_methods = array();
 
