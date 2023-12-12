@@ -81,14 +81,15 @@ function simpl_init_gateway_class()
             $order = wc_get_order($order_id);
 
             $order->update_status('pending');
+            //This is required. Store credit is debited on this action
+            do_action( 'woocommerce_checkout_order_processed', $order_id, array(), $order );
             
             if( $order->get_payment_method("edit") == PAYMENT_METHOD_COD ) {
                 $order->update_status('processing');
                 
                 // Need to do the following specifically for COD. These are done by the payment_complete method for other modes.
                 // Reduce stock levels 
-                $order->reduce_order_stock();
-                do_action( 'woocommerce_checkout_order_processed', $order_id, array(), $order );
+                $order->reduce_order_stock();                
             } else {
                 // Complete order payment.
                 $order->payment_complete();
