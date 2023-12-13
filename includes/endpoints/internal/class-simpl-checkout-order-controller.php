@@ -68,7 +68,10 @@ class SimplCheckoutOrderController
 
         SimplWcCartHelper::simpl_update_order_metadata($request, $order);
 
-        if('yes' !== get_option( 'woocommerce_enable_guest_checkout' )) {
+        if(is_user_logged_in()) {
+            //Map the order to current logged_in user. Required for store credit usage
+            $order->set_customer_id(get_current_user_id());            
+        } elseif('yes' !== get_option( 'woocommerce_enable_guest_checkout' )) {
             SimplWcCartHelper::simpl_set_customer_info_in_order($order);
         }
 

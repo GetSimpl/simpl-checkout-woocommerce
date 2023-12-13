@@ -105,6 +105,7 @@ class SimplCartResponse
         return  $address;
     }
 
+    //TODO: This must be offloaded to backend. Plugin must not contain business logic.
     function cart_common_payload($cart, $order, $merchant_additional_details)
     {
         $totals = $cart->get_totals();
@@ -116,6 +117,8 @@ class SimplCartResponse
         }
         $cart_payload["total_discount"] = round($discount_amount, 2);
         $this->formatted_coupons($cart_payload, $cart, $cart->get_coupons(), $order);
+        //TODO: This may not be a valid check. tax_included may have changed later
+        //and in that case already created products remain as-is. Need to find an alternative
         if (wc_prices_include_tax()) {
             $cart_payload['tax_included'] = true;
         } else {
@@ -218,6 +221,7 @@ class SimplCartResponse
 
                 //Since this gets applied as payment method, it would not be available on the cart.
                 //We need to specifically adjust discount and total to be displayed on checkout
+                //Cannot invoke totals() on order as that puts tax on fee
                 $cart_payload["total_discount"] += $cart_payload["total_price"];
                 $cart_payload["total_price"] = 0;
             }

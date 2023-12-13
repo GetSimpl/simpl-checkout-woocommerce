@@ -136,6 +136,7 @@ class SimplWcCartHelper {
 
         //To support Tera Wallet - If the order is getting paid by wallet entirely - wallet is the payment method
         //Bail for guest user
+        //TODO: Check if we must use is_customer_guest or is_user_logged_in. To be handled at 2 places if modified.
         if ( !SimplWcCartHelper::is_customer_guest(get_current_user_id()) && function_exists( 'is_full_payment_through_wallet' ) && is_full_payment_through_wallet() ) {
             $order->set_payment_method("wallet"); //TODO: Remove hardcoding
             $order->set_payment_method_title("WALLET"); //TODO: Remove hardcoding
