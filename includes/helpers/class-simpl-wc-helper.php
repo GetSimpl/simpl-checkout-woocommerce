@@ -45,14 +45,7 @@ class SimplWcCartHelper {
     }
 
     static function add_to_cart($items) {
-        WC()->cart->empty_cart();
-
-        //When iframe is triggered again after closing, previously applied coupons gets removed from cart but is visible on iframe.
-        //Here we try to apply those coupons from order to cart - it will fail if the coupon is not applicable
-        //Later while populating order from cart, we anyways remove all the coupons from order.
-        // if($order) {
-        //     self::simpl_apply_order_coupons_to_cart($order);
-        // }
+        WC()->cart->empty_cart();        
 
         foreach($items as $item_id => $item) {
             WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"], $item["attributes"], $item["item_data"]);
@@ -68,7 +61,7 @@ class SimplWcCartHelper {
 // 		$order->update_meta_data( '_fees_hash', '' );
 // 		$order->remove_order_items( 'line_item' );
 // 		$order->remove_order_items( 'fee' );
-// 		$order->remove_order_items( 'coupon' );
+		$order->remove_order_items( 'coupon' );
 		$order->remove_order_items( 'shipping' );
 		$order->update_meta_data( '_shipping_hash', '' );
 
@@ -284,25 +277,21 @@ class SimplWcCartHelper {
             set_order_address_in_cart($order->get_address('shipping'), $order->get_address('billing'));
             set_order_shipping_method_in_cart($order);
 
-            simpl_apply_order_coupons_to_cart($order);
-
-            $order_coupons = get_order_coupon_codes($order);
-            if(count($order_coupons) > 0) {
-                foreach ($order_coupons as $item_id => $coupon_code) {
-                    WC()->cart->add_discount($coupon_code);
-                }
-            }            
+            self::simpl_apply_order_coupons_to_cart($order);
         }
         return WC()->cart;
     }
 
-    static protected function simpl_apply_order_coupons_to_cart($order) {
+    static function simpl_apply_order_coupons_to_cart($order) {
         $order_coupons = get_order_coupon_codes($order);
+
         if(count($order_coupons) > 0) {
             foreach ($order_coupons as $item_id => $coupon_code) {
                 WC()->cart->add_discount($coupon_code);
             }
         }
+        //We need to clear the notices as the same gets rendered in the native flow
+        //wc_clear_notices(); 
     }
 
     static function simpl_set_customer_info_in_order($order) {
@@ -332,6 +321,22 @@ class SimplWcCartHelper {
             $coupon->set_code(SIMPL_EXCLUSIVE_DISCOUNT);
             $order->add_item($coupon);
 			$order->set_total($order->get_total('edit') - $sed);			
+        }
+    }
+
+    //For COD Charges
+    static function simpl_set_fee_to_order($request, $order) {
+        $fees = $request['fees'];
+        if (!$fees) return;
+
+        foreach ($fees as $fee) {						
+            $item_fee = new WC_Order_Item_Fee();
+            $item_fee->set_name($fee['name']);
+            $item_fee->set_amount( wc_format_decimal($fee['amount']) );
+            $item_fee->set_total( wc_format_decimal($fee['amount']) );
+            $item_fee->set_tax_status( 'none' ); // since not taxable
+            $order->add_item($item_fee);
+            $order->calculate_totals();
         }
     }
 
@@ -396,7 +401,7 @@ class SimplWcCartHelper {
             array_push($auto_applied_coupons, $code);
         }
         
-        $order->add_meta_data('_simpl_auto_applied_coupons', $auto_applied_coupons);
+        $order->update_meta_data('_simpl_auto_applied_coupons', $auto_applied_coupons);
         $order->save();
     }
 }

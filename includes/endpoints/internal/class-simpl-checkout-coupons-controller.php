@@ -72,6 +72,8 @@ class SimplCheckoutCouponController {
             $order = wc_get_order($order_id);
             $cart = SimplWcCartHelper::simpl_load_cart_from_order($order);
             $cart->remove_coupons();
+            //Remove automatic coupon meta data. Would be updated again if applicable
+            $order->delete_meta_data('_simpl_auto_applied_coupons'); //TODO: Remove hardcoding
 
             SimplWcCartHelper::simpl_update_order_from_cart($order, false);
             SimplWcCartHelper::simpl_add_automatic_discounts_to_order($order);

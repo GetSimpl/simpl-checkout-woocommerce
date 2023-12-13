@@ -10,7 +10,6 @@ class SimplCheckoutController
 
             if (!$success) {
                 $items = $request->get_params()["items"];
-                simpl_cart_init_common();
                 SimplWcCartHelper::add_to_cart($items);
             }
 
@@ -41,7 +40,6 @@ class SimplCheckoutController
         try {
             $items = $request->get_params()["items"];
             $is_line_items_updated = false;
-            simpl_cart_init_common();
             SimplRequestValidator::validate_shipping_address_or_items($request);
             SimplRequestValidator::validate_checkout_order_id($request);
             
@@ -60,6 +58,10 @@ class SimplCheckoutController
 			    SimplWcCartHelper::set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
             }
 
+            //When iframe is triggered again after closing, previously applied coupons gets removed from cart but is visible on iframe.
+            //Here we try to apply those coupons from order to cart - it will fail if the coupon is not applicable
+            //Later while populating order from cart, we anyways remove all the coupons from order.
+            SimplWcCartHelper::simpl_apply_order_coupons_to_cart($order);
             $order = SimplWcCartHelper::simpl_update_order_from_cart($order, $is_line_items_updated);
             
             $si = new SimplCartResponse();
@@ -82,7 +84,6 @@ class SimplCheckoutController
     {
         try {
             SimplRequestValidator::validate_checkout_order_id($request);
-            simpl_cart_init_common();
             WC()->cart->empty_cart();
             $order_id = $request->get_params()["checkout_order_id"];
             $order = wc_get_order($order_id);

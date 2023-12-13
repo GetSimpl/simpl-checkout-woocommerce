@@ -24,8 +24,8 @@ class SimplCheckoutCartControllerV2 {
             return new WP_REST_Response(array(
                 "success"=> false, 
                 "code" => SIMPL_HTTP_ERROR_CART_CREATE, 
-                "errors" => $err_messages), 
-                400);
+                "errors" => $err_messages
+            ), 400);
         }
 
         try {
