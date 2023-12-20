@@ -77,15 +77,6 @@ class SimplRequestValidator {
         return NULL;        
     }
     
-    static function convert_address_payload($address) {
-        $supported_cc = SimplUtil::country_code_for_country($address["country"]);
-        if(!isset($supported_cc)) {
-            throw new SimplCustomHttpBadRequest("country is not supported");
-        }
-    
-        return  $address;
-    }
-    
     static function validate_events_payload($request) {
         $event_payload = $request->get_params()["event_payload"] ?? null;
         

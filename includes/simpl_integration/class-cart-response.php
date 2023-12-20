@@ -6,10 +6,10 @@ const HEADER_USER_AGENT = "User-Agent";
 const HEADER_PLATFORM = "Platform";
 const HEADER_ORIGIN = "Origin";
 
-class SimplCartResponse
-{
-    public function cart_redirection_url($cart, $request)
-    {
+class SimplCartResponse {
+
+    public function simpl_cart_redirection_url($cart, $request) {
+
         $merchant_additional_details = $request['merchant_additional_details'];
 
         $client_information = self::simpl_get_client_information($request);
@@ -61,16 +61,14 @@ class SimplCartResponse
         return $client_information;
     }
 
-    public function static_cart_payload($cart, $merchant_additional_details)
-    {
+    public function static_cart_payload($cart, $merchant_additional_details) {
         $request = array("source" => "cart");
         $cart_payload = $this->cart_common_payload($cart, null, $merchant_additional_details);
         $request["cart"] = $cart_payload;
         return $request;
     }
 
-    public function cart_payload($cart, $order = NULL)
-    {
+    public function cart_payload($cart, $order = NULL) {
         $request = array("source" => "cart");
         $cart_payload = $this->cart_common_payload($cart, $order, null);
         $shipping_address = WC()->customer->get_shipping('edit');
@@ -85,8 +83,7 @@ class SimplCartResponse
         return $request;
     }
 
-    protected function is_address_present($shipping_address, $billing_address)
-    {
+    protected function is_address_present($shipping_address, $billing_address) {
         return (isset($shipping_address) && isset($billing_address) && count($shipping_address) > 0 && count($billing_address) > 0) && $shipping_address["country"] != "";
     }
 
@@ -106,8 +103,7 @@ class SimplCartResponse
     }
 
     //TODO: This must be offloaded to backend. Plugin must not contain business logic.
-    function cart_common_payload($cart, $order, $merchant_additional_details)
-    {
+    function cart_common_payload($cart, $order, $merchant_additional_details) {
         $totals = $cart->get_totals();
         $cart_payload = array();
         $cart_payload["total_price"] = wc_format_decimal($cart->get_total('float'), 2);
@@ -139,8 +135,7 @@ class SimplCartResponse
     }
 
 
-    public function order_payload($order)
-    {
+    public function order_payload($order) {
         $response = array();
         $response["id"] = $order->get_id();
         $response["total_price"] = wc_format_decimal($order->get_total(), 2);
@@ -165,8 +160,7 @@ class SimplCartResponse
         return $response;
     }
 
-    protected function get_applied_shipping_method($cart)
-    {
+    protected function get_applied_shipping_method($cart) {
         $chosen_shipping_method = $cart->calculate_shipping();
         if (count($chosen_shipping_method) > 0) {
             return $chosen_shipping_method[0]->get_id();
@@ -230,8 +224,7 @@ class SimplCartResponse
         $cart_payload["applied_discounts"] = $applied_discounts;
     }
 
-    protected function formatted_order_coupons($order)
-    {
+    protected function formatted_order_coupons($order) {
         $applied_discounts = array();
         $order_items = $order->get_items('coupon');
         $applied_discount_count = 0;
@@ -256,8 +249,8 @@ class SimplCartResponse
         return $applied_discounts;
     }
 
-    protected function formatted_shipping_methods($shipping_methods)
-    {
+    protected function formatted_shipping_methods($shipping_methods) {
+
         $shipping_methods_array = array();
         foreach ($shipping_methods as $item_id => $item) {
             $shipping_methods_array["id"] = $item->get_id();
@@ -270,8 +263,8 @@ class SimplCartResponse
         return $shipping_methods_array;
     }
 
-    function get_shipping_methods($cart)
-    {
+    function get_shipping_methods($cart) {
+
         $cart->calculate_shipping();
         $shipping_methods_count = 0;
         $shipping_methods_array = array();
@@ -294,8 +287,7 @@ class SimplCartResponse
         return $shipping_methods_array;
     }
 
-    function getOrderLineItem($order)
-    {
+    protected function getOrderLineItem($order) {
         $i = 0;
 
         foreach ($order->get_items() as $item_id => $item) {
@@ -322,8 +314,7 @@ class SimplCartResponse
     }
 
 
-    protected function getCartLineItem($cart)
-    {
+    protected function getCartLineItem($cart) {
         $i = 0;
 
         foreach ($cart as $item_id => $item) {
@@ -376,8 +367,7 @@ class SimplCartResponse
     }
 
     //This function will clear all type of notice or success
-    protected function simpl_hide_error_messages()
-    {
+    protected function simpl_hide_error_messages() {
 
         $_SESSION["simpl_session_message"] = [];
         WC()->session->set('wc_notices', null);

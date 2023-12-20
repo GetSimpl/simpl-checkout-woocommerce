@@ -8,13 +8,12 @@ class SimplCheckoutShippingController {
             $order_id = $request->get_params()["checkout_order_id"];
             $order = wc_get_order($order_id);
 
-            $cart = SimplWcCartHelper::simpl_load_cart_from_order($order);
             WC()->session->set('chosen_shipping_methods', array($request->get_params()["shipping_method_id"]));
 			
-			$order = SimplWcCartHelper::simpl_update_order_from_cart($order, false);
+			$order = SimplWcCartHelper::simpl_update_order_from_cart($order);
 			
             $si = new SimplCartResponse();
-            return $si->cart_payload($cart, $order);
+            return $si->cart_payload(WC()->cart, $order);
         } catch (SimplCustomHttpBadRequest $fe) {
             //TODO: Logger
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);

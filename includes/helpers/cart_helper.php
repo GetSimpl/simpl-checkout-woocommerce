@@ -1,11 +1,45 @@
 <?php   
 
-add_action( 'wp_loaded', 'maybe_load_cart', 5 );
+add_action( 'before_woocommerce_init', 'simpl_before_woocommerce_init', 5 );
+add_filter( 'woocommerce_is_rest_api_request', 'simpl_is_woocommerce_rest_api_request');
+add_filter( 'woocommerce_rest_is_request_to_rest_api', 'simpl_is_woocommerce_rest_api_request');
 
-function maybe_load_cart() {
-	if ( version_compare( WC_VERSION, '3.6.0', '>=' ) && WC()->is_rest_api_request() ) {
+//Load cookie for Simpl APIs
+function simpl_before_woocommerce_init() {
+	
+	//Only for simpl request, bail otherwise
+	if ( !simpl_is_woocommerce_rest_api_request(false, true) ) {
+		return;
+	}
+	
+	$request_body = file_get_contents('php://input');
+	$data = json_decode($request_body);
+	$wc_session_cookie = null;
+	
+	//For checkout create/update calls, 3PP would send cart token. Here, we'd create order and store order <> cart token map	
+	if(isset($data->cart_token)) {
+		$cart_session_token = $data->cart_token;
+		$wc_session_cookie = get_transient($cart_session_token);
+	} elseif (isset($data->checkout_order_id)) {
+	//For remaining, we'll pull cart token from order and subsequently cookie from token.
+		$order_id = $data->checkout_order_id;
+		$cart_session_token = get_transient($order_id);
+		$wc_session_cookie = get_transient($cart_session_token);
+	}
+
+	if($wc_session_cookie) {
+//		$wc_session_cookie = 't_31cf15af529f2fe68705daa75752b1||1702920565||1702916965||7a8dec728ea641e0dc9bb6a77fc7cf6e';
+		simpl_set_cookie($wc_session_cookie);
+	}
+}
+
+//WooCommerce checks if the API request is REST or Frontend.
+//Respond false to treat Simpl API requests as Frontend to load session, cart, etc.
+function simpl_is_woocommerce_rest_api_request($is_rest_api_request, $simpl_response = false) {
+	
+	if ( version_compare( WC_VERSION, '3.6.0', '>=' ) ) {
 		if ( empty( $_SERVER['REQUEST_URI'] ) ) {
-			return;
+			return $is_rest_api_request;
 		}
 
 		$rest_prefix = 'simpl/';
@@ -14,69 +48,37 @@ function maybe_load_cart() {
 		$is_my_endpoint = ( false !== strpos( $req_uri, $rest_prefix ) );
 
 		if ( ! $is_my_endpoint ) {
-			return;
+			return $is_rest_api_request;
 		}
 
-		require_once WC_ABSPATH . 'includes/wc-cart-functions.php';
-		require_once WC_ABSPATH . 'includes/wc-notice-functions.php';
-
-		if ( null === WC()->session ) {
-			$session_class = apply_filters( 'woocommerce_session_handler', 'WC_Session_Handler' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-
-			// Prefix session class with global namespace if not already namespaced
-			if ( false === strpos( $session_class, '\\' ) ) {
-				$session_class = '\\' . $session_class;
-			}
-
-			WC()->session = new $session_class();
-			WC()->session->init();
+		//Do not want to initialise session, cart, etc for the following
+		if ( false !== strpos( $req_uri, '/events' ) || false !== strpos( $req_uri, '/master-config' ) || 
+			false !== strpos( $req_uri, '/authenticate_simpl' ) || false !== strpos( $req_uri, '/revert_authenticate_simpl' ) ) {
+				return $is_rest_api_request;
 		}
-
-		/**
-		 * For logged in customers, pull data from their account rather than the
-		 * session which may contain incomplete data.
-		 */
-		if ( is_null( WC()->customer ) ) {
-			if ( is_user_logged_in() ) {
-				WC()->customer = new WC_Customer( get_current_user_id() );
-			} else {
-				WC()->customer = new WC_Customer( get_current_user_id(), true );
-			}
-
-			// Customer should be saved during shutdown.
-			add_action( 'shutdown', array( WC()->customer, 'save' ), 10 );
-		}
-
-		// Load Cart.
-		if ( null === WC()->cart ) {
-			WC()->cart = new WC_Cart();
-		}
-
-		// Avoid discount not applicable for Simpl
-		WC()->session->set('chosen_payment_method', SIMPL_PAYMENT_GATEWAY);
-		// We set the chosen_payment_method above. In case of a change, everything needs to be recalculated to be safe
-		WC()->cart->calculate_fees();
-		// WC()->cart->calculate_shipping();
-		WC()->cart->calculate_totals();
+		
+		//Return false for Simpl Checkout APIs to load everything
+		return $simpl_response;
 	}
+	
+	return $is_rest_api_request;
 }
 
-function simpl_cart_init_common()
-{ 
-    if (defined('WC_ABSPATH')) {
-        // WC 3.6+ - Cart and other frontend functions are not included for REST requests.
-        include_once WC_ABSPATH . 'includes/wc-cart-functions.php'; // nosemgrep: file-inclusion
-        include_once WC_ABSPATH . 'includes/wc-notice-functions.php'; // nosemgrep: file-inclusion
-        include_once WC_ABSPATH . 'includes/wc-template-hooks.php'; // nosemgrep: file-inclusion
-        // include_once SIMPL_PLUGIN_DIR . "/includes/helpers/notice_helper.php";
-    }
-    
-	$session_class = apply_filters('woocommerce_session_handler', 'WC_Session_Handler');
-	WC()->session  = new $session_class();
-	WC()->session->init();
-	// Avoid discount not applicable for Simpl
-	WC()->session->set('chosen_payment_method', SIMPL_PAYMENT_GATEWAY);
-	WC()->customer = new WC_Customer();        
-	WC()->cart = new WC_Cart();
-	WC()->cart->empty_cart();
+function simpl_set_cookie($wc_session_cookie) {
+
+	if($wc_session_cookie) {	
+		
+		$customer_id = explode("||", $wc_session_cookie)[0];		
+
+		//Login to Wordpress for WooCommerce login user.
+		$user = get_user_by('id', $customer_id );
+	    do_action( 'wp_login', $user->user_login, $user );
+		
+		if( !SimplWcCartHelper::is_customer_guest( $customer_id ) ) {
+			wp_set_current_user ( $customer_id );
+		}
+		
+		$wc_session_cookie_key = apply_filters( 'woocommerce_cookie', 'wp_woocommerce_session_' . COOKIEHASH );
+		$_COOKIE[$wc_session_cookie_key] = $wc_session_cookie;		
+	}
 }

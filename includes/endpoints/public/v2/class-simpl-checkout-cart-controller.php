@@ -29,8 +29,11 @@ class SimplCheckoutCartControllerV2 {
         }
 
         try {
+            // Remove discount not applicable on Simpl
+			WC()->session->set('chosen_payment_method', SIMPL_PAYMENT_GATEWAY);
+
             $si = new SimplCartResponse();
-            $redirection_url = $si->cart_redirection_url(WC()->cart, $request);
+            $redirection_url = $si->simpl_cart_redirection_url(WC()->cart, $request);
 
             // parse cart_session_token from received redirection_url
             $query = parse_url($redirection_url, PHP_URL_QUERY);

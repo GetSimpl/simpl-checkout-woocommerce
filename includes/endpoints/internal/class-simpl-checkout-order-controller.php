@@ -1,9 +1,8 @@
 <?php
 
-class SimplCheckoutOrderController
-{
-    function fetch(WP_REST_Request $request)
-    {
+class SimplCheckoutOrderController {
+
+    function fetch(WP_REST_Request $request) {
         try {
             SimplRequestValidator::validate_fetch_order_request($request);
             $order = wc_get_order((int)$request->get_params()["order_id"]);
@@ -22,13 +21,12 @@ class SimplCheckoutOrderController
         }
     }
 
-    function create(WP_REST_Request $request)
-    {
+    function create(WP_REST_Request $request) {
+
         try {
             SimplRequestValidator::validate_order_request($request);
 
             $order = wc_get_order((int)$request->get_params()["checkout_order_id"]);
-            SimplWcCartHelper::simpl_load_cart_from_order($order);
             self::simpl_update_order_details($request, $order);
 
             WC()->session->order_awaiting_payment = $order->get_id();
@@ -51,6 +49,7 @@ class SimplCheckoutOrderController
             $si = new SimplCartResponse();
             $order_payload = $si->order_payload($order);
             $order_payload["order_status_url"] = $result["redirect"];
+
             return $order_payload;
         } catch (SimplCustomHttpBadRequest $fe) {
             //TODO: Logger
@@ -92,6 +91,7 @@ class SimplCheckoutOrderController
     protected function simpl_gateway($order_id) {
         WC()->session->set("simpl_order_id", $order_id);
         $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
+        
         return $available_gateways[SIMPL_PAYMENT_GATEWAY];
     }
 }

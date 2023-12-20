@@ -4,58 +4,19 @@ use Automattic\WooCommerce\StoreApi\Utilities\OrderController;
 const SIMPL_EXCLUSIVE_DISCOUNT = 'simpl_exclusive';
 
 class SimplWcCartHelper {
-    static function create_order_from_cart($cart_session_token) {
+
+    static function simpl_create_order_from_cart($cart_session_token) {
+
         $oc = new OrderController();
         $order = $oc->create_order_from_cart();
         $order->update_meta_data(SIMPL_ORDER_METADATA, 'yes');
         $order->update_meta_data("simpl_cart_token", $cart_session_token);
         $order->save();
+
         return $order;
     }
 
-    static function init_woocommerce_session_with_cart_session_token($cart_session_token) {
-        // fetch woocommerce session_cookies we stored against our cart_session_token
-        $wc_session_cookie = get_transient($cart_session_token);
-        $wc_session_cookie_key = apply_filters( 'woocommerce_cookie', 'wp_woocommerce_session_' . COOKIEHASH );
-
-        if ($wc_session_cookie != "") {
-            $_COOKIE[$wc_session_cookie_key] = $wc_session_cookie;
-            $customer_id = WC()->session->get_session_cookie()[0];
-
-            if (!self::is_customer_guest($customer_id)) {
-                wp_set_current_user($customer_id);
-            }
-            WC()->session->init();
-            WC()->cart->init();
-            WC()->customer = new WC_Customer( get_current_user_id(), true );
-            return true;
-        }
-        return false;
-    }
-
-    static function store_woocommerce_session_cookies_to_order($order, $cart_session_token) {
-        // fetch woocommerce session_cookies we stored against our cart_session_token
-        $wc_session_cookie = get_transient($cart_session_token);
-        $wc_session_cookie_key = apply_filters( 'woocommerce_cookie', 'wp_woocommerce_session_' . COOKIEHASH );
-
-        $order->update_meta_data('_wc_session_cookie', $wc_session_cookie);
-
-        $order->save();
-
-    }
-
-    static function add_to_cart($items) {
-        WC()->cart->empty_cart();        
-
-        foreach($items as $item_id => $item) {
-            WC()->cart->add_to_cart($item["product_id"], $item["quantity"], $item["variant_id"], $item["attributes"], $item["item_data"]);
-        }
-        if(WC()->cart->is_empty()) {
-            throw new SimplCustomHttpBadRequest("invalid cart items");
-        }
-    }
-
-    static function simpl_update_order_from_cart($order, $is_line_items_updated) {
+    static function simpl_update_order_from_cart($order) {
         $oc = new OrderController();
 		$order->set_cart_hash( '' );
 // 		$order->update_meta_data( '_fees_hash', '' );
@@ -64,20 +25,15 @@ class SimplWcCartHelper {
 		$order->remove_order_items( 'coupon' );
 		$order->remove_order_items( 'shipping' );
 		$order->update_meta_data( '_shipping_hash', '' );
-
-// 		$all_fees = wc()->cart->fees_api()->get_fees();
-// 		if ( isset( $all_fees['_via_wallet_partial_payment'] ) ) {
-// 			unset( $all_fees['_via_wallet_partial_payment'] );
-// 			wc()->cart->fees_api()->set_fees( $all_fees );
-// 		}
 		
         $oc->update_order_from_cart($order);
 
-        self::set_address_in_order($order);
+        self::simpl_set_address_in_order($order);
+
         return $order;
     }
     
-    static protected function set_address_in_order($order) {
+    static protected function simpl_set_address_in_order($order) {
         $shipping_address = WC()->customer->get_shipping('edit');
         $billing_address = WC()->customer->get_billing('edit');
         WC()->cart->calculate_shipping();
@@ -87,26 +43,10 @@ class SimplWcCartHelper {
         }
     }
 
-    //Created this method to support older version
-    static protected function set_data_from_cart( &$order ) {
-        $order->set_shipping_total( WC()->cart->get_shipping_total() );
-        $order->set_discount_total( WC()->cart->get_discount_total() );
-        $order->set_discount_tax( WC()->cart->get_discount_tax() );
-        $order->set_cart_tax( WC()->cart->get_cart_contents_tax() + WC()->cart->get_fee_tax() );
-        $order->set_shipping_tax( WC()->cart->get_shipping_tax() );
-        $order->set_total( WC()->cart->get_total( 'edit' ) );
-        $order->set_prices_include_tax(wc_prices_include_tax());
-        WC()->checkout->create_order_line_items( $order, WC()->cart );
-        WC()->checkout->create_order_fee_lines( $order, WC()->cart );
-        WC()->checkout->create_order_shipping_lines( $order, WC()->session->get( 'chosen_shipping_methods' ), WC()->shipping()->get_packages() );
-        WC()->checkout->create_order_tax_lines( $order, WC()->cart );
-        WC()->checkout->create_order_coupon_lines( $order, WC()->cart );
-    }
-
-    static function set_address_in_cart($shipping_address, $billing_address) {
+    static function simpl_set_address_in_cart($shipping_address, $billing_address) {
 		//TODO: If the customer is pre-logged-in, we must just fill the shipping. Billing must come from profile
-        $shipping_address = self::convert_address_payload($shipping_address);
-        $billing_address = self::convert_address_payload($billing_address);  
+        $shipping_address = self::simpl_convert_address_payload($shipping_address);
+        $billing_address = self::simpl_convert_address_payload($billing_address);  
     
         if(isset($shipping_address) && isset($billing_address)) {        
             foreach($shipping_address as $key => $value) {
@@ -156,8 +96,7 @@ class SimplWcCartHelper {
         }
     }
 
-    static protected function simpl_is_utm_info_present($request)
-    {
+    static protected function simpl_is_utm_info_present($request) {
         return (isset($request->get_params()["utm_info"]) && count($request->get_params()["utm_info"]) > 0);
     }
 
@@ -174,7 +113,7 @@ class SimplWcCartHelper {
         $order->save();
     }
 
-    static protected function convert_address_payload($address) {
+    static protected function simpl_convert_address_payload($address) {
         $supported_cc = SimplUtil::country_code_for_country($address["country"]);
         if(!isset($supported_cc)) {
             throw new SimplCustomHttpBadRequest("country is not supported");
@@ -189,25 +128,6 @@ class SimplWcCartHelper {
         return  $address;
     }
 
-    static function init_woocommerce_session_from_order($order) {
-        if ($order->meta_exists('_wc_session_cookie')) {
-            $wc_session_cookie = $order->get_meta('_wc_session_cookie');
-            $wc_session_cookie_key = apply_filters( 'woocommerce_cookie', 'wp_woocommerce_session_' . COOKIEHASH );
-
-            $_COOKIE[$wc_session_cookie_key] = $wc_session_cookie;
-            $customer_id = WC()->session->get_session_cookie()[0];
-
-            if (!self::is_customer_guest($customer_id)) {
-                wp_set_current_user($customer_id);
-            }
-            WC()->session->init();
-            WC()->cart->init();
-            WC()->customer = new WC_Customer( get_current_user_id(), true );
-            return WC()->cart;
-        }
-        return null;
-    }
-
     static function is_customer_guest($customer_id) {
         $customer_id = strval( $customer_id );
 
@@ -219,16 +139,6 @@ class SimplWcCartHelper {
             return true;
         }
         return false;
-    }
-
-    static function simpl_load_cart_from_order($order) {
-        $cart = self::init_woocommerce_session_from_order($order);
-        
-        if ($cart != null) {
-            return $cart;
-        }
-
-        return self::convert_wc_order_to_wc_cart($order);
     }
     
     static function simpl_update_shipping_line($order) {
@@ -247,52 +157,6 @@ class SimplWcCartHelper {
         }
         $order->save();
         return $order;
-    }
-
-    static protected function convert_wc_order_to_wc_cart($order) {
-        WC()->cart->empty_cart();
-        if ($order && $order->get_item_count() > 0) {
-            foreach ($order->get_items() as $item_id => $item) {
-                $variationAttributes = [];
-                $productId   = $item->get_product_id();
-                $variationId = $item->get_variation_id();
-                $quantity    = $item->get_quantity();
-                
-                $customData['item_id'] = $item_id;
-
-                $product               = $item->get_product();
-                if ($product->is_type('variation')) {
-                    $variation_attributes = $product->get_variation_attributes();
-                    foreach ($variation_attributes as $attribute_taxonomy => $term_slug) {
-                        $taxonomy                                 = str_replace('attribute_', '', $attribute_taxonomy);
-                        $value                                    = wc_get_order_item_meta($item_id, $taxonomy, true);
-                        $variationAttributes[$attribute_taxonomy] = $value;
-                    }
-                }
-
-                WC()->cart->add_to_cart($productId, $quantity, $variationId, $variationAttributes, $customData);                
-            }
-
-            //First we add address and shipping method on cart followed by cart
-            //This is done to handle the edge case where coupon minimum value requirement is breached by shipping charges
-            set_order_address_in_cart($order->get_address('shipping'), $order->get_address('billing'));
-            set_order_shipping_method_in_cart($order);
-
-            self::simpl_apply_order_coupons_to_cart($order);
-        }
-        return WC()->cart;
-    }
-
-    static function simpl_apply_order_coupons_to_cart($order) {
-        $order_coupons = get_order_coupon_codes($order);
-
-        if(count($order_coupons) > 0) {
-            foreach ($order_coupons as $item_id => $coupon_code) {
-                WC()->cart->add_discount($coupon_code);
-            }
-        }
-        //We need to clear the notices as the same gets rendered in the native flow
-        //wc_clear_notices(); 
     }
 
     static function simpl_set_customer_info_in_order($order) {
@@ -381,18 +245,6 @@ class SimplWcCartHelper {
         }
     }
 
-    static function simpl_set_shipping_method_in_order($order, $shipping_method) {
-        $method = new WC_Order_Item_Shipping();
-
-        $method->set_method_id($shipping_method['slug']);
-        $method->set_name($shipping_method['name']);
-        $method->set_total($shipping_method['amount']);
-
-        // Add Shipping item to the order.
-        $order->add_item( $method );
-        $order->calculate_totals();
-    }
-
     static function simpl_add_automatic_discounts_to_order($order) {
         $coupons = WC()->cart->get_coupons();
         $auto_applied_coupons = array();
@@ -405,6 +257,11 @@ class SimplWcCartHelper {
         $order->update_meta_data('_simpl_auto_applied_coupons', $auto_applied_coupons);
         $order->save();
     }
+
+    static function simpl_add_order_token_to_cache($order_id, $cart_session_token) {
+        // now set these session_cookies to cache against our cart_session_token
+        set_transient($order_id, $cart_session_token, 1 * HOUR_IN_SECONDS);
+    }
 }
 
 function simpl_is_auto_applied_coupon($order, $coupon) {
@@ -415,58 +272,6 @@ function simpl_is_auto_applied_coupon($order, $coupon) {
     }
     return false;
 }
-
-
-function set_order_address_in_cart($shipping_address, $billing_address) {
-    if(isset($shipping_address) && isset($billing_address)) {        
-        foreach($shipping_address as $key => $value) {
-            if(method_exists(WC()->customer, "set_shipping_".$key)) {
-                WC()->customer->{"set_shipping_".$key}($value);   
-            }
-        }
-        foreach($billing_address as $key => $value) {
-            if(method_exists(WC()->customer, "set_billing_".$key)) {
-                WC()->customer->{"set_billing_".$key}($value);    
-            }
-        }
-
-        WC()->cart->calculate_shipping();
-        WC()->cart->calculate_totals(); 
-    }
-}
-
-
-function set_order_shipping_method_in_cart($order) {
-    $order_shipping_methods = $order->get_shipping_methods();
-    foreach ($order_shipping_methods as $key => $method) {
-        $id = $method->get_method_id() . ':' . $method->get_instance_id();
-        WC()->session->set('chosen_shipping_methods', array($id));
-        break;
-    }
-
-    WC()->cart->calculate_shipping();
-    WC()->cart->calculate_totals();
-}
-
-function get_order_coupon_codes($order) {
-	$coupon_codes = array();
-	$coupons      = $order->get_items( 'coupon' );
-
-	if ( $coupons ) {
-		foreach ( $coupons as $coupon ) {
-			$coupon_codes[] = $coupon->get_code();
-		}
-	}
-	return $coupon_codes;
-}
-
-function updateToSimplDraft($orderId) {
-    wp_update_post(array(
-        'ID'          => $orderId,
-        'post_status' => 'checkout-draft',
-    ));
-}
-
 
 class SimplWcEventHelper {
     static function publish_event($event_name, $event_data, $entity, $flow) {
