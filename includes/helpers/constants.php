@@ -1,10 +1,12 @@
 <?php
 
-define("PAYMENT_TYPE_COD", "Cash on Delivery (COD)");
-define("PAYMENT_METHOD_COD", "cod");
-define("PAYMENT_METHOD_TITLE_COD", "Cash on delivery");
+define("SIMPL_PAYMENT_TYPE_COD", "Cash on Delivery (COD)");
+define("SIMPL_PAYMENT_METHOD_COD", "cod");
+define("SIMPL_PAYMENT_METHOD_TITLE_COD", "Cash on delivery");
 
 define("SIMPL_PAYMENT_METHOD", "Simpl Checkout");
 define("SIMPL_PAYMENT_GATEWAY", "simplcheckout");
 
+define("SIMPL_PAYMENT_METHOD_WOO_WALLET", "wallet");
+define("SIMPL_PAYMENT_TITLE_WOO_WALLET", "WALLET");
 ?>

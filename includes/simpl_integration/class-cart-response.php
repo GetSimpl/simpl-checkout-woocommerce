@@ -188,15 +188,13 @@ class SimplCartResponse {
                 if( !SimplWcCartHelper::is_customer_guest(get_current_user_id()) ) {
 
                     array_push($applied_discounts, array(
-                        "code" => $fee_id, //TODO: Change the coupon code generated for Tera Wallet
+                        "code" => 'Store Credit', //$fee_id, //coupon code generated for Tera Wallet
                         "amount" => wc_format_decimal($fee->amount * -1, 2),
                         "free_shipping" => false,
                         "type" => "auto"
                     ));
 
                     //Need not update the total as store credit is already applied on cart as fee
-                    // $cart_payload["total_discount"] += $woo_wallet_discount;
-                    // $cart_payload["total_price"] -= $woo_wallet_discount;
                 }
             }
         }
@@ -207,7 +205,7 @@ class SimplCartResponse {
             if ( function_exists( 'is_full_payment_through_wallet' ) && is_full_payment_through_wallet() ) {            
 
                 array_push($applied_discounts, array(  
-                    "code" => '_via_wallet_partial_payment', //TODO: Change the coupon code generated for Tera Wallet
+                    "code" => 'Store Credit', //'_via_wallet_partial_payment', //coupon code generated for Tera Wallet
                     "amount" => $cart_payload["total_price"],
                     "free_shipping" => false,
                     "type" => "auto"

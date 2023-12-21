@@ -15,13 +15,13 @@ class SimplCheckoutShippingController {
             $si = new SimplCartResponse();
             return $si->cart_payload(WC()->cart, $order);
         } catch (SimplCustomHttpBadRequest $fe) {
-            //TODO: Logger
+            get_simpl_logger()->error(print_r($fe, true));
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
-            //TODO: Logger
+            get_simpl_logger()->error(print_r($fe, true));
 	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
-            //TODO: Logger
+            get_simpl_logger()->error(print_r($fe, true));
 	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in setting shipping method'), 500);
         }
     }

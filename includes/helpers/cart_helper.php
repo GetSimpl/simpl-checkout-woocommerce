@@ -28,7 +28,6 @@ function simpl_before_woocommerce_init() {
 	}
 
 	if($wc_session_cookie) {
-//		$wc_session_cookie = 't_31cf15af529f2fe68705daa75752b1||1702920565||1702916965||7a8dec728ea641e0dc9bb6a77fc7cf6e';
 		simpl_set_cookie($wc_session_cookie);
 	}
 }

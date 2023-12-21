@@ -84,7 +84,7 @@ function simpl_init_gateway_class()
             //This is required. Store credit is debited on this action
             do_action( 'woocommerce_checkout_order_processed', $order_id, array(), $order );
             
-            if( $order->get_payment_method("edit") == PAYMENT_METHOD_COD ) {
+            if( $order->get_payment_method("edit") == SIMPL_PAYMENT_METHOD_COD ) {
                 $order->update_status('processing');
                 
                 // Need to do the following specifically for COD. These are done by the payment_complete method for other modes.

@@ -1,6 +1,7 @@
 <?php
 
 class SimplCheckoutCartControllerV2 {
+    
     function create(WP_REST_Request $request) {
         wc_clear_notices();
 
@@ -48,6 +49,7 @@ class SimplCheckoutCartControllerV2 {
 
             return array('redirection_url'=>$redirection_url);
         } catch (Exception $fe) {
+            get_simpl_logger()->error(print_r($fe, true));
             return new WP_REST_Response(array(
                 "code" => SIMPL_HTTP_ERROR_CART_CREATE, 
                 "message" => 'error in creating checkout'), 

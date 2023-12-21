@@ -44,7 +44,7 @@ class SimplWcCartHelper {
     }
 
     static function simpl_set_address_in_cart($shipping_address, $billing_address) {
-		//TODO: If the customer is pre-logged-in, we must just fill the shipping. Billing must come from profile
+		
         $shipping_address = self::simpl_convert_address_payload($shipping_address);
         $billing_address = self::simpl_convert_address_payload($billing_address);  
     
@@ -76,14 +76,13 @@ class SimplWcCartHelper {
 
         //To support Tera Wallet - If the order is getting paid by wallet entirely - wallet is the payment method
         //Bail for guest user
-        //TODO: Check if we must use is_customer_guest or is_user_logged_in. To be handled at 2 places if modified.
         if ( !SimplWcCartHelper::is_customer_guest(get_current_user_id()) && function_exists( 'is_full_payment_through_wallet' ) && is_full_payment_through_wallet() ) {
-            $order->set_payment_method("wallet"); //TODO: Remove hardcoding
-            $order->set_payment_method_title("WALLET"); //TODO: Remove hardcoding
+            $order->set_payment_method(SIMPL_PAYMENT_METHOD_WOO_WALLET); //TODO: Remove hardcoding
+            $order->set_payment_method_title(SIMPL_PAYMENT_TITLE_WOO_WALLET); //TODO: Remove hardcoding
             //Transaction id has to be blank for the debit to happen. It is put by Tera Wallet
-        } elseif ($request->get_params()["simpl_payment_type"] == PAYMENT_TYPE_COD) {
-            $order->set_payment_method(PAYMENT_METHOD_COD);
-            $order->set_payment_method_title(PAYMENT_METHOD_TITLE_COD);
+        } elseif ($request->get_params()["simpl_payment_type"] == SIMPL_PAYMENT_TYPE_COD) {
+            $order->set_payment_method(SIMPL_PAYMENT_METHOD_COD);
+            $order->set_payment_method_title(SIMPL_PAYMENT_METHOD_TITLE_COD);
             $order->set_transaction_id($request->get_params()["simpl_order_id"]);
         } else {
             $order->set_payment_method(SIMPL_PAYMENT_GATEWAY);
