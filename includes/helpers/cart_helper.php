@@ -69,11 +69,11 @@ function simpl_set_cookie($wc_session_cookie) {
 		
 		$customer_id = explode("||", $wc_session_cookie)[0];		
 
-		//Login to Wordpress for WooCommerce login user.
-		$user = get_user_by('id', $customer_id );
-	    do_action( 'wp_login', $user->user_login, $user );
-		
 		if( !SimplWcCartHelper::is_customer_guest( $customer_id ) ) {
+			//Login to Wordpress for WooCommerce login user.
+			$user = get_user_by('id', $customer_id );
+			do_action( 'wp_login', $user->user_login, $user );
+			
 			wp_set_current_user ( $customer_id );
 		}
 		

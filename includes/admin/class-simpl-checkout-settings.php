@@ -76,32 +76,32 @@ class WC_Simpl_Settings {
 	public static function get_widget_url_based_on_url() {
 		switch ( self::store_url() ) {
 			case SIMPL_SANDBOX_STORE_URL:
-				return WIDGET_SCRIPT_SANDBOX_URL;
+				return SIMPL_WIDGET_SCRIPT_SANDBOX_URL;
 			case SIMPL_QA_STORE_URL:
-				return WIDGET_SCRIPT_QA_URL;
+				return SIMPL_WIDGET_SCRIPT_QA_URL;
 			case SIMPL_STAGING_STORE_URL:
-				return WIDGET_SCRIPT_STAGING_URL;
+				return SIMPL_WIDGET_SCRIPT_STAGING_URL;
 			default:
-				return WIDGET_SCRIPT_SANDBOX_URL;;
+				return SIMPL_WIDGET_SCRIPT_SANDBOX_URL;;
 		}
 	}
 
 	public static function widget_script_url() {
-		if ( SIMPL_ENV == "localhost" ) {
-			return WIDGET_SCRIPT_LOCALHOST;
-		}
+		// if ( SIMPL_ENV == "localhost" ) {
+		// 	return SIMPL_WIDGET_SCRIPT_LOCALHOST;
+		// }
 		$test_env = get_option( "wc_settings_tab_simpl_test_env" );
 		if ( $test_env == "yes" ) {
 
 			return self::get_widget_url_based_on_url();
 		}
 
-		return WIDGET_SCRIPT_PRODUCTION_URL;
+		return SIMPL_WIDGET_SCRIPT_PRODUCTION_URL;
 	}
 
-	public static function is_localhost() {
-		return SIMPL_ENV == "localhost";
-	}
+	// public static function is_localhost() {
+	// 	return SIMPL_ENV == "localhost";
+	// }
 
 	public static function simpl_authorized_flag_key() {
 		$staging_env = get_option( "wc_settings_tab_simpl_test_env" );

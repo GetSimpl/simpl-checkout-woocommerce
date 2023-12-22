@@ -93,9 +93,9 @@ class SimplCheckoutController {
 
 function internal_authenticate() {
 
-    if (WC_Simpl_Settings::is_localhost()) {
-        return true;
-    }
+    // if (WC_Simpl_Settings::is_localhost()) {
+    //     return true;
+    // }
 
     $api = new WC_REST_Authentication();
     $authenticated = $api->authenticate("");

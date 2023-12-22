@@ -2,30 +2,61 @@
 /**
  * Plugin Name: Simpl Checkout
  * Plugin URI: http://www.getsimpl.com
- * Description: Simpl checkout offers an optimised checkout process, higher order conversions and RTO reduction. We offer Simpl Pay Later, Pay-in-3, UPI, Cards, and COD for seamless transactions while you focus on growing your business.
- * Author:  One Sigma Technologies Pvt. Ltd.
+ * 
+ * Description: Simpl checkout offers an optimised checkout process, higher order conversions and RTO reduction.
+ * We offer Simpl Pay Later, Pay-in-3, UPI, Cards, and COD for seamless transactions while you focus on growing your business.
+ * 
+ * Author:  Bill Sigma Technologies Pvt. Ltd.
  * Author URI: http://www.getsimpl.com
+ * 
  * Version: 2.0.1
  */
 add_action('plugins_loaded', 'simpl_checkout_int', 0);
 
 function simpl_checkout_int() {
 
-    if (!class_exists('WC_Payment_Gateway'))
-    {
+    if (!class_exists('WC_Payment_Gateway')) {
         return;
     }
+
+    include_once 'includes/admin/load.php';
+    if( ! function_exists('get_plugin_data') ){
+        require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+    }
+    $plugin_data = get_plugin_data( __FILE__ );
+    $plugin_version = $plugin_data['Version'];
+    if (!defined('SIMPL_PLUGIN_VERSION')) {
+        define('SIMPL_PLUGIN_VERSION', $plugin_version);    
+    }
+
     define('SIMPL_PLUGIN_DIR', plugin_dir_path( __FILE__ ));
     define("SIMPL_ENV", getenv("SIMPL_ENV"));
     define("SIMPL_PRE_QA_QUERY_PARAM_KEY", "simpl-qa");
     define("SIMPL_PRE_QA_QUERY_PARAM_VALUE", "ce50e3b0-641b-4b26-8bbb-8a240f03811b");
-    define('WIDGET_SCRIPT_LOCALHOST', 'http://localhost:4300/');
+    // define('SIMPL_WIDGET_SCRIPT_LOCALHOST', 'http://localhost:4300/');
     define("SIMPL_ORDER_STATUS_CHECKOUT", "checkout-draft");
-    define("SIMPL_ORDER_METADATA", "is_simpl_checkout_order");
-    define('WIDGET_SCRIPT_STAGING_URL', 'https://s3.ap-southeast-1.amazonaws.com/staging-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
-    define('WIDGET_SCRIPT_SANDBOX_URL', 'https://s3.ap-southeast-1.amazonaws.com/sandbox-cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
-    define('WIDGET_SCRIPT_QA_URL', 'https://s3.ap-south-1.amazonaws.com/qa-cdn.stagingsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
-    define('WIDGET_SCRIPT_PRODUCTION_URL', 'https://cdn.getsimpl.com/widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife.js');
+    define("SIMPL_ORDER_METADATA", "is_simpl_checkout_order");    
+
+    $https = 'https://';
+    $widget_script = 'widget-script-v2/woocommerce/simpl-checkout-woocommerce-widget.iife';
+    $js = '.js';
+    $staging_base_url = 's3.ap-southeast-1.amazonaws.com/staging-cdn.getsimpl.com/';
+    $sandbox_base_url = 's3.ap-southeast-1.amazonaws.com/sandbox-cdn.getsimpl.com/';
+    $qa_base_url = 's3.ap-south-1.amazonaws.com/qa-cdn.stagingsimpl.com/';
+    $production_base_url = 'cdn.getsimpl.com/';
+    
+    $widget_script_staging_url = $https.$staging_base_url.$widget_script.$js;
+    define('SIMPL_WIDGET_SCRIPT_STAGING_URL', $widget_script_staging_url);
+
+    $widget_script_sandbox_url = $https.$sandbox_base_url.$widget_script.$js;
+    define('SIMPL_WIDGET_SCRIPT_SANDBOX_URL', $widget_script_sandbox_url);
+
+    $widget_script_qa_url = $https.$qa_base_url.$widget_script.$js;
+    define('SIMPL_WIDGET_SCRIPT_QA_URL', $widget_script_qa_url);
+
+    $widget_script_production_url = $https.$production_base_url.$widget_script.$js;
+    define('SIMPL_WIDGET_SCRIPT_PRODUCTION_URL', $widget_script_production_url);
+    
     define('SIMPL_WIDGET_SESSION_HEADER', 'simpl-widget-session-token');
 
     // Defined error CODE for API
