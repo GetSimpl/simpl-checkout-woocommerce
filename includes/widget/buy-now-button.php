@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 $buttonPosition_pdp = WC_Simpl_Settings::cta_position_in_pdp();
 $buttonPosition_cart = WC_Simpl_Settings::cta_position_in_cart();
 if(WC_Simpl_Settings::can_display_in_pdp_page()){
@@ -19,7 +20,7 @@ add_action('wp_footer', 'load_widget_script');
 
 function simpl_add_to_cart_btn(){
   $queries = array();
-  parse_str($_SERVER['QUERY_STRING'], $queries);
+  parse_str( sanitize_title_for_query( $_SERVER['QUERY_STRING'] ), $queries );
   $simpl_pre_qa_env = (isset($queries[SIMPL_PRE_QA_QUERY_PARAM_KEY]) && $queries[SIMPL_PRE_QA_QUERY_PARAM_KEY] == SIMPL_PRE_QA_QUERY_PARAM_VALUE);
   $enabled_only_for_admin = WC_Simpl_Settings::is_simpl_enabled_for_admins() && current_user_can('manage_woocommerce');  
   if(WC_Simpl_Settings::is_simpl_button_enabled() || $enabled_only_for_admin || $simpl_pre_qa_env) {
@@ -35,7 +36,7 @@ function simpl_add_to_cart_btn(){
         $page = 'product';
     }
 
-    echo '<div class="simpl-checkout-cta-container simpl-button-container" data-background="' . $color . '" page=' . $page . ' data-product-id=' . $productID . ' data-text="' . $buttonText . '"></div>';
+    echo '<div class="simpl-checkout-cta-container simpl-button-container" data-background="' . esc_attr($color) . '" page=' . esc_attr($page) . ' data-product-id=' . esc_attr($productID) . ' data-text="' . esc_attr($buttonText) . '"></div>';
   }
 }
 

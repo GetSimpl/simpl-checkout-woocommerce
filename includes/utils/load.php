@@ -1,9 +1,11 @@
 <?php
 
-class SimplUtil
-{
-    static function state_code_for_state($state_name)
-    {
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+class SimplUtil {
+
+    static function state_code_for_state($state_name) {
+        
         $supported_states = array();
 
         $states = WC()->countries->get_states("IN");

@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 class SimplCheckoutCartController {
     function create(WP_REST_Request $request) {
         if (isset($request->get_params()["is_pdp"]) && $request->get_params()["is_pdp"]) {
@@ -35,7 +37,9 @@ class SimplCheckoutCartController {
 
             return array('redirection_url'=>$redirection_url);
         } catch (Exception $fe) {
-            get_simpl_logger()->error(print_r($fe, true));
+            
+            simpl_get_logger()->error(wc_print_r($fe, true));
+
             return new WP_REST_Response(array(
                 "code" => SIMPL_HTTP_ERROR_CART_CREATE, 
                 "message" => 'error in creating checkout'), 

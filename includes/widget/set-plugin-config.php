@@ -1,13 +1,16 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 add_action( 'wp_head', 'simpl_set_plugin_config');
 
 function simpl_is_cta_enabled() {
 	$queries = array();
-  parse_str($_SERVER['QUERY_STRING'], $queries);
-  $is_simpl_pre_qa_env = (isset($queries[SIMPL_PRE_QA_QUERY_PARAM_KEY]) && $queries[SIMPL_PRE_QA_QUERY_PARAM_KEY] == SIMPL_PRE_QA_QUERY_PARAM_VALUE);
-  $is_simpl_enabled_for_admin = WC_Simpl_Settings::is_simpl_enabled_for_admins() && current_user_can('manage_woocommerce');  
+	parse_str($_SERVER['QUERY_STRING'], $queries);
+	$is_simpl_pre_qa_env = (isset($queries[SIMPL_PRE_QA_QUERY_PARAM_KEY]) && $queries[SIMPL_PRE_QA_QUERY_PARAM_KEY] == SIMPL_PRE_QA_QUERY_PARAM_VALUE);
+	$is_simpl_enabled_for_admin = WC_Simpl_Settings::is_simpl_enabled_for_admins() && current_user_can('manage_woocommerce');  
 
-  $is_simpl_cta_enabled = WC_Simpl_Settings::is_simpl_button_enabled() || $is_simpl_enabled_for_admin || $is_simpl_pre_qa_env;
+	$is_simpl_cta_enabled = WC_Simpl_Settings::is_simpl_button_enabled() || $is_simpl_enabled_for_admin || $is_simpl_pre_qa_env;
 
 	return $is_simpl_cta_enabled;
 }

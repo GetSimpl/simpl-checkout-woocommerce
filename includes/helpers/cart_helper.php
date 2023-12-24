@@ -1,4 +1,6 @@
-<?php   
+<?php
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 add_action( 'before_woocommerce_init', 'simpl_before_woocommerce_init', 5 );
 add_filter( 'woocommerce_is_rest_api_request', 'simpl_is_woocommerce_rest_api_request');
@@ -37,12 +39,12 @@ function simpl_before_woocommerce_init() {
 function simpl_is_woocommerce_rest_api_request($is_rest_api_request, $simpl_response = false) {
 	
 	if ( version_compare( WC_VERSION, '3.6.0', '>=' ) ) {
-		if ( empty( $_SERVER['REQUEST_URI'] ) ) {
+		if ( empty( sanitize_url( $_SERVER['REQUEST_URI'] ) ) ) {
 			return $is_rest_api_request;
 		}
 
 		$rest_prefix = 'simpl/';
-		$req_uri     = esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+		$req_uri     = esc_url_raw( wp_unslash( sanitize_url( $_SERVER['REQUEST_URI'] ) ) );
 
 		$is_my_endpoint = ( false !== strpos( $req_uri, $rest_prefix ) );
 
@@ -69,7 +71,7 @@ function simpl_set_cookie($wc_session_cookie) {
 		
 		$customer_id = explode("||", $wc_session_cookie)[0];		
 
-		if( !SimplWcCartHelper::is_customer_guest( $customer_id ) ) {
+		if( !SimplWcCartHelper::simpl_is_customer_guest( $customer_id ) ) {
 			//Login to Wordpress for WooCommerce login user.
 			$user = get_user_by('id', $customer_id );
 			do_action( 'wp_login', $user->user_login, $user );

@@ -1,12 +1,10 @@
 <?php
 
-function simpl_init_gateway_class()
-{
-    if ( ! defined( 'ABSPATH' ) ) {
-        exit; // Exit if accessed directly.
-    }
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+function simpl_init_gateway_class() {
     
-    class WC_Simpl_Gateway extends WC_Payment_Gateway {
+    class Simpl_WC_Gateway extends WC_Payment_Gateway {
 
         public function __construct() {
             $this->id                 = SIMPL_PAYMENT_GATEWAY;
@@ -110,6 +108,6 @@ function simpl_init_gateway_class()
  * Add the Gateway to WooCommerce
  **/
 function simpl_add_gateway_class($methods) {
-    $methods[] = 'WC_Simpl_Gateway';
+    $methods[] = 'Simpl_WC_Gateway';
     return $methods;
 }

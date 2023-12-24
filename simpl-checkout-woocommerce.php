@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 /**
  * Plugin Name: Simpl Checkout
  * Plugin URI: http://www.getsimpl.com
@@ -83,7 +86,7 @@ function simpl_checkout_int() {
     add_action( 'plugins_loaded', 'simpl_init_gateway_class' );
     
     // initiating logger instance
-    $logger = get_simpl_logger();
+    $logger = simpl_get_logger();
 }
 
 // registering hooks as soon as the plugin starts so that we are able listen to the data as soon as plugin installed

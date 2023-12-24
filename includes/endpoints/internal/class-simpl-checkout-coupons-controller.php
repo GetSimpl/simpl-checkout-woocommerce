@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 class SimplCheckoutCouponController {
     function apply(WP_REST_Request $request)
     {
@@ -15,18 +17,19 @@ class SimplCheckoutCouponController {
             // We first need to apply coupon on cart - to ensure coupon applicability
             $status = WC()->cart->apply_coupon($coupon_code);
 
+            //TODO: Find a way to check if coupon was applied. If not, we don't have to update the order
             $order = SimplWcCartHelper::simpl_update_order_from_cart($order);
 
             $si = new SimplCartResponse();
             return $si->cart_payload(WC()->cart, $order);
         } catch (SimplCustomHttpBadRequest $fe) {
-            get_simpl_logger()->error(print_r($fe, true));
+            simpl_get_logger()->error(wc_print_r($fe, true));
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
-            get_simpl_logger()->error(print_r($fe, true));
+            simpl_get_logger()->error(wc_print_r($fe, true));
 	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
-            get_simpl_logger()->error(print_r($fe, true));
+            simpl_get_logger()->error(wc_print_r($fe, true));
 	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in applying coupon'), 500);
         }
     }
@@ -49,13 +52,13 @@ class SimplCheckoutCouponController {
             $si = new SimplCartResponse();
             return $si->cart_payload(WC()->cart, $order);
         } catch (SimplCustomHttpBadRequest $fe) {
-            get_simpl_logger()->error(print_r($fe, true));
+            simpl_get_logger()->error(wc_print_r($fe, true));
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
-            get_simpl_logger()->error(print_r($fe, true));
+            simpl_get_logger()->error(wc_print_r($fe, true));
 	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
-            get_simpl_logger()->error(print_r($fe, true));
+            simpl_get_logger()->error(wc_print_r($fe, true));
 	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in removing coupon'), 500);
         }
     }
@@ -80,13 +83,13 @@ class SimplCheckoutCouponController {
             $si = new SimplCartResponse();
             return $si->cart_payload(WC()->cart, $order);
         } catch (SimplCustomHttpBadRequest $fe) {
-            get_simpl_logger()->error(print_r($fe, true));
+            simpl_get_logger()->error(wc_print_r($fe, true));
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
         } catch (Exception $fe) {
-            get_simpl_logger()->error(print_r($fe, true));
+            simpl_get_logger()->error(wc_print_r($fe, true));
 	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => $fe->getMessage()), 500);
         } catch (Error $fe) {
-            get_simpl_logger()->error(print_r($fe, true));
+            simpl_get_logger()->error(wc_print_r($fe, true));
 	        return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_USER_NOTICE, "message" => 'error in removing coupons'), 500);
         }
     }

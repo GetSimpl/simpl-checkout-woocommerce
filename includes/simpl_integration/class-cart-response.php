@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 const DEFAULT_WC_ORDER_FIELDS = ["key", "product_id", "variation_id", "variation", "quantity", "data", "data_hash", "line_tax_data", "line_subtotal", "line_subtotal_tax", "line_total", "line_tax"];
 
 const HEADER_USER_AGENT = "User-Agent";
@@ -141,6 +143,7 @@ class SimplCartResponse {
         $response["total_price"] = wc_format_decimal($order->get_total(), 2);
         $response["items"] = $this->getOrderLineItem($order);
         $response["taxes"] = $order->get_tax_totals();
+        $response["fees"] = $order->get_fees();
         $response["shipping_address"] = $this->convert_address_response($order->get_address('shipping'));
         $response["billing_address"] = $this->convert_address_response($order->get_address('billing'));
         $response["applied_discounts"] = $this->formatted_order_coupons($order);
@@ -185,7 +188,7 @@ class SimplCartResponse {
 
             if ( '_via_wallet_partial_payment' == $fee_id ) {
                 // Bail for guest users
-                if( !SimplWcCartHelper::is_customer_guest(get_current_user_id()) ) {
+                if( !SimplWcCartHelper::simpl_is_customer_guest(get_current_user_id()) ) {
 
                     array_push($applied_discounts, array(
                         "code" => 'Store Credit', //$fee_id, //coupon code generated for Tera Wallet
@@ -201,7 +204,7 @@ class SimplCartResponse {
 
         // Add Tera Wallet Store credit (if applicable) - full payment
         // Bail for guest users
-        if( !SimplWcCartHelper::is_customer_guest(get_current_user_id()) ) {
+        if( !SimplWcCartHelper::simpl_is_customer_guest(get_current_user_id()) ) {
             if ( function_exists( 'is_full_payment_through_wallet' ) && is_full_payment_through_wallet() ) {            
 
                 array_push($applied_discounts, array(  

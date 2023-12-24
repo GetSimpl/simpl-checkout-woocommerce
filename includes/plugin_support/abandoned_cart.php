@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 //cart flow is third party plugin
 add_action("simpl_abandoned_cart", "cart_flows_abandoned_cart", 10, 2);
 function cart_flows_abandoned_cart($cart, $simpl_checkout_data)
@@ -102,6 +104,3 @@ function cart_flows_abandoned_cart($cart, $simpl_checkout_data)
 
     return $response;
 }
-
-
-?>

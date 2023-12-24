@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 define('CHECKOUT_TOKEN_EXPIRY', 3 * 24 * 60 * 60);
 define('SYNC_ORDER_ACTION_TEXT', 'Sync Order - Simpl Checkout');
 
@@ -9,8 +11,7 @@ function init_wc_session() {
     WC()->session->init();
 }
 
-function order_refunded_hook($order_id)
-{
+function order_refunded_hook($order_id) {
     $order = wc_get_order($order_id);
 
     if (!$order->meta_exists('simpl_order_id')) {
@@ -28,8 +29,7 @@ function order_refunded_hook($order_id)
     try {
         $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
     } catch (\Throwable $th) { 
-        $logger = get_simpl_logger();
-        $logger->error(print_r($th, TRUE));
+        simpl_get_logger()->error("error in order_refunded_hook ". wc_print_r($th, TRUE));
     }
 
     if (!simpl_is_success_response($simplHttpResponse)) {
@@ -37,8 +37,7 @@ function order_refunded_hook($order_id)
     }
 }
 
-function order_cancelled_hook($order_id)
-{
+function order_cancelled_hook($order_id) {
     $order = wc_get_order($order_id);
 
     if (!$order->meta_exists('simpl_order_id')) {
@@ -55,8 +54,8 @@ function order_cancelled_hook($order_id)
     $checkout_3pp_client = new SimplCheckout3ppClient();
     try {
         $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
-    } catch (\Throwable $th) { 
-        error_log(print_r($th, TRUE)); 
+    } catch (\Throwable $th) {
+        simpl_get_logger()->error("error in order_cancelled_hook ". wc_print_r($th, TRUE));
     }
 
     if (!simpl_is_success_response($simplHttpResponse)) {
@@ -64,8 +63,7 @@ function order_cancelled_hook($order_id)
     }
 }
 
-function order_created_hook($order_id, $order)
-{
+function order_created_hook($order_id, $order) {
     if (WC()->session == null) {
         init_wc_session();
     }
@@ -81,16 +79,14 @@ function order_created_hook($order_id, $order)
     try {
         $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
     } catch (\Throwable $th) {
-        $logger = get_simpl_logger();
-        $logger->error("error while processing order_created_hook ".print_r($th, TRUE));
+        simpl_get_logger()->error("error while processing order_created_hook ". wc_print_r($th, TRUE));
     }
 
     // unset checkout_token when order is created
     WC()->session->__unset('checkout_token');
 }
 
-function checkout_update_order_hook($posted_data)
-{
+function checkout_update_order_hook($posted_data) {
     // unsetting checkout_token if it is expired
     unset_checkout_token_if_expired();
 
@@ -111,7 +107,7 @@ function checkout_update_order_hook($posted_data)
     try {
         $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
     } catch (\Throwable $th) {
-        error_log(print_r($th, TRUE)); 
+        simpl_get_logger()->error("error in checkout_update_order_hook ". wc_print_r($th, TRUE));
     }
 }
 
@@ -122,11 +118,10 @@ function checkout_update_order_hook($posted_data)
  * @param array $actions order actions array to display
  * @return array - updated actions
  */
-function simpl_add_sync_order_action( $actions ) {
-	global $theorder;
+function simpl_add_sync_order_action( $actions, $order ) {
 
     // Only show the sync order action for Simpl orders
-    if('yes' == get_post_meta( $theorder->get_id(), SIMPL_ORDER_METADATA, true ) ) {
+    if('yes' == get_post_meta( $order->get_id(), SIMPL_ORDER_METADATA, true ) ) {
         $actions['simpl_sync_order'] = SYNC_ORDER_ACTION_TEXT;   
     }
     return $actions;
@@ -148,7 +143,7 @@ function simpl_sync_order_hook( $order ) {
     try {
         $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
     } catch (\Throwable $th) { 
-        error_log(print_r($th, TRUE));
+        simpl_get_logger()->error("error in simpl_sync_order_hook ". wc_print_r($th, TRUE));
     }
 
     // add the order sync note to order

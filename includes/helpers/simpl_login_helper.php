@@ -1,4 +1,6 @@
-<?php   
+<?php
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 add_action( 'template_redirect', 'simpl_force_login' );
 

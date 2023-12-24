@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 add_action('rest_api_init', function () {
   register_rest_route('simpl/v1', '/cart', array(
     'methods' => 'POST',

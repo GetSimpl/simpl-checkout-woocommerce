@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 function plugin_status_hook($plugin_status) {
     $request["topic"] = "plugin.status_updated";
     $request["resource"] = "plugin";
@@ -11,7 +14,7 @@ function plugin_status_hook($plugin_status) {
     try {
         $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
     } catch (\Throwable $th) { 
-        $logger->error(print_r($th, TRUE));
+        $logger->error(wc_print_r($th, TRUE));
     }
 }
 

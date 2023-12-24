@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 class SimplRequestValidator {
     static function validate_checkout_order_id($request) {
         $order_id = $request->get_params()["checkout_order_id"];    
@@ -93,4 +95,3 @@ class SimplRequestValidator {
         }
     }
 }
-

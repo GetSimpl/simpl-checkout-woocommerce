@@ -1,12 +1,12 @@
 === Simpl Checkout ===
-Contributors: 1sigma
+Contributors: getsimpl
 Tags: woocommerce,simpl,ecommerce,e-commerce,checkout,buy-now-pay-later,payments,india
 Requires at least: 5.8
 Tested up to: 6.4.2
 Stable tag: 2.0.1
 Requires PHP: 7.0
 WC requires at least: 7.0
-WC tested up to: 8.2
+WC tested up to: 8.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 

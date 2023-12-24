@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 include_once 'plugin-status-hook-handler.php';
 
 // Simpl plugin activate/de-activate hooks

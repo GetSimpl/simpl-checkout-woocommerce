@@ -1,7 +1,11 @@
-<?php        
+<?php
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 use Automattic\WooCommerce\StoreApi\Utilities\OrderController;
 const SIMPL_EXCLUSIVE_DISCOUNT = 'simpl_exclusive';
+const INTERNAL_COD_FEE = 'internal_cod_fee';
+const SIMPL_SURE = 'simpl_sure';
 
 class SimplWcCartHelper {
 
@@ -76,7 +80,7 @@ class SimplWcCartHelper {
 
         //To support Tera Wallet - If the order is getting paid by wallet entirely - wallet is the payment method
         //Bail for guest user
-        if ( !SimplWcCartHelper::is_customer_guest(get_current_user_id()) && function_exists( 'is_full_payment_through_wallet' ) && is_full_payment_through_wallet() ) {
+        if ( !SimplWcCartHelper::simpl_is_customer_guest(get_current_user_id()) && function_exists( 'is_full_payment_through_wallet' ) && is_full_payment_through_wallet() ) {
             $order->set_payment_method(SIMPL_PAYMENT_METHOD_WOO_WALLET); //TODO: Remove hardcoding
             $order->set_payment_method_title(SIMPL_PAYMENT_TITLE_WOO_WALLET); //TODO: Remove hardcoding
             //Transaction id has to be blank for the debit to happen. It is put by Tera Wallet
@@ -127,7 +131,7 @@ class SimplWcCartHelper {
         return  $address;
     }
 
-    static function is_customer_guest($customer_id) {
+    static function simpl_is_customer_guest($customer_id) {
         $customer_id = strval( $customer_id );
 
         if ( empty( $customer_id ) ) {
@@ -184,23 +188,32 @@ class SimplWcCartHelper {
             $coupon->set_name(SIMPL_EXCLUSIVE_DISCOUNT);
             $coupon->set_code(SIMPL_EXCLUSIVE_DISCOUNT);
             $order->add_item($coupon);
-			$order->set_total($order->get_total('edit') - $sed);			
+			
+            //$order->calculate_totals(); Calculating totals on order adds tax on store credits
+            //Hence we update the total manually
+            $order->set_total($order->get_total('edit') - $sed);            
         }
     }
 
-    //For COD Charges
+    //For COD Charges & Simpl Sure. Rest may have already been applied to order via cart
     static function simpl_set_fee_to_order($request, $order) {
         $fees = $request['fees'];
         if (!$fees) return;
 
-        foreach ($fees as $fee) {						
+        foreach ($fees as $fee) {
+            if ( $fee['type'] != INTERNAL_COD_FEE && $fee['type'] != SIMPL_SURE) continue;
+            
+            $additional_fee = wc_format_decimal($fee['amount'], 2);
             $item_fee = new WC_Order_Item_Fee();
             $item_fee->set_name($fee['name']);
-            $item_fee->set_amount( wc_format_decimal($fee['amount']) );
-            $item_fee->set_total( wc_format_decimal($fee['amount']) );
+            $item_fee->set_amount( $additional_fee );
+            $item_fee->set_total( $additional_fee );
             $item_fee->set_tax_status( 'none' ); // since not taxable
             $order->add_item($item_fee);
-            $order->calculate_totals();
+            
+            //$order->calculate_totals(); Calculating totals on order adds tax on store credits
+            //Hence we update the total manually
+            $order->set_total($order->get_total('edit') + $additional_fee);
         }
     }
 
@@ -268,34 +281,6 @@ function simpl_is_auto_applied_coupon($order, $coupon) {
     if ($order && $order->meta_exists('_simpl_auto_applied_coupons')) {
         $auto_applied_coupons = $order->get_meta('_simpl_auto_applied_coupons');
         return in_array($coupon->get_code(), $auto_applied_coupons);
-    }
-    return false;
-}
-
-class SimplWcEventHelper {
-    static function publish_event($event_name, $event_data, $entity, $flow) {
-        $simpl_host = WC_Simpl_Settings::simpl_host();
-        $event_payload = array(
-            "trigger_timestamp" => time(),
-            "event_name" => $event_name,
-            "event_data" => $event_data,
-            "entity" =>  $entity,
-            "flow" => $flow
-        );
-        $simplHttpResponse = wp_remote_post("https://".$simpl_host."/api/v1/wc/publish/events", array(
-            "body" => json_encode($event_payload),
-            "headers" => array(            
-                    "content-type" => "application/json"
-                ),
-        )); 
-        return $simplHttpResponse;
-    }
-}
-
-// TODO: add a wrapper instead of a helper function
-function simpl_is_success_response($simplHTTPResponse) {
-    if (isset($simplHTTPResponse) && $simplHTTPResponse["response"]["code"] == 200) {
-        return true;
     }
     return false;
 }

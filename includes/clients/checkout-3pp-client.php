@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 const SIMPL_SESSION_HEADER_KEY = 'simpl-widget-session-token';
 
 const GET_MASTER_CONFIG_PATH = 'https://%s/api/v1/wc/widget/master-config?shop=%s';

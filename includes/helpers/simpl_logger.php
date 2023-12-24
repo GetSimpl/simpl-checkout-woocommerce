@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 /**
  * Log a message if debug mode is enabled.
  *
@@ -12,6 +14,7 @@
 const SIMPL_LOG_NAME = 'simpl-logs';
 
 class Simpl_Logger {
+    
     private static $instance;
     
     /**
@@ -90,7 +93,7 @@ class Simpl_Logger {
     }
 }
 
-function get_simpl_logger() {
+function simpl_get_logger() {
     $simpl_logger = Simpl_Logger::get_instance();
     return $simpl_logger;
 }
