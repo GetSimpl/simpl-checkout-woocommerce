@@ -272,7 +272,7 @@ class SimplWcCartHelper {
 
     static function simpl_add_order_token_to_cache($order_id, $cart_session_token) {
         // now set these session_cookies to cache against our cart_session_token
-        set_transient($order_id, $cart_session_token, 1 * HOUR_IN_SECONDS);
+        set_transient('simpl_'.$order_id, $cart_session_token, 1 * HOUR_IN_SECONDS);
     }
 }
 

@@ -101,6 +101,8 @@ function internal_authenticate() {
 
     $api = new WC_REST_Authentication();
     $authenticated = $api->authenticate("");
+    
+    //This is not needed anymore since we are setting user cookies. If enabled, this would override the logged-in user.
     // wp_set_current_user(0);
 
     return $authenticated;

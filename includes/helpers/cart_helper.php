@@ -3,8 +3,25 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 add_action( 'before_woocommerce_init', 'simpl_before_woocommerce_init', 5 );
+add_action( 'woocommerce_init', 'simpl_woocommerce_init', 5 );
 add_filter( 'woocommerce_is_rest_api_request', 'simpl_is_woocommerce_rest_api_request');
 add_filter( 'woocommerce_rest_is_request_to_rest_api', 'simpl_is_woocommerce_rest_api_request');
+
+function simpl_woocommerce_init() {
+	
+	//Only for simpl request, bail otherwise
+	if ( !simpl_is_woocommerce_rest_api_request(false, true) ) {
+		return;
+	}
+	
+	//Add to cart action is hooked to wp_loaded and hence invoked automatically.
+	//Since this actions is triggered from PDP, we need to clear the cart. woocommerce_init precedes wp_loaded and hence this is the best hook for the same.
+	if ( isset( $_REQUEST['add-to-cart'] ) && is_numeric( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) {
+		//Clear any existing error messages to start afresh
+		wc_clear_notices();
+		WC()->cart->empty_cart();
+	}
+}
 
 //Load cookie for Simpl APIs
 function simpl_before_woocommerce_init() {
@@ -25,7 +42,12 @@ function simpl_before_woocommerce_init() {
 	} elseif (isset($data->checkout_order_id)) {
 	//For remaining, we'll pull cart token from order and subsequently cookie from token.
 		$order_id = $data->checkout_order_id;
-		$cart_session_token = get_transient($order_id);
+		$cart_session_token = get_transient('simpl_'.$order_id);
+		$wc_session_cookie = get_transient($cart_session_token);
+	} elseif ( isset( $_REQUEST['checkout_order_id'] ) ) {
+	//We get the params as part of REQUEST object for HTTP DELETE method - remove coupons
+		$order_id = $_REQUEST['checkout_order_id'];
+		$cart_session_token = get_transient('simpl_'.$order_id);
 		$wc_session_cookie = get_transient($cart_session_token);
 	}
 

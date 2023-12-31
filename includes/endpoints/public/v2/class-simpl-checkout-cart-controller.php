@@ -5,17 +5,20 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class SimplCheckoutCartControllerV2 {
     
     function create(WP_REST_Request $request) {
-        wc_clear_notices();
+        //Errors cleared in cart_helper as part of woocommerce_init. We need the errors generated post that to be rendered on PDP
+        // wc_clear_notices();
 
         foreach ( $request->get_params() as $key => $value ) {
             $_REQUEST[$key] = $value;
             $_POST[$key] = $value;
         }
 
-        if (isset($request->get_params()['add-to-cart'])) {
-            WC()->cart->empty_cart();
-            WC_Form_Handler::add_to_cart_action();
-        }
+        //Now since we are loading frontend, add-to-cart is invoked automatically for PDP
+        //class-wc-form-handler.php -> add_to_cart_action
+        // if (isset($request->get_params()['add-to-cart'])) {
+        //     WC()->cart->empty_cart();
+        //     WC_Form_Handler::add_to_cart_action();
+        // }
 
         $err = wc_get_notices('error');
         if (isset($err) && count($err) > 0) {
@@ -23,6 +26,9 @@ class SimplCheckoutCartControllerV2 {
             foreach ($err as $err_message) {
                 array_push($err_messages, strip_tags($err_message["notice"]));
             }
+
+            //Error messages to be handled by Simpl. Cleanup native message
+            wc_clear_notices();
             
             return new WP_REST_Response(array(
                 "success"=> false, 

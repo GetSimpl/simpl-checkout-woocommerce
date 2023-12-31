@@ -44,8 +44,8 @@ class SimplCheckout3ppClient {
     }
 
     function get_master_config(WP_REST_Request $request) {
-        // TODO: do this cache flushing through middleware
-        wp_cache_flush();
+        //We cannot flush the cache as that would clean the transients as well
+        // wp_cache_flush();
         $request_url = sprintf(GET_MASTER_CONFIG_PATH, $this->simpl_host, $this->store_url);
         $unique_device_id = '';
         if ($request->get_header(SIMPL_SESSION_HEADER_KEY)) {
