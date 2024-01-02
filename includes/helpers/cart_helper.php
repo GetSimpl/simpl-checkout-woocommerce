@@ -41,6 +41,9 @@ function maybe_load_cart() {
 				WC()->customer = new WC_Customer( get_current_user_id() );
 			} else {
 				WC()->customer = new WC_Customer( get_current_user_id(), true );
+				//Set state/country to default to render appropriate price (with tax) on iframe
+				WC()->customer->set_billing_address_to_base();
+				WC()->customer->set_shipping_address_to_base();
 			}
 
 			// Customer should be saved during shutdown.
@@ -61,8 +64,7 @@ function maybe_load_cart() {
 	}
 }
 
-function simpl_cart_init_common()
-{ 
+function simpl_cart_init_common() { 
     if (defined('WC_ABSPATH')) {
         // WC 3.6+ - Cart and other frontend functions are not included for REST requests.
         include_once WC_ABSPATH . 'includes/wc-cart-functions.php'; // nosemgrep: file-inclusion
@@ -76,7 +78,12 @@ function simpl_cart_init_common()
 	WC()->session->init();
 	// Avoid discount not applicable for Simpl
 	WC()->session->set('chosen_payment_method', SIMPL_PAYMENT_GATEWAY);
-	WC()->customer = new WC_Customer();        
+
+	WC()->customer = new WC_Customer();
+	//Set state/country to default to render appropriate price (with tax) on iframe
+	WC()->customer->set_billing_address_to_base();
+	WC()->customer->set_shipping_address_to_base();
+
 	WC()->cart = new WC_Cart();
 	WC()->cart->empty_cart();
 }
