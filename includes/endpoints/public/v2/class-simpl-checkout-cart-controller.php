@@ -8,17 +8,16 @@ class SimplCheckoutCartControllerV2 {
         //Errors cleared in cart_helper as part of woocommerce_init. We need the errors generated post that to be rendered on PDP
         // wc_clear_notices();
 
-        foreach ( $request->get_params() as $key => $value ) {
-            $_REQUEST[$key] = $value;
-            $_POST[$key] = $value;
-        }
-
         //Now since we are loading frontend, add-to-cart is invoked automatically for PDP
         //class-wc-form-handler.php -> add_to_cart_action
         // if (isset($request->get_params()['add-to-cart'])) {
         //     WC()->cart->empty_cart();
         //     WC_Form_Handler::add_to_cart_action();
         // }
+
+        if ( WC()->cart->is_empty() ) {
+			throw new Exception('Cannot proceed with an empty cart');
+		}
 
         $err = wc_get_notices('error');
         if (isset($err) && count($err) > 0) {
@@ -52,8 +51,25 @@ class SimplCheckoutCartControllerV2 {
             $wc_session_cookie_key = apply_filters( 'woocommerce_cookie', 'wp_woocommerce_session_' . COOKIEHASH );
             $wc_session_cookie = $_COOKIE[$wc_session_cookie_key];
 
+            // Cookie is not set until add_to_cart call is complete.
+			// Hence, we extract the cookie from headers
+			if(!$wc_session_cookie) {				
+				foreach(headers_list() as $header) {
+					if (stripos($header, $wc_session_cookie_key) !== false) {
+						$parsed_cookie = explode("=", $header)[1];
+						$parsed_cookie = explode(";", $parsed_cookie)[0];
+						$wc_session_cookie = urldecode($parsed_cookie);
+						break;
+					}
+				}
+			}
+
             // now set these session_cookies to cache against our cart_session_token
-            set_transient($cart_session_token, $wc_session_cookie, 1 * HOUR_IN_SECONDS);
+            if($wc_session_cookie) {
+            	set_transient($cart_session_token, $wc_session_cookie, 1 * HOUR_IN_SECONDS);
+			} else {
+				throw new Exception('Unable to fetch wc_session_cookie');
+			}
 
             return array('redirection_url'=>$redirection_url);
         } catch (Exception $fe) {
