@@ -116,6 +116,8 @@ class SimplCartResponse
             $discount_amount = $totals['discount_total'] + $totals['discount_tax'];
         }
         $cart_payload["total_discount"] = round($discount_amount, 2);
+        $cart_payload["total_fee"] = wc_format_decimal($cart->get_fee_total() + $cart->get_fee_tax(), 2);
+
         if (wc_prices_include_tax()) {
             $cart_payload['tax_included'] = true;
         } else {
@@ -127,6 +129,7 @@ class SimplCartResponse
         $cart_payload["checkout_url"] = wc_get_checkout_url();
         $cart_payload["shipping_methods"] = $this->get_shipping_methods($cart);
         $cart_payload["applied_shipping_method"] = $this->get_applied_shipping_method($cart);
+        $cart_payload["total_shipping"] = wc_format_decimal($cart->get_shipping_total() + $cart->get_shipping_tax(), 2);        
         $cart_content = $cart->get_cart();
         $cart_payload["items"] = $this->getCartLineItem($cart_content);
         $cart_payload['attributes'] = array();
@@ -143,6 +146,7 @@ class SimplCartResponse
         $response["items"] = $this->getOrderLineItem($order);
         $response["taxes"] = $order->get_tax_totals();
         $response["fees"] = $order->get_fees();
+		$response["total_fee"] = wc_format_decimal($order->get_total_fees(), 2);
         $response["shipping_address"] = $this->convert_address_response($order->get_address('shipping'));
         $response["billing_address"] = $this->convert_address_response($order->get_address('billing'));
         $response["applied_discounts"] = $this->formatted_order_coupons($order);
