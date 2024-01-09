@@ -95,10 +95,17 @@ function simpl_set_cookie($wc_session_cookie) {
 
 		if( !SimplWcCartHelper::simpl_is_customer_guest( $customer_id ) ) {
 			//Login to Wordpress for WooCommerce login user.
-			$user = get_user_by('id', $customer_id );
-			do_action( 'wp_login', $user->user_login, $user );
-			
-			wp_set_current_user ( $customer_id );
+			try {
+				$user = get_user_by('id', $customer_id );
+				if($user) {
+					
+						do_action( 'wp_login', $user->user_login, $user );			
+						wp_set_current_user ( $customer_id );
+				}
+			} catch (Error $fe) {
+				//Ignore if we are unable to login the user. Sometimes guest check fails
+				simpl_get_logger()->error(wc_print_r($fe, true));
+			}
 		}
 		
 		$wc_session_cookie_key = apply_filters( 'woocommerce_cookie', 'wp_woocommerce_session_' . COOKIEHASH );
