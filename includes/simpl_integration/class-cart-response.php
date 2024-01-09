@@ -113,8 +113,9 @@ class SimplCartResponse {
         if ($cart->get_total_discount()) {
             $discount_amount = $totals['discount_total'] + $totals['discount_tax'];
         }
-        $cart_payload["total_discount"] = round($discount_amount, 2);
+        $cart_payload["total_discount"] = wc_format_decimal($discount_amount, 2);
         $this->formatted_coupons($cart_payload, $cart, $cart->get_coupons(), $order);
+        $cart_payload["total_fee"] = wc_format_decimal($cart->get_fee_total() + $cart->get_fee_tax(), 2);
         //TODO: This may not be a valid check. tax_included may have changed later
         //and in that case already created products remain as-is. Need to find an alternative
         if (wc_prices_include_tax()) {
@@ -128,6 +129,7 @@ class SimplCartResponse {
         $cart_payload["checkout_url"] = wc_get_checkout_url();
         $cart_payload["shipping_methods"] = $this->get_shipping_methods($cart);
         $cart_payload["applied_shipping_method"] = $this->get_applied_shipping_method($cart);
+        $cart_payload["total_shipping"] = wc_format_decimal($cart->get_shipping_total() + $cart->get_shipping_tax(), 2);
         $cart_content = $cart->get_cart();
         $cart_payload["items"] = $this->getCartLineItem($cart_content);
         $cart_payload['attributes'] = array();
@@ -143,10 +145,10 @@ class SimplCartResponse {
         $response["total_price"] = wc_format_decimal($order->get_total(), 2);
         $response["items"] = $this->getOrderLineItem($order);
         $response["taxes"] = $order->get_tax_totals();
-        $response["fees"] = $order->get_fees();
+        $this->simpl_formatted_order_fees($order, $response);
         $response["shipping_address"] = $this->convert_address_response($order->get_address('shipping'));
         $response["billing_address"] = $this->convert_address_response($order->get_address('billing'));
-        $response["applied_discounts"] = $this->formatted_order_coupons($order);
+        $response["applied_discounts"] = $this->simpl_formatted_order_coupons($order);
         $discount_amount = 0;
         if ($order->get_total_discount()) {
             $discount_amount = $order->get_total_discount(false);
@@ -154,8 +156,8 @@ class SimplCartResponse {
         $response["total_discount"] = wc_format_decimal($discount_amount, 2);
         $response["item_subtotal_price"] = wc_format_decimal($order->get_subtotal(), 2);
         $response["total_tax"] = wc_format_decimal($order->get_total_tax(), 2);
-        $response["total_shipping"] = wc_format_decimal($order->get_shipping_total(), 2);
-        $response["shipping_methods"] = $this->formatted_shipping_methods($order->get_shipping_methods());
+        $response["total_shipping"] = wc_format_decimal($order->get_shipping_total() + $order->get_shipping_tax(), 2);
+        $response["shipping_methods"] = $this->simpl_formatted_shipping_methods($order->get_shipping_methods());
         $response["status"] = $order->get_status();
         $response["is_paid"] = $order->is_paid();
         self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
@@ -225,7 +227,7 @@ class SimplCartResponse {
         $cart_payload["applied_discounts"] = $applied_discounts;
     }
 
-    protected function formatted_order_coupons($order) {
+    protected function simpl_formatted_order_coupons($order) {
         $applied_discounts = array();
         $order_items = $order->get_items('coupon');
         $applied_discount_count = 0;
@@ -250,7 +252,26 @@ class SimplCartResponse {
         return $applied_discounts;
     }
 
-    protected function formatted_shipping_methods($shipping_methods) {
+    protected function simpl_formatted_order_fees($order, &$response) {
+
+        $applied_fees = array();
+        $fees_total = 0;
+        $fees = $order->get_fees();
+
+		if ( $fees ) {
+			foreach ( $fees as $id => $fee ) {
+				$fee_name = $fee->get_name();
+                $fee_amount = wc_format_decimal($fee->get_total() + $fee->get_total_tax(), 2);
+                array_push( $applied_fees, array( "name" => $fee_name, "type" => $fee_name, "amount" => $fee_amount ) );
+                $fees_total += $fee_amount;
+			}
+		}
+
+        $response["fees"] = $applied_fees;
+        $response["total_fee"] = $fees_total;
+    }
+
+    protected function simpl_formatted_shipping_methods($shipping_methods) {
 
         $shipping_methods_array = array();
         foreach ($shipping_methods as $item_id => $item) {
