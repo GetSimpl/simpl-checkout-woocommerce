@@ -130,6 +130,7 @@ class SimplCartResponse
         $cart_payload["shipping_methods"] = $this->get_shipping_methods($cart);
         $cart_payload["applied_shipping_method"] = $this->get_applied_shipping_method($cart);
         $cart_payload["total_shipping"] = wc_format_decimal($cart->get_shipping_total() + $cart->get_shipping_tax(), 2);        
+        $cart_payload["fees"] = $cart->get_fees();
         $cart_content = $cart->get_cart();
         $cart_payload["items"] = $this->getCartLineItem($cart_content);
         $cart_payload['attributes'] = array();
@@ -145,7 +146,8 @@ class SimplCartResponse
         $response["total_price"] = wc_format_decimal($order->get_total(), 2);
         $response["items"] = $this->getOrderLineItem($order);
         $response["taxes"] = $order->get_tax_totals();
-        $this->formatted_order_fees($order, $response);
+        $response["fees"] = $order->get_fees();
+        $response["total_fee"] = $order->get_fee_total();
         $response["shipping_address"] = $this->convert_address_response($order->get_address('shipping'));
         $response["billing_address"] = $this->convert_address_response($order->get_address('billing'));
         $response["applied_discounts"] = $this->formatted_order_coupons($order);
@@ -213,25 +215,6 @@ class SimplCartResponse
             $applied_discount_count += 1;
         }
         return $applied_discounts;
-    }
-
-    protected function formatted_order_fees($order, &$response) {
-
-        $applied_fees = array();
-        $fees_total = 0;
-        $fees = $order->get_fees();
-
-		if ( $fees ) {
-			foreach ( $fees as $id => $fee ) {
-				$fee_name = $fee->get_name();
-                $fee_amount = wc_format_decimal($fee->get_total() + $fee->get_total_tax(), 2);
-                array_push( $applied_fees, array( "name" => $fee_name, "type" => $fee_name, "amount" => $fee_amount ) );
-                $fees_total += $fee_amount;
-			}
-		}
-
-        $response["fees"] = $applied_fees;
-        $response["total_fee"] = $fees_total;
     }
 
     protected function formatted_shipping_methods($shipping_methods)
