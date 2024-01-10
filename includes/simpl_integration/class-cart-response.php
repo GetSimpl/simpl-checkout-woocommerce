@@ -147,7 +147,7 @@ class SimplCartResponse
         $response["items"] = $this->getOrderLineItem($order);
         $response["taxes"] = $order->get_tax_totals();
         $response["fees"] = $order->get_fees();
-        $response["total_fee"] = $order->get_fee_total();
+        $response["total_fee"] = $order->get_total_fees();
         $response["shipping_address"] = $this->convert_address_response($order->get_address('shipping'));
         $response["billing_address"] = $this->convert_address_response($order->get_address('billing'));
         $response["applied_discounts"] = $this->formatted_order_coupons($order);
