@@ -133,7 +133,7 @@ class SimplCartResponse
         $cart_content = $cart->get_cart();
         $cart_payload["items"] = $this->getCartLineItem($cart_content);
         $cart_payload['attributes'] = array();
-        $this->formatted_cart_fees($cart, $cart_payload);		
+        $this->add_formatted_cart_fees($cart, $cart_payload);		
         $cart_payload["merchant_additional_details"] = $merchant_additional_details;
         return $cart_payload;
     }
@@ -174,7 +174,7 @@ class SimplCartResponse
         return "";
     }
 	
-    protected function formatted_cart_fees($cart, &$cart_payload) {
+    protected function add_formatted_cart_fees($cart, &$cart_payload) {
         $applied_fees = array();
         $fees = $cart->get_fees();
 
