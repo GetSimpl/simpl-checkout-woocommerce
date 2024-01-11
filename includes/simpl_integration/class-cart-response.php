@@ -217,6 +217,25 @@ class SimplCartResponse
         return $applied_discounts;
     }
 
+    protected function formatted_order_fees($order, &$response) {
+
+        $applied_fees = array();
+        $fees_total = 0;
+        $fees = $order->get_fees();
+
+		if ( $fees ) {
+			foreach ( $fees as $id => $fee ) {
+				$fee_name = $fee->get_name();
+                $fee_amount = wc_format_decimal($fee->get_total() + $fee->get_total_tax(), 2);
+                array_push( $applied_fees, array( "name" => $fee_name, "type" => $fee_name, "amount" => $fee_amount ) );
+                $fees_total += $fee_amount;
+			}
+		}
+
+        $response["fees"] = $applied_fees;
+        $response["total_fee"] = $fees_total;
+    }
+
     protected function formatted_shipping_methods($shipping_methods)
     {
         $shipping_methods_array = array();
@@ -348,4 +367,6 @@ class SimplCartResponse
         add_filter('woocommerce_coupon_message', '');
         wc_clear_notices();
     }
+
+
 }
