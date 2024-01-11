@@ -130,10 +130,10 @@ class SimplCartResponse
         $cart_payload["shipping_methods"] = $this->get_shipping_methods($cart);
         $cart_payload["applied_shipping_method"] = $this->get_applied_shipping_method($cart);
         $cart_payload["total_shipping"] = wc_format_decimal($cart->get_shipping_total() + $cart->get_shipping_tax(), 2);        
-        $cart_payload["fees"] = $cart->get_fees();
         $cart_content = $cart->get_cart();
         $cart_payload["items"] = $this->getCartLineItem($cart_content);
         $cart_payload['attributes'] = array();
+        $this->formatted_cart_fees($cart, $cart_payload);		
         $cart_payload["merchant_additional_details"] = $merchant_additional_details;
         return $cart_payload;
     }
@@ -146,8 +146,7 @@ class SimplCartResponse
         $response["total_price"] = wc_format_decimal($order->get_total(), 2);
         $response["items"] = $this->getOrderLineItem($order);
         $response["taxes"] = $order->get_tax_totals();
-        $response["fees"] = $order->get_fees();
-        $response["total_fee"] = $order->get_total_fees();
+        $this->formatted_order_fees($order, $response);		
         $response["shipping_address"] = $this->convert_address_response($order->get_address('shipping'));
         $response["billing_address"] = $this->convert_address_response($order->get_address('billing'));
         $response["applied_discounts"] = $this->formatted_order_coupons($order);
@@ -173,6 +172,21 @@ class SimplCartResponse
             return $chosen_shipping_method[0]->get_id();
         }
         return "";
+    }
+	
+    protected function formatted_cart_fees($cart, &$cart_payload) {
+        $applied_fees = array();
+        $fees = $cart->get_fees();
+
+		if ( $fees ) {
+			foreach ( $fees as $id => $fee ) {
+				$fee_name = $fee->name;
+                $fee_amount = wc_format_decimal($fee->total, 2);
+                array_push( $applied_fees, array( "name" => $fee_name, "type" => $fee_name, "amount" => $fee_amount ));
+			}
+		}
+
+        $cart_payload["fees"] = $applied_fees;
     }
 
     protected function formatted_coupons($cart, $coupons, $order)
@@ -367,6 +381,4 @@ class SimplCartResponse
         add_filter('woocommerce_coupon_message', '');
         wc_clear_notices();
     }
-
-
 }
