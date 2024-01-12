@@ -109,15 +109,14 @@ class SimplCartResponse {
         $totals = $cart->get_totals();
         $cart_payload = array();
         $cart_payload["total_price"] = wc_format_decimal($cart->get_total('float'), 2);
-        $discount_amount = 0;
+                $discount_amount = 0;
         if ($cart->get_total_discount()) {
             $discount_amount = $totals['discount_total'] + $totals['discount_tax'];
         }
         $cart_payload["total_discount"] = wc_format_decimal($discount_amount, 2);
-        $this->formatted_coupons($cart_payload, $cart, $cart->get_coupons(), $order);
+$this->formatted_coupons($cart_payload, $cart, $cart->get_coupons(), $order);
         $cart_payload["total_fee"] = wc_format_decimal($cart->get_fee_total() + $cart->get_fee_tax(), 2);
-        //TODO: This may not be a valid check. tax_included may have changed later
-        //and in that case already created products remain as-is. Need to find an alternative
+
         if (wc_prices_include_tax()) {
             $cart_payload['tax_included'] = true;
         } else {
@@ -129,12 +128,13 @@ class SimplCartResponse {
         $cart_payload["checkout_url"] = wc_get_checkout_url();
         $cart_payload["shipping_methods"] = $this->get_shipping_methods($cart);
         $cart_payload["applied_shipping_method"] = $this->get_applied_shipping_method($cart);
-        $cart_payload["total_shipping"] = wc_format_decimal($cart->get_shipping_total() + $cart->get_shipping_tax(), 2);
+        $cart_payload["total_shipping"] = wc_format_decimal($cart->get_shipping_total() + $cart->get_shipping_tax(), 2);        
         $cart_content = $cart->get_cart();
         $cart_payload["items"] = $this->getCartLineItem($cart_content);
         $cart_payload['attributes'] = array();
+        $this->simpl_add_formatted_cart_fees($cart, $cart_payload);		
         $cart_payload["merchant_additional_details"] = $merchant_additional_details;
-		
+
         return $cart_payload;
     }
 
@@ -145,7 +145,7 @@ class SimplCartResponse {
         $response["total_price"] = wc_format_decimal($order->get_total(), 2);
         $response["items"] = $this->getOrderLineItem($order);
         $response["taxes"] = $order->get_tax_totals();
-        $this->simpl_formatted_order_fees($order, $response);
+        $this->simpl_add_formatted_order_fees($order, $response);		
         $response["shipping_address"] = $this->convert_address_response($order->get_address('shipping'));
         $response["billing_address"] = $this->convert_address_response($order->get_address('billing'));
         $response["applied_discounts"] = $this->simpl_formatted_order_coupons($order);
@@ -161,7 +161,7 @@ class SimplCartResponse {
         $response["status"] = $order->get_status();
         $response["is_paid"] = $order->is_paid();
         self::simpl_hide_error_messages(); // HIDE WOOCOMMERCE SUCCESS OR ERROR NOTIFICATION
-        
+
         return $response;
     }
 
@@ -252,7 +252,22 @@ class SimplCartResponse {
         return $applied_discounts;
     }
 
-    protected function simpl_formatted_order_fees($order, &$response) {
+    protected function simpl_add_formatted_cart_fees($cart, &$cart_payload) {
+        $applied_fees = array();
+        $fees = $cart->get_fees();
+
+		if ( $fees ) {
+			foreach ( $fees as $id => $fee ) {
+				$fee_name = $fee->name;
+                $fee_amount = wc_format_decimal($fee->total, 2);
+                array_push( $applied_fees, array( "name" => $fee_name, "type" => $fee_name, "amount" => $fee_amount ));
+			}
+		}
+
+        $cart_payload["fees"] = $applied_fees;
+    }
+
+    protected function simpl_add_formatted_order_fees($order, &$response) {
 
         $applied_fees = array();
         $fees_total = 0;
