@@ -146,7 +146,7 @@ class SimplCartResponse
         $response["total_price"] = wc_format_decimal($order->get_total(), 2);
         $response["items"] = $this->getOrderLineItem($order);
         $response["taxes"] = $order->get_tax_totals();
-        $this->formatted_order_fees($order, $response);		
+        $this->add_formatted_order_fees($order, $response);		
         $response["shipping_address"] = $this->convert_address_response($order->get_address('shipping'));
         $response["billing_address"] = $this->convert_address_response($order->get_address('billing'));
         $response["applied_discounts"] = $this->formatted_order_coupons($order);
@@ -231,7 +231,7 @@ class SimplCartResponse
         return $applied_discounts;
     }
 
-    protected function formatted_order_fees($order, &$response) {
+    protected function add_formatted_order_fees($order, &$response) {
 
         $applied_fees = array();
         $fees_total = 0;
