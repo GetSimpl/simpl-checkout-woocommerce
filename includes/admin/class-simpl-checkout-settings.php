@@ -45,6 +45,7 @@ class WC_Simpl_Settings {
 	}
 
 	public static function simpl_host() {
+		return 'checkout-3pp.stagingsimpl.com';
 		$staging_env = get_option( "wc_settings_tab_simpl_test_env" );
 		if ( $staging_env == "yes" ) {
 
@@ -170,6 +171,7 @@ class WC_Simpl_Settings {
 	}
 
 	public static function store_url() {
+		return 'shop.1bill.in';
 		return parse_url( get_site_url(), PHP_URL_HOST );
 	}
 

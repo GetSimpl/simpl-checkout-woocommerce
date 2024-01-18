@@ -80,7 +80,7 @@ function simpl_checkout_int() {
     {
         return;
     }
-    define('SIMPL_PLUGIN_DIR', plugin_dir_path( __FILE__ ));
+    define('SIMPL_ABSPATH', plugin_dir_path( __FILE__ ));
     define("SIMPL_ENV", getenv("SIMPL_ENV"));
     define("SIMPL_PRE_QA_QUERY_PARAM_KEY", "simpl-qa");
     define("SIMPL_PRE_QA_QUERY_PARAM_VALUE", "ce50e3b0-641b-4b26-8bbb-8a240f03811b");
@@ -118,6 +118,23 @@ function simpl_checkout_int() {
     
     // initiating logger instance
     $logger = get_simpl_logger();
+
+
+    include_once 'includes/lib/web/router.php';
+    include_once 'includes/lib/web/server.php';
+    include_once 'includes/api/routes/v3/routes.php';
+    include_once 'includes/api/routes/v1/routes.php';
+
+    $router = new Simpl\Checkout\Lib\Web\Router();
+
+    // $routes = new Simpl\Checkout\Api\Routes\V1\V1Routes($router);
+    // $routes->init();
+    Simpl\Checkout\Api\Routes\V3\init_v3_routes($router);
+    Simpl\Checkout\Api\Routes\V1\init_v1_routes($router);
+
+    $server = new Simpl\Checkout\Lib\Web\Server($router);
+    $server->start();
+
 }
 
 // registering hooks as soon as the plugin starts so that we are able listen to the data as soon as plugin installed
