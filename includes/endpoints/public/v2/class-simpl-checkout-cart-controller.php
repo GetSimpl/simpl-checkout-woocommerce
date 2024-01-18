@@ -15,9 +15,11 @@ class SimplCheckoutCartControllerV2 {
         //     WC_Form_Handler::add_to_cart_action();
         // }
 
-        if ( WC()->cart->is_empty() ) {
-			throw new Exception('Cannot proceed with an empty cart');
-		}
+        // We can't add this check. When add-to-cart fails because of mandatory field, cart would be empty
+        // and in that case, error alert would not render if we return from here.
+        // if ( WC()->cart->is_empty() ) {
+		// 	throw new Exception('Cannot proceed with an empty cart');
+		// }
 
         $err = wc_get_notices('error');
         if (isset($err) && count($err) > 0) {
