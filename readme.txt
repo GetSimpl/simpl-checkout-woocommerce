@@ -1,4 +1,4 @@
-=== Simpl Checkout ===
+=== Simpl Checkout for WooCommerce ===
 Contributors: getsimpl
 Tags: woocommerce,simpl,ecommerce,e-commerce,checkout,buy-now-pay-later,payments,india
 Requires at least: 5.8
@@ -10,7 +10,7 @@ WC tested up to: 8.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Simpl Checkout streamlines the checkout process for your customers, leading to increased order conversions and a decrease in Return to Origin (RTO) rates when compared to the standard WooCommerce checkout. With payment options like Simpl Paylater, Pay-in-3, UPI, Cards, and COD, you can concentrate on expanding your business while we manage the payment intricacies.
+Simpl Checkout for WooCommerce streamlines the checkout process for your customers, leading to increased order conversions and a decrease in Return to Origin (RTO) rates when compared to the standard WooCommerce checkout. With payment options like Simpl Paylater, Pay-in-3, UPI, Cards, and COD, you can concentrate on expanding your business while we manage the payment intricacies.
 
 == Description ==
 

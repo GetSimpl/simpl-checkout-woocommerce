@@ -3,14 +3,16 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
- * Plugin Name: Simpl Checkout
+ * Plugin Name: Simpl Checkout for WooCommerce
  * Plugin URI: http://www.getsimpl.com
  * 
- * Description: Simpl checkout offers an optimised checkout process, higher order conversions and RTO reduction.
+ * Description: Simpl Checkout for WooCommerce offers an optimised checkout process, higher order conversions and RTO reduction.
  * We offer Simpl Pay Later, Pay-in-3, UPI, Cards, and COD for seamless transactions while you focus on growing your business.
  * 
- * Author:  Bill Sigma Technologies Pvt. Ltd.
+ * Author:  Simpl
  * Author URI: http://www.getsimpl.com
+ * 
+ * Text Domain: simpl-checkout-for-woocommerce
  * 
  * Version: 2.0.1
  */
