@@ -85,8 +85,24 @@ function simpl_checkout_int() {
     add_filter( 'woocommerce_payment_gateways', 'simpl_add_gateway_class' );
     // The following was added to support in-house shipping. Commenting as we current do not support in-house shipping
     //add_filter( 'woocommerce_shipping_chosen_method', '__return_false', 99); // this disables the application of default shipping method
-    add_action( 'plugins_loaded', 'simpl_init_gateway_class' );
     
+    /**
+     * Show action links on the plugin screen.
+     *
+     * @param   mixed $links Settings link on Plugins page.
+     * @return  array
+     */
+    function simpl_plugin_action_links( $links ) {
+        $custom_links = array(
+            'settings' => '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=settings_tab_simpl' ) . '">' . 'Settings</a>'
+        );
+        
+        return array_merge( $custom_links, $links );
+    }
+    add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'simpl_plugin_action_links' );
+    
+    add_action( 'plugins_loaded', 'simpl_init_gateway_class' );
+
     // initiating logger instance
     $logger = simpl_get_logger();
 }
