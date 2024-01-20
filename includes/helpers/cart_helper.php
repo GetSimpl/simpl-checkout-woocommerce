@@ -95,16 +95,14 @@ function simpl_set_cookie($wc_session_cookie) {
 
 		if( !SimplWcCartHelper::simpl_is_customer_guest( $customer_id ) ) {
 			//Login to Wordpress for WooCommerce login user.
-			try {
-				$user = get_user_by('id', $customer_id );
-				if($user) {
-					
-						do_action( 'wp_login', $user->user_login, $user );			
-						wp_set_current_user ( $customer_id );
-				}
-			} catch (Error $fe) {
-				//Ignore if we are unable to login the user. Sometimes guest check fails
-				simpl_get_logger()->error(wc_print_r($fe, true));
+			$user = get_user_by( 'id', $customer_id );
+			if($user) {
+				// Following 2 lines doesn't work for some reason.
+				// wp_clear_auth_cookie();
+				// wp_set_auth_cookie( $user_id );
+
+				do_action( 'wp_login', $user->user_email, $user );
+				wp_set_current_user ( $customer_id );
 			}
 		}
 		
