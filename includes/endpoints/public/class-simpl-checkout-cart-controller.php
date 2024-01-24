@@ -8,19 +8,26 @@ class SimplCheckoutCartController {
         //Errors cleared in cart_helper as part of woocommerce_init. We need the errors generated post that to be rendered on PDP
         // wc_clear_notices();
 
-        //Now since we are loading frontend, add-to-cart is invoked automatically for PDP
-        //class-wc-form-handler.php -> add_to_cart_action
-        // if (isset($request->get_params()['add-to-cart'])) {
-        //     WC()->cart->empty_cart();
-        //     WC_Form_Handler::add_to_cart_action();
-        // }
-
         // We can't add this check. When add-to-cart fails because of mandatory field, cart would be empty
         // and in that case, error alert would not render if we return from here.
         // if ( WC()->cart->is_empty() ) {
 		// 	throw new Exception('Cannot proceed with an empty cart');
 		// }
 
+        $err = wc_get_notices('error');
+        // Added this condition because there may be error if default add-to-cart failed because of error like required field is empty
+        if( !isset($err) || count($err) == 0 ) {
+            // Now since we are loading frontend, add_to_cart is invoked automatically for PDP
+            //class-wc-form-handler.php -> add_to_cart_action
+            // WC()->cart->empty_cart(); This is not required here. Doing this in cart_helper before default add_to_cart is triggered
+            if ( isset($request->get_params()['add-to-cart']) && WC()->cart->is_empty() ) {
+                // There are times when default add_to_cart_action is overriden and is handled by ajax instead.
+                // In that case, we specifically have to invoke add to cart.
+                WC_Form_Handler::add_to_cart_action();
+            }
+        }
+
+        // Fetching this again as the above statement may have added errors.
         $err = wc_get_notices('error');
         if (isset($err) && count($err) > 0) {
             $err_messages = array();
@@ -41,7 +48,7 @@ class SimplCheckoutCartController {
         try {
             // Remove discount not applicable on Simpl
 			WC()->session->set('chosen_payment_method', SIMPL_PAYMENT_GATEWAY);
-
+            
             $si = new SimplCartResponse();
             $redirection_url = $si->simpl_cart_redirection_url(WC()->cart, $request);
 
