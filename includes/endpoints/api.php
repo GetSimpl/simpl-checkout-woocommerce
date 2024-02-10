@@ -3,6 +3,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 add_action('rest_api_init', function () {
+
   register_rest_route('simpl/v1', '/cart', array(
     'methods' => 'POST',
     'callback' => array(new SimplCheckoutCartController, 'create'),
@@ -13,7 +14,7 @@ add_action('rest_api_init', function () {
 
   register_rest_route('simpl/v2', '/cart', array(
     'methods' => 'POST',
-    'callback' => array(new SimplCheckoutCartControllerV2, 'create'),
+    'callback' => array(new SimplCheckoutCartController, 'create'),
     'permission_callback' => function () {
       return true;
     }
