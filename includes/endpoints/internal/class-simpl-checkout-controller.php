@@ -5,8 +5,11 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class SimplCheckoutController {
 
     function create(WP_REST_Request $request) {
+
         try {
+
             $cart_session_token = $request->get_params()["cart_token"];
+            simpl_get_logger()->debug("includes->endpoints->internal->SimplCheckoutController->create token: ". $cart_session_token);
 
             if ($this->is_address_present($request)) {
                 SimplWcCartHelper::simpl_set_address_in_cart($request->get_params()["shipping_address"], $request->get_params()["billing_address"]);
@@ -21,6 +24,7 @@ class SimplCheckoutController {
             do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
 
             return $cart_payload;
+
         } catch (SimplCustomHttpBadRequest $fe) {
             simpl_get_logger()->error(wc_print_r($fe, true));
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
@@ -34,11 +38,14 @@ class SimplCheckoutController {
     }
 
     function update(WP_REST_Request $request) {
+
         try {
+
             SimplRequestValidator::validate_shipping_address_or_items($request);
             SimplRequestValidator::validate_checkout_order_id($request);
             
             $order_id = $request->get_params()["checkout_order_id"];
+            simpl_get_logger()->debug("includes->endpoints->internal->SimplCheckoutController->update checkout_order_id: ". $order_id);
             $order = wc_get_order($order_id);            
 
             if ($this->is_address_present($request)) {
@@ -53,6 +60,7 @@ class SimplCheckoutController {
             do_action("simpl_abandoned_cart", WC()->cart, $cart_payload);
 
             return $cart_payload;
+
         } catch (SimplCustomHttpBadRequest $fe) {
             simpl_get_logger()->error(wc_print_r($fe, true));
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
@@ -67,14 +75,18 @@ class SimplCheckoutController {
 
     //Session and cart would not exist
     function fetch(WP_REST_Request $request) {
+
         try {
+
             SimplRequestValidator::validate_checkout_order_id($request);
 
             $order_id = $request->get_params()["checkout_order_id"];
+            simpl_get_logger()->debug("includes->endpoints->internal->SimplCheckoutController->fetch checkout_order_id: ". $order_id);
             $order = wc_get_order($order_id);
 
             $si = new SimplCartResponse();
             return $si->order_payload($order);
+
         } catch (SimplCustomHttpBadRequest $fe) {
             simpl_get_logger()->error(wc_print_r($fe, true));
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);

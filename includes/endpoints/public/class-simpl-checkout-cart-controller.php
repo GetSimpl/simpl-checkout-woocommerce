@@ -5,6 +5,9 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class SimplCheckoutCartController {
     
     function create(WP_REST_Request $request) {
+
+        simpl_get_logger()->debug("public->cart-controller->create");
+
         //Errors cleared in cart_helper as part of woocommerce_init. We need the errors generated post that to be rendered on PDP
         // wc_clear_notices();
 
@@ -21,6 +24,9 @@ class SimplCheckoutCartController {
             //class-wc-form-handler.php -> add_to_cart_action
             // WC()->cart->empty_cart(); This is not required here. Doing this in cart_helper before default add_to_cart is triggered
             if ( isset($request->get_params()['add-to-cart']) && WC()->cart->is_empty() ) {
+                
+                simpl_get_logger()->debug("public->cart-controller->create: before add_to_cart_action");
+                
                 // There are times when default add_to_cart_action is overriden and is handled by ajax instead.
                 // In that case, we specifically have to invoke add to cart.
                 WC_Form_Handler::add_to_cart_action();
@@ -75,7 +81,8 @@ class SimplCheckoutCartController {
 
             // now set these session_cookies to cache against our cart_session_token
             if($wc_session_cookie) {
-            	set_transient($cart_session_token, $wc_session_cookie, 1 * HOUR_IN_SECONDS);
+                simpl_get_logger()->debug("public->cart-controller->create: adding cookie to transient:". $wc_session_cookie);
+                set_transient($cart_session_token, $wc_session_cookie, 1 * HOUR_IN_SECONDS);
 			} else {
 				throw new Exception('Unable to fetch wc_session_cookie');
 			}

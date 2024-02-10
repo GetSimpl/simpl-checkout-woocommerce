@@ -182,13 +182,14 @@ class SimplWcCartHelper {
         foreach ($applied_discounts as $discount) {
             if ($discount['type'] != SIMPL_EXCLUSIVE_DISCOUNT) continue;
             
-			$sed = wc_format_decimal($discount['amount'], 2);
+            $sed = wc_format_decimal($discount['amount'], 2);
             $coupon = new WC_Order_Item_Coupon();
             $coupon->set_discount($sed);
             $coupon->set_name(SIMPL_EXCLUSIVE_DISCOUNT);
             $coupon->set_code(SIMPL_EXCLUSIVE_DISCOUNT);
             $order->add_item($coupon);
 			
+            simpl_get_logger()->debug("includes->helpers->class-simpl-wc-helper->simpl_set_simpl_exclusive_discount: ". $sed);
             //$order->calculate_totals(); Calculating totals on order adds tax on store credits
             //Hence we update the total manually
             $order->set_total($order->get_total('edit') - $sed);            
@@ -211,6 +212,7 @@ class SimplWcCartHelper {
             $item_fee->set_tax_status( 'none' ); // since not taxable
             $order->add_item($item_fee);
             
+            simpl_get_logger()->debug("includes->helpers->class-simpl-wc-helper->simpl_set_fee_to_order: ". $additional_fee);
             //$order->calculate_totals(); Calculating totals on order adds tax on store credits
             //Hence we update the total manually
             $order->set_total($order->get_total('edit') + $additional_fee);

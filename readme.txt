@@ -65,3 +65,6 @@ To initiate the return customer can download the Simpl app and go to ‘Manage y
 == Changelog ==
 = 2.0.1 =
 * wordpress security issue fix
+
+= 2.0.2 =
+* express on native checkout

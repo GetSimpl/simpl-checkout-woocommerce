@@ -11,3 +11,5 @@ define("SIMPL_PAYMENT_GATEWAY", "simplcheckout");
 
 define("SIMPL_PAYMENT_METHOD_WOO_WALLET", "wallet");
 define("SIMPL_PAYMENT_TITLE_WOO_WALLET", "WALLET");
+
+define("SIMPL_PARSE_FILE_INPUT", 'php://input');

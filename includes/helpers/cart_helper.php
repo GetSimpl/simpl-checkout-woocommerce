@@ -17,6 +17,9 @@ function simpl_woocommerce_init() {
 	//Add to cart action is hooked to wp_loaded and hence invoked automatically.
 	//Since this actions is triggered from PDP, we need to clear the cart. woocommerce_init precedes wp_loaded and hence this is the best hook for the same.
 	if ( isset( $_REQUEST['add-to-cart'] ) && is_numeric( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) {
+
+		simpl_get_logger()->debug("includes->helper->cart_helper->simpl_woocommerce_init: before clearing cart");
+
 		//Clear any existing error messages to start afresh
 		wc_clear_notices();
 		WC()->cart->empty_cart();
@@ -31,10 +34,12 @@ function simpl_before_woocommerce_init() {
 		return;
 	}
 	
-	$request_body = file_get_contents('php://input');
+	$request_body = file_get_contents(SIMPL_PARSE_FILE_INPUT);
 	$data = json_decode($request_body);
-	$wc_session_cookie = null;
-	
+	$wc_session_cookie = null;	
+
+	simpl_get_logger()->debug("includes->helper->cart_helper->simpl_before_woocommerce_init file_get_contents: ". wc_print_r($data, true));
+
 	//For checkout create/update calls, 3PP would send cart token. Here, we'd create order and store order <> cart token map	
 	if(isset($data->cart_token)) {
 		$cart_session_token = $data->cart_token;
@@ -87,9 +92,11 @@ function simpl_is_woocommerce_rest_api_request($is_rest_api_request, $simpl_resp
 	return $is_rest_api_request;
 }
 
-function simpl_set_cookie($wc_session_cookie) {
+function simpl_set_cookie( $wc_session_cookie ) {
 
-	if($wc_session_cookie) {	
+	if( $wc_session_cookie ) {
+
+		simpl_get_logger()->debug("includes->helper->cart_helper->simpl_set_cookie: ". $wc_session_cookie);
 		
 		$customer_id = explode("||", $wc_session_cookie)[0];		
 

@@ -5,12 +5,18 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class SimplCheckoutOrderController {
 
     function fetch(WP_REST_Request $request) {
+
+        simpl_get_logger()->debug("includes->endpoints->internal->SimplCheckoutOrderController->fetch");
+
         try {
+
             SimplRequestValidator::validate_fetch_order_request($request);
             $order = wc_get_order((int)$request->get_params()["order_id"]);
             $si = new SimplCartResponse();
             $order_payload = $si->order_payload($order);
+            
             return $order_payload;
+
         } catch (SimplCustomHttpBadRequest $fe) {
             simpl_get_logger()->error(wc_print_r($fe, true));
             return new WP_REST_Response(array("code" => SIMPL_HTTP_ERROR_BAD_REQUEST, "message" => $fe->getMessage()), 400);
@@ -24,6 +30,8 @@ class SimplCheckoutOrderController {
     }
 
     function create(WP_REST_Request $request) {
+
+        simpl_get_logger()->debug("includes->endpoints->internal->SimplCheckoutOrderController->create");
 
         try {
             SimplRequestValidator::validate_order_request($request);
