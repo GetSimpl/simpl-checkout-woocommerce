@@ -135,12 +135,20 @@ class Simpl_WC_Settings {
 		return get_option( "wc_settings_tab_simpl_button_mini_cart_activated" ) == 'yes';
 	}
 
+	public static function can_display_in_checkout_page() {
+		return get_option( "wc_settings_tab_simpl_button_checkout_activated" ) == 'yes';
+	}
+
 	public static function cta_position_in_pdp() {
 		return get_option( "wc_settings_tab_simpl_button_position_pdp" );
 	}
 
 	public static function cta_position_in_cart() {
 		return get_option( "wc_settings_tab_simpl_button_position_cart" );
+	}
+
+	public static function cta_position_in_checkout() {
+		return get_option( "wc_settings_tab_simpl_button_position_checkout" );
 	}
 
 	public static function cta_text() {
@@ -177,12 +185,14 @@ class Simpl_WC_Settings {
 			"merchant_client_secret" => isset( $_POST["wc_settings_tab_simpl_merchant_client_secret"] ) ? sanitize_title( $_POST["wc_settings_tab_simpl_merchant_client_secret"] ) : '',
 			"button_position_pdp"    => isset( $_POST["wc_settings_tab_simpl_button_position_pdp"] ) ? sanitize_title( $_POST["wc_settings_tab_simpl_button_position_pdp"] ) : '',
 			"button_position_cart"   => isset( $_POST["wc_settings_tab_simpl_button_position_cart"] ) ? sanitize_title( $_POST["wc_settings_tab_simpl_button_position_cart"] ) : '',
+			"button_position_checkout"   => isset( $_POST["wc_settings_tab_simpl_button_position_checkout"] ) ? sanitize_title( $_POST["wc_settings_tab_simpl_button_position_checkout"] ) : '',
 
 			"test_env"              => ! isset( $_POST["wc_settings_tab_simpl_test_env"] ) ? 0 : 1,
 			"button_activated"      => ! isset( $_POST["wc_settings_tab_simpl_button_activated"] ) ? 0 : 1,
 			"button_pdp_activated"  => ! isset( $_POST["wc_settings_tab_simpl_button_pdp_activated"] ) ? 0 : 1,
 			"button_cart_activated" => ! isset( $_POST["wc_settings_tab_simpl_button_cart_activated"] ) ? 0 : 1,
 			"button_mini_cart_activated" => ! isset( $_POST["wc_settings_tab_simpl_button_mini_cart_activated"] ) ? 0 : 1,
+			"button_checkout_activated" => ! isset( $_POST["wc_settings_tab_simpl_button_checkout_activated"] ) ? 0 : 1,
 			"enabled_to_admin"      => ! isset( $_POST["wc_settings_tab_simpl_enabled_to_admin"] ) ? 0 : 1,
 		);
 
@@ -220,6 +230,7 @@ class Simpl_WC_Settings {
 			"button_pdp_activated"   => get_option( "wc_settings_tab_simpl_button_pdp_activated" ) == 'yes' ? 1 : 0,
 			"button_cart_activated"  => get_option( "wc_settings_tab_simpl_button_cart_activated" ) == 'yes' ? 1 : 0,
 			"button_mini_cart_activated"  => get_option( "wc_settings_tab_simpl_button_mini_cart_activated" ) == 'yes' ? 1 : 0,
+			"button_checkout_activated"  => get_option( "wc_settings_tab_simpl_button_checkout_activated" ) == 'yes' ? 1 : 0,
 			"enabled_to_admin"       => get_option( "wc_settings_tab_simpl_enabled_to_admin" ) == 'yes' ? 1 : 0,
 		);
 	}
@@ -304,7 +315,7 @@ class Simpl_WC_Settings {
 		if ( $valid_credentials ) {
 			$endpoint      = '/wc-auth/v1/authorize?';
 			$params        = [
-				'app_name'     => 'simpl_wordpress_integration',
+				'app_name'     => 'Simpl Checkout',
 				'scope'        => 'read_write',
 				'user_id'      => 2,
 				'return_url'   => self::store_url_with_prefix() . "/wp-admin/admin.php?page=wc-settings&tab=settings_tab_simpl",
@@ -358,14 +369,14 @@ class Simpl_WC_Settings {
 			$settings[] = array(
 				'name' => 'Product Page',
 				'type' => 'checkbox',
-				'desc' => 'Show simpl checkout button in Product page',
+				'desc' => 'Show Simpl checkout button on Product page',
 				'id'   => 'wc_settings_tab_simpl_button_pdp_activated'
 			);
 
 			$settings[] = array(
 				'name'    => 'Collections Pages',
 				'type'    => 'hidden',
-				'desc'    => 'Show simpl checkout button in Collections page',
+				'desc'    => 'Show Simpl checkout button on Collections page',
 				'id'      => 'wc_settings_tab_simpl_button_collections_activated',
 				'default' => 'no',
 				'value'   => 'no'
@@ -374,15 +385,22 @@ class Simpl_WC_Settings {
 			$settings[] = array(
 				'name' => 'Cart Page',
 				'type' => 'checkbox',
-				'desc' => 'Show simpl checkout button in Cart page',
+				'desc' => 'Show Simpl checkout button on Cart page',
 				'id'   => 'wc_settings_tab_simpl_button_cart_activated'
 			);
 			
 			$settings[] = array(
 				'name' => 'Mini Cart',
 				'type' => 'checkbox',
-				'desc' => 'Show simpl checkout button in Mini cart',
+				'desc' => 'Show Simpl checkout button on Mini cart',
 				'id'   => 'wc_settings_tab_simpl_button_mini_cart_activated'
+			);
+
+			$settings[] = array(
+				'name' => 'Checkout Page',
+				'type' => 'checkbox',
+				'desc' => 'Show Simpl checkout button on Checkout page',
+				'id'   => 'wc_settings_tab_simpl_button_checkout_activated'
 			);
 
 			$settings[] = array(
@@ -398,7 +416,7 @@ class Simpl_WC_Settings {
 			);
 
 			$settings[] = array(
-				'name'     => 'Button Position in Product Page',
+				'name'     => 'Button Position on Product Page',
 				'type'     => 'select',
 				'id'       => 'wc_settings_tab_simpl_button_position_pdp',
 				'options'  => array(
@@ -411,7 +429,7 @@ class Simpl_WC_Settings {
 			);
 
 			$settings[] = array(
-				'name'     => 'Button Position in Cart Page',
+				'name'     => 'Button Position on Cart Page',
 				'type'     => 'select',
 				'id'       => 'wc_settings_tab_simpl_button_position_cart',
 				'options'  => array(
@@ -420,6 +438,21 @@ class Simpl_WC_Settings {
 				),
 				'default'  => 'woocommerce_proceed_to_checkout',
 				'desc'     => "This position will be relative to the 'Proceed to Checkout' button",
+				'desc_tip' => true,
+			);
+
+			$settings[] = array(
+				'name'     => 'Button Position on Checkout Page',
+				'type'     => 'select',
+				'id'       => 'wc_settings_tab_simpl_button_position_checkout',
+				'options'  => array(
+					'woocommerce_checkout_billing' => 'Before billing',
+					'woocommerce_checkout_before_customer_details'   => 'Before customer details',
+					'woocommerce_before_checkout_form'   => 'Before checkout form'
+					// Options: https://www.storeapps.org/wp-content/uploads/2022/07/woocommerce-checkout-hooks-visual.png
+				),
+				'default'  => 'woocommerce_checkout_billing',
+				'desc'     => "This position will be relative to the 'Checkout form",
 				'desc_tip' => true,
 			);
 

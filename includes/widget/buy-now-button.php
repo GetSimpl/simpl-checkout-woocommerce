@@ -4,6 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 $buttonPosition_pdp = Simpl_WC_Settings::cta_position_in_pdp();
 $buttonPosition_cart = Simpl_WC_Settings::cta_position_in_cart();
+$buttonPosition_checkout = Simpl_WC_Settings::cta_position_in_checkout();
+
 if(Simpl_WC_Settings::can_display_in_pdp_page()){
   // hook for pdp page
   add_action( $buttonPosition_pdp, 'simpl_add_to_cart_btn' );
@@ -15,6 +17,10 @@ if(Simpl_WC_Settings::can_display_in_collections_page()){
 if(Simpl_WC_Settings::can_display_in_cart_page()){
   // hook for cart page
   add_action( $buttonPosition_cart, 'simpl_add_to_cart_btn');
+}
+if(Simpl_WC_Settings::can_display_in_checkout_page()) {
+  // hook for checkout page
+  add_action( $buttonPosition_checkout, 'simpl_add_to_cart_btn');
 }
 
 // footer hook to load script
@@ -30,11 +36,13 @@ function simpl_add_to_cart_btn(){
     $buttonText = Simpl_WC_Settings::cta_text();
     $productID = get_the_ID();
     
-    if(is_cart()){
+    if(is_cart()) {
         $page = 'cart';
-    } else if (is_shop()){
+    } else if (is_checkout()) {
+        $page = 'checkout';
+    } else if (is_shop()) {
         $page = 'shop';
-    } else{
+    } else {
         $page = 'product';
     }
 

@@ -48,6 +48,7 @@ class SimplCheckoutCartControllerV2 {
         try {
             // Remove discount not applicable on Simpl
 			WC()->session->set('chosen_payment_method', SIMPL_PAYMENT_GATEWAY);
+            //WC()->session->set( 'chosen_shipping_methods', '' ); To check if this would remove default shipping to support in-house shipping ?
             
             $si = new SimplCartResponse();
             $redirection_url = $si->simpl_cart_redirection_url(WC()->cart, $request);

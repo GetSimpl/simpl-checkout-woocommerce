@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  * 
  * Text Domain: simpl-checkout-for-woocommerce
  * 
- * Version: 2.0.1
+ * Version: 2.0.2
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
