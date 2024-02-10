@@ -76,7 +76,7 @@ function simpl_is_woocommerce_rest_api_request($is_rest_api_request, $simpl_resp
 
 		//Do not want to initialise session, cart, etc for the following
 		if ( false !== strpos( $req_uri, '/events' ) || false !== strpos( $req_uri, '/master-config' ) || 
-			false !== strpos( $req_uri, '/authenticate_simpl' ) || false !== strpos( $req_uri, '/revert_authenticate_simpl' ) ) {
+			false !== strpos( $req_uri, '/simpl_authenticate' ) || false !== strpos( $req_uri, '/simpl_revert_authenticate' ) ) {
 				return $is_rest_api_request;
 		}
 		

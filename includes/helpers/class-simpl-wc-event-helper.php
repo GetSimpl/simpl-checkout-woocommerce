@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class SimplWcEventHelper {
     
     static function publish_event($event_name, $event_data, $entity, $flow) {
-        $simpl_host = WC_Simpl_Settings::simpl_host();
+        $simpl_host = Simpl_WC_Settings::simpl_host();
         $event_payload = array(
             "trigger_timestamp" => time(),
             "event_name" => $event_name,

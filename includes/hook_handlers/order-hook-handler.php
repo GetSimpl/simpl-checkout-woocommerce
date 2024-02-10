@@ -2,23 +2,23 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-define('CHECKOUT_TOKEN_EXPIRY', 3 * 24 * 60 * 60);
-define('SYNC_ORDER_ACTION_TEXT', 'Sync Order - Simpl Checkout');
+define('SIMPL_CHECKOUT_TOKEN_EXPIRY', 3 * 24 * 60 * 60);
+define('SIMPL_SYNC_ORDER_ACTION_TEXT', 'Sync Order - Simpl Checkout');
 
-function init_wc_session() {
+function simpl_init_wc_session() {
     $session_class = apply_filters('woocommerce_session_handler', 'WC_Session_Handler');
     WC()->session  = new $session_class();
     WC()->session->init();
 }
 
-function order_refunded_hook($order_id) {
+function simpl_order_refunded_hook($order_id) {
     $order = wc_get_order($order_id);
 
     if (!$order->meta_exists('simpl_order_id')) {
         return;
     }
 
-    $order_data = fetch_order_data($order);
+    $order_data = simpl_fetch_order_data($order);
 
     $request["topic"] = "order.refunded";
     $request["resource"] = "order";
@@ -29,7 +29,7 @@ function order_refunded_hook($order_id) {
     try {
         $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
     } catch (\Throwable $th) { 
-        simpl_get_logger()->error("error in order_refunded_hook ". wc_print_r($th, TRUE));
+        simpl_get_logger()->error("error in simpl_order_refunded_hook ". wc_print_r($th, TRUE));
     }
 
     if (!simpl_is_success_response($simplHttpResponse)) {
@@ -37,14 +37,14 @@ function order_refunded_hook($order_id) {
     }
 }
 
-function order_cancelled_hook($order_id) {
+function simpl_order_cancelled_hook($order_id) {
     $order = wc_get_order($order_id);
 
     if (!$order->meta_exists('simpl_order_id')) {
         return;
     }
 
-    $order_data = fetch_order_data($order);
+    $order_data = simpl_fetch_order_data($order);
 
     $request["topic"] = "order.cancelled";
     $request["resource"] = "order";
@@ -55,7 +55,7 @@ function order_cancelled_hook($order_id) {
     try {
         $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
     } catch (\Throwable $th) {
-        simpl_get_logger()->error("error in order_cancelled_hook ". wc_print_r($th, TRUE));
+        simpl_get_logger()->error("error in simpl_order_cancelled_hook ". wc_print_r($th, TRUE));
     }
 
     if (!simpl_is_success_response($simplHttpResponse)) {
@@ -63,15 +63,15 @@ function order_cancelled_hook($order_id) {
     }
 }
 
-function order_created_hook($order_id, $order) {
+function simpl_order_created_hook($order_id, $order) {
     if (WC()->session == null) {
-        init_wc_session();
+        simpl_init_wc_session();
     }
 
     $checkout_token = WC()->session->get('checkout_token');
 
     $request["topic"] = "order.created";
-    $request["data"] = fetch_order_data($order);
+    $request["data"] = simpl_fetch_order_data($order);
     $request["data"]["checkout_token"] = $checkout_token;
     $request["data"]["merchant_session_token"] = $checkout_token;
 
@@ -79,27 +79,27 @@ function order_created_hook($order_id, $order) {
     try {
         $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
     } catch (\Throwable $th) {
-        simpl_get_logger()->error("error while processing order_created_hook ". wc_print_r($th, TRUE));
+        simpl_get_logger()->error("error while processing simpl_order_created_hook ". wc_print_r($th, TRUE));
     }
 
     // unset checkout_token when order is created
     WC()->session->__unset('checkout_token');
 }
 
-function checkout_update_order_hook($posted_data) {
+function simpl_checkout_update_order_hook($posted_data) {
     // unsetting checkout_token if it is expired
-    unset_checkout_token_if_expired();
+    simpl_unset_checkout_token_if_expired();
 
     $request["topic"] = "checkout.updated";
 
     // set checkout_token when we receive this hook first time
     $checkout_token = WC()->session->get('checkout_token');
     if ($checkout_token == null) {
-        set_checkout_token();
+        simpl_set_checkout_token();
         $request["topic"] = "checkout.created";
     }
 
-    $request["data"] = fetch_checkout_data($posted_data);
+    $request["data"] = simpl_fetch_checkout_data($posted_data);
     $request["data"]["checkout_token"] = $checkout_token;
     $request["data"]["merchant_session_token"] = $checkout_token;
 
@@ -107,7 +107,7 @@ function checkout_update_order_hook($posted_data) {
     try {
         $simplHttpResponse = $checkout_3pp_client->post_hook_request($request);
     } catch (\Throwable $th) {
-        simpl_get_logger()->error("error in checkout_update_order_hook ". wc_print_r($th, TRUE));
+        simpl_get_logger()->error("error in simpl_checkout_update_order_hook ". wc_print_r($th, TRUE));
     }
 }
 
@@ -122,7 +122,7 @@ function simpl_add_sync_order_action( $actions, $order ) {
 
     // Only show the sync order action for Simpl orders
     if('yes' == get_post_meta( $order->get_id(), SIMPL_ORDER_METADATA, true ) ) {
-        $actions['simpl_sync_order'] = SYNC_ORDER_ACTION_TEXT;   
+        $actions['simpl_sync_order'] = SIMPL_SYNC_ORDER_ACTION_TEXT;   
     }
     return $actions;
 }
@@ -132,7 +132,7 @@ function simpl_sync_order_hook( $order ) {
         return;
     }
 
-    $order_data = fetch_order_data($order);
+    $order_data = simpl_fetch_order_data($order);
 
     $request["topic"] = "order.sync";
     $request["resource"] = "order";
@@ -157,7 +157,7 @@ function simpl_sync_order_hook( $order ) {
     $order->add_order_note( $message );
 }
 
-function fetch_order_data($order) {
+function simpl_fetch_order_data($order) {
     $order_data = $order->get_data();
     $order_data["line_items"] = SimplUtil::get_data($order->get_items());
     $order_data["tax_lines"] = SimplUtil::get_data($order->get_taxes());
@@ -166,34 +166,34 @@ function fetch_order_data($order) {
     return $order_data;
 }
 
-function fetch_checkout_data($posted_data) {
+function simpl_fetch_checkout_data($posted_data) {
     $posted_data = urldecode($posted_data);
     parse_str($posted_data, $params);
     $params['cart'] = WC()->cart->get_cart();
     return $params;
 }
 
-function set_checkout_token() {
+function simpl_set_checkout_token() {
     if (WC()->session == null) {
-        init_wc_session();
+        simpl_init_wc_session();
     }
     
-    $checkout_token = get_uuid4();
+    $checkout_token = simpl_get_uuid4();
     WC()->session->set('checkout_token', $checkout_token);
     WC()->session->set('checkout_token_timestamp', current_time('timestamp'));
 }
 
 // Define the custom function to set an expiry for a field in the session.
-function unset_checkout_token_if_expired() {
+function simpl_unset_checkout_token_if_expired() {
     if (WC()->session == null) {
-        init_wc_session();
+        simpl_init_wc_session();
     }
     // Get the WooCommerce session data.
     $checkout_token = WC()->session->get('checkout_token');
     $checkout_token_timestamp = WC()->session->get('checkout_token_timestamp');
 
     // Check if the session field exists and if it's expired.
-    if (!empty($checkout_token) && $checkout_token_timestamp < (current_time('timestamp') - CHECKOUT_TOKEN_EXPIRY)) {
+    if (!empty($checkout_token) && $checkout_token_timestamp < (current_time('timestamp') - SIMPL_CHECKOUT_TOKEN_EXPIRY)) {
         // Field has expired, so remove it.
         WC()->session->__unset('checkout_token');
     }

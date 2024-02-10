@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-function plugin_status_hook($plugin_status) {
+function simpl_plugin_status_hook($plugin_status) {
     $request["topic"] = "plugin.status_updated";
     $request["resource"] = "plugin";
     $request["event"] = "status_updated";
@@ -18,10 +18,10 @@ function plugin_status_hook($plugin_status) {
     }
 }
 
-function plugin_status_activate_hook() {
-    plugin_status_hook("active");
+function simpl_plugin_status_activate_hook() {
+    simpl_plugin_status_hook("active");
 }
 
-function plugin_status_deactivate_hook() {
-    plugin_status_hook("inactive");
+function simpl_plugin_status_deactivate_hook() {
+    simpl_plugin_status_hook("inactive");
 }

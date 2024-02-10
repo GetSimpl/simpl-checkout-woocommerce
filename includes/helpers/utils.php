@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-function get_uuid4() {
+function simpl_get_uuid4() {
     $uuid = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
         // 32 bits for "time_low"
         mt_rand(0, 0xffff), mt_rand(0, 0xffff),

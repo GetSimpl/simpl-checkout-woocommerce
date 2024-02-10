@@ -1,5 +1,5 @@
 === Simpl Checkout for WooCommerce ===
-Contributors: getsimpl
+Contributors: simpl
 Tags: woocommerce,simpl,ecommerce,e-commerce,checkout,buy-now-pay-later,payments,india
 Requires at least: 5.8
 Tested up to: 6.4.2
@@ -7,8 +7,8 @@ Stable tag: 2.0.1
 Requires PHP: 7.0
 WC requires at least: 7.0
 WC tested up to: 8.4
-License: GPLv2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+License: GPLv3 or later
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 Simpl Checkout for WooCommerce streamlines the checkout process for your customers, leading to increased order conversions and a decrease in Return to Origin (RTO) rates when compared to the standard WooCommerce checkout. With payment options like Simpl Paylater, Pay-in-3, UPI, Cards, and COD, you can concentrate on expanding your business while we manage the payment intricacies.
 
@@ -29,6 +29,11 @@ It comes with below features out-of-the-box:
 COUNTRIES SUPPORTED
 Simpl Checkout is available for Merchants in
 - India
+
+=== How to Get Started ===
+* [Sign up for Simpl](https://getsimpl.com/contact-us).
+* [Install the plugin] on your site.
+* Get your store approved by Simpl, and start selling.
 
 == Installation ==
 1. Install the plugin or upload plugin folder to to the “/wp-content/plugins/” directory.

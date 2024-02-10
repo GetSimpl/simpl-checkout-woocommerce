@@ -2,12 +2,12 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-function authenticate_simpl( WP_REST_Request $request ) {    
+function simpl_authenticate( WP_REST_Request $request ) {    
     //POST call to simpl with credentials
     //adds header related to shop domain
-    $simpl_host = WC_Simpl_Settings::simpl_host();
-    $store_url = WC_Simpl_Settings::store_url();
-    $client_credentials = WC_Simpl_Settings::merchant_credentials();
+    $simpl_host = Simpl_WC_Settings::simpl_host();
+    $store_url = Simpl_WC_Settings::store_url();
+    $client_credentials = Simpl_WC_Settings::merchant_credentials();
     $simplHttpResponse = wp_remote_post( "https://".$simpl_host."/api/v1/wc/app/install", array(
         "body" => json_encode($request->get_params()),
         "headers" => array(
@@ -22,7 +22,7 @@ function authenticate_simpl( WP_REST_Request $request ) {
         $body = json_decode( wp_remote_retrieve_body( $simplHttpResponse ), true );
         echo(wp_kses(json_encode($body)));
         if($body["success"]) {
-            add_option(WC_Simpl_Settings::simpl_authorized_flag_key(), "true");
+            add_option(Simpl_WC_Settings::simpl_authorized_flag_key(), "true");
         } else {
             throw new Exception( $body['message'] );            
         }
@@ -32,6 +32,6 @@ function authenticate_simpl( WP_REST_Request $request ) {
     }
 }
 
-function revert_authorization_flag( WP_REST_Request $request ) {
-    update_option(WC_Simpl_Settings::simpl_authorized_flag_key(), "false");   
+function simpl_revert_authorization_flag( WP_REST_Request $request ) {
+    update_option(Simpl_WC_Settings::simpl_authorized_flag_key(), "false");
 }

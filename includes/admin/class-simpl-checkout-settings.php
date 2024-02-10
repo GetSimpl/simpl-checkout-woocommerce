@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-class WC_Simpl_Settings {
+class Simpl_WC_Settings {
 
 	public static function init() {
 		add_filter( 'woocommerce_settings_tabs_array', __CLASS__ . '::add_settings_tab', 50 );
@@ -10,17 +10,17 @@ class WC_Simpl_Settings {
 		add_action( 'woocommerce_update_options_settings_tab_simpl', __CLASS__ . '::update_settings' );
 
 		// add css to admin panel
-		function register_simpl_admin_style() {
+		function simpl_register_admin_style() {
 			wp_register_style( 'simpl-admin-style', plugins_url( 'css/simpl-admin.css', __FILE__ ), false, '1.0.0', 'all' );
 			wp_enqueue_script( 'simpl-admin-js', plugin_dir_url( __FILE__ ) . 'js/simpl-admin.js', false, false, true );
 		}
 
-		add_action( 'admin_init', 'register_simpl_admin_style' );
-		function enqueue_simpl_style() {
+		add_action( 'admin_init', 'simpl_register_admin_style' );
+		function simpl_enqueue_simpl_style() {
 			wp_enqueue_style( 'simpl-admin-style' );
 		}
 
-		add_action( 'admin_enqueue_scripts', 'enqueue_simpl_style' );
+		add_action( 'admin_enqueue_scripts', 'simpl_enqueue_simpl_style' );
 
 		// This will add Custom class on body TAG
 		add_filter( 'admin_body_class', static function ( $classes ) {
@@ -189,7 +189,7 @@ class WC_Simpl_Settings {
 		woocommerce_update_options( self::get_settings() );
 		self::is_valid_credentials( true );
 		if ( serialize($existingSetting) != serialize($simplSettingsField)) {
-			$simpl_host = WC_Simpl_Settings::simpl_host();
+			$simpl_host = Simpl_WC_Settings::simpl_host();
 			$event_data = array(
 				"merchant_id" => $simpl_host,
 			);
@@ -308,7 +308,7 @@ class WC_Simpl_Settings {
 				'scope'        => 'read_write',
 				'user_id'      => 2,
 				'return_url'   => self::store_url_with_prefix() . "/wp-admin/admin.php?page=wc-settings&tab=settings_tab_simpl",
-				'callback_url' => self::store_url_with_prefix() . "/wp-json/wc-simpl/v1/authenticate_simpl"
+				'callback_url' => self::store_url_with_prefix() . "/wp-json/wc-simpl/v1/simpl_authenticate"
 			];
 			$query_string  = http_build_query( $params );
 			$auth_endpoint = self::store_url_with_prefix() . $endpoint . $query_string;
@@ -495,4 +495,4 @@ class WC_Simpl_Settings {
 	}
 }
 
-WC_Simpl_Settings::init();
+Simpl_WC_Settings::init();

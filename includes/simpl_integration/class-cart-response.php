@@ -19,13 +19,13 @@ class SimplCartResponse {
 
         $cart_request = self::static_cart_payload($cart, $merchant_additional_details);
         $cart_request["unique_id"] = $request->get_header(SIMPL_WIDGET_SESSION_HEADER);
-        $simpl_host = WC_Simpl_Settings::simpl_host();
+        $simpl_host = Simpl_WC_Settings::simpl_host();
 
         $simplHttpResponse = wp_remote_post("https://" . $simpl_host . "/api/v1/wc/cart", array(
             "body" => json_encode($cart_request),
             //TODO: merchantClientID
             "headers" => array(
-                "shop-domain" => WC_Simpl_Settings::store_url(),
+                "shop-domain" => Simpl_WC_Settings::store_url(),
                 "content-type" => "application/json",
             ),
         ));
@@ -114,9 +114,9 @@ class SimplCartResponse {
             $discount_amount = $totals['discount_total'] + $totals['discount_tax'];
         }
         $cart_payload["total_discount"] = wc_format_decimal($discount_amount, 2);
-$this->formatted_coupons($cart_payload, $cart, $cart->get_coupons(), $order);
+        $this->formatted_coupons($cart_payload, $cart, $cart->get_coupons(), $order);
         $cart_payload["total_fee"] = wc_format_decimal($cart->get_fee_total() + $cart->get_fee_tax(), 2);
-
+        
         if (wc_prices_include_tax()) {
             $cart_payload['tax_included'] = true;
         } else {
@@ -133,8 +133,8 @@ $this->formatted_coupons($cart_payload, $cart, $cart->get_coupons(), $order);
         $cart_payload["items"] = $this->getCartLineItem($cart_content);
         $cart_payload['attributes'] = array();
         $this->simpl_add_formatted_cart_fees($cart, $cart_payload);		
-        $cart_payload["merchant_additional_details"] = $merchant_additional_details;
-
+        $cart_payload["merchant_additional_details"] = $merchant_additional_details;   
+        
         return $cart_payload;
     }
 
@@ -254,7 +254,7 @@ $this->formatted_coupons($cart_payload, $cart, $cart->get_coupons(), $order);
 
     protected function simpl_add_formatted_cart_fees($cart, &$cart_payload) {
         $applied_fees = array();
-        $fees = $cart->get_fees();
+                $fees = $cart->get_fees();
 
 		if ( $fees ) {
 			foreach ( $fees as $id => $fee ) {
@@ -279,7 +279,7 @@ $this->formatted_coupons($cart_payload, $cart, $cart->get_coupons(), $order);
                 $fee_amount = wc_format_decimal($fee->get_total() + $fee->get_total_tax(), 2);
                 array_push( $applied_fees, array( "name" => $fee_name, "type" => $fee_name, "amount" => $fee_amount ) );
                 $fees_total += $fee_amount;
-			}
+							}
 		}
 
         $response["fees"] = $applied_fees;
@@ -326,7 +326,7 @@ $this->formatted_coupons($cart_payload, $cart, $cart->get_coupons(), $order);
 
     protected function getOrderLineItem($order) {
         $i = 0;
-
+        
         foreach ($order->get_items() as $item_id => $item) {
             $product =  wc_get_product($item['product_id']);
             $price = (float)$item['line_subtotal'] + (float)$item['line_subtotal_tax'];
@@ -353,7 +353,7 @@ $this->formatted_coupons($cart_payload, $cart, $cart->get_coupons(), $order);
 
     protected function getCartLineItem($cart) {
         $i = 0;
-
+        
         foreach ($cart as $item_id => $item) {
             $product =  wc_get_product($item['product_id']);
             $price = (float)$item['line_subtotal'] + (float)$item['line_subtotal_tax'];

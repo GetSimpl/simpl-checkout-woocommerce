@@ -93,9 +93,9 @@ class SimplCheckoutController {
 }
 
 
-function internal_authenticate() {
+function simpl_internal_authenticate() {
 
-    // if (WC_Simpl_Settings::is_localhost()) {
+    // if (Simpl_WC_Settings::is_localhost()) {
     //     return true;
     // }
 
