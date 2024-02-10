@@ -46,7 +46,7 @@ function simpl_before_woocommerce_init() {
 		$wc_session_cookie = get_transient($cart_session_token);
 	} elseif ( isset( $_REQUEST['checkout_order_id'] ) ) {
 	//We get the params as part of REQUEST object for HTTP DELETE method - remove coupons
-		$order_id = $_REQUEST['checkout_order_id'];
+		$order_id = wp_unslash( $_REQUEST['checkout_order_id'] );
 		$cart_session_token = get_transient('simpl_'.$order_id);
 		$wc_session_cookie = get_transient($cart_session_token);
 	}

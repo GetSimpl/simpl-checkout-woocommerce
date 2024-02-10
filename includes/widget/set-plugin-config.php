@@ -6,7 +6,7 @@ add_action( 'wp_head', 'simpl_set_plugin_config');
 
 function simpl_is_cta_enabled() {
 	$queries = array();
-	parse_str($_SERVER['QUERY_STRING'], $queries);
+	parse_str( sanitize_title_for_query( $_SERVER['QUERY_STRING'] ), $queries );
 	$is_simpl_pre_qa_env = (isset($queries[SIMPL_PRE_QA_QUERY_PARAM_KEY]) && $queries[SIMPL_PRE_QA_QUERY_PARAM_KEY] == SIMPL_PRE_QA_QUERY_PARAM_VALUE);
 	$is_simpl_enabled_for_admin = Simpl_WC_Settings::is_simpl_enabled_for_admins() && current_user_can('manage_woocommerce');  
 
