@@ -4,29 +4,34 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 $buttonPosition_pdp = Simpl_WC_Settings::cta_position_in_pdp();
 $buttonPosition_cart = Simpl_WC_Settings::cta_position_in_cart();
+$buttonPosition_flyout_cart = Simpl_WC_Settings::cta_position_in_flyout_cart();
 $buttonPosition_checkout = Simpl_WC_Settings::cta_position_in_checkout();
 
-if(Simpl_WC_Settings::can_display_in_pdp_page()){
+if(Simpl_WC_Settings::can_display_in_pdp_page()) {
   // hook for pdp page
-  add_action( $buttonPosition_pdp, 'simpl_add_to_cart_btn' );
+  add_action( $buttonPosition_pdp, function() { simpl_checkout_button_action('product'); } );
 }
-if(Simpl_WC_Settings::can_display_in_collections_page()){
+//if(Simpl_WC_Settings::can_display_in_collections_page()){
   // hook for collections page
-  //add_action( 'woocommerce_after_shop_loop_item', 'simpl_add_to_cart_btn');
-}
-if(Simpl_WC_Settings::can_display_in_cart_page()){
+  //add_action( 'woocommerce_after_shop_loop_item', function() { simpl_checkout_button_action('collection'); } );
+//}
+if(Simpl_WC_Settings::can_display_in_cart_page()) {
   // hook for cart page
-  add_action( $buttonPosition_cart, 'simpl_add_to_cart_btn');
+  add_action( $buttonPosition_cart, function() { simpl_checkout_button_action('cart'); } );
+}
+if(Simpl_WC_Settings::can_display_in_flyout_cart()) {
+  // hook for flyout cart
+  add_action( $buttonPosition_flyout_cart, function() { simpl_checkout_button_action('flyoutCart'); } );
 }
 if(Simpl_WC_Settings::can_display_in_checkout_page()) {
   // hook for checkout page
-  add_action( $buttonPosition_checkout, 'simpl_add_to_cart_btn');
+  add_action( $buttonPosition_checkout, function() { simpl_checkout_button_action('checkout'); } );
 }
 
 // footer hook to load script
 add_action('wp_footer', 'simpl_load_widget_script');
 
-function simpl_add_to_cart_btn(){
+function simpl_checkout_button_action( $page ) {
   $queries = array();
   parse_str( sanitize_title_for_query( $_SERVER['QUERY_STRING'] ), $queries );
   $simpl_pre_qa_env = (isset($queries[SIMPL_PRE_QA_QUERY_PARAM_KEY]) && $queries[SIMPL_PRE_QA_QUERY_PARAM_KEY] == SIMPL_PRE_QA_QUERY_PARAM_VALUE);
@@ -36,14 +41,18 @@ function simpl_add_to_cart_btn(){
     $buttonText = Simpl_WC_Settings::cta_text();
     $productID = get_the_ID();
     
-    if(is_cart()) {
-        $page = 'cart';
-    } else if (is_checkout()) {
-        $page = 'checkout';
-    } else if (is_shop()) {
-        $page = 'shop';
-    } else {
-        $page = 'product';
+    if( empty( $page ) ) {
+      if(is_product()) {
+          $page = 'product';
+      } else if(is_cart()) {
+          $page = 'cart';
+      } else if (is_checkout()) {
+          $page = 'checkout';
+//      } else if (is_shop()) {
+//          $page = 'shop';
+      } else {
+          $page = 'cart';
+      }
     }
 
     echo '<div class="simpl-checkout-cta-container simpl-button-container" data-background="' . esc_attr($color) . '" page=' . esc_attr($page) . ' data-product-id=' . esc_attr($productID) . ' data-text="' . esc_attr($buttonText) . '"></div>';

@@ -135,6 +135,10 @@ class Simpl_WC_Settings {
 		return get_option( "wc_settings_tab_simpl_button_mini_cart_activated" ) == 'yes';
 	}
 
+	public static function can_display_in_flyout_cart() {
+		return get_option( "wc_settings_tab_simpl_button_flyout_cart_activated" ) == 'yes';
+	}	
+
 	public static function can_display_in_checkout_page() {
 		return get_option( "wc_settings_tab_simpl_button_checkout_activated" ) == 'yes';
 	}
@@ -145,6 +149,10 @@ class Simpl_WC_Settings {
 
 	public static function cta_position_in_cart() {
 		return get_option( "wc_settings_tab_simpl_button_position_cart" );
+	}
+
+	public static function cta_position_in_flyout_cart() {
+		return get_option( "wc_settings_tab_simpl_button_position_flyout_cart" );
 	}
 
 	public static function cta_position_in_checkout() {
@@ -185,6 +193,7 @@ class Simpl_WC_Settings {
 			"merchant_client_secret" => isset( $_POST["wc_settings_tab_simpl_merchant_client_secret"] ) ? sanitize_title( $_POST["wc_settings_tab_simpl_merchant_client_secret"] ) : '',
 			"button_position_pdp"    => isset( $_POST["wc_settings_tab_simpl_button_position_pdp"] ) ? sanitize_title( $_POST["wc_settings_tab_simpl_button_position_pdp"] ) : '',
 			"button_position_cart"   => isset( $_POST["wc_settings_tab_simpl_button_position_cart"] ) ? sanitize_title( $_POST["wc_settings_tab_simpl_button_position_cart"] ) : '',
+			"button_position_flyout_cart"   => isset( $_POST["wc_settings_tab_simpl_button_position_flyout_cart"] ) ? sanitize_title( $_POST["wc_settings_tab_simpl_button_position_flyout_cart"] ) : '',
 			"button_position_checkout"   => isset( $_POST["wc_settings_tab_simpl_button_position_checkout"] ) ? sanitize_title( $_POST["wc_settings_tab_simpl_button_position_checkout"] ) : '',
 
 			"test_env"              => ! isset( $_POST["wc_settings_tab_simpl_test_env"] ) ? 0 : 1,
@@ -192,6 +201,7 @@ class Simpl_WC_Settings {
 			"button_pdp_activated"  => ! isset( $_POST["wc_settings_tab_simpl_button_pdp_activated"] ) ? 0 : 1,
 			"button_cart_activated" => ! isset( $_POST["wc_settings_tab_simpl_button_cart_activated"] ) ? 0 : 1,
 			"button_mini_cart_activated" => ! isset( $_POST["wc_settings_tab_simpl_button_mini_cart_activated"] ) ? 0 : 1,
+			"button_flyout_cart_activated" => ! isset( $_POST["wc_settings_tab_simpl_button_flyout_cart_activated"] ) ? 0 : 1,
 			"button_checkout_activated" => ! isset( $_POST["wc_settings_tab_simpl_button_checkout_activated"] ) ? 0 : 1,
 			"enabled_to_admin"      => ! isset( $_POST["wc_settings_tab_simpl_enabled_to_admin"] ) ? 0 : 1,
 		);
@@ -225,11 +235,14 @@ class Simpl_WC_Settings {
 			"merchant_client_secret" => get_option( "wc_settings_tab_simpl_merchant_client_secret" ),
 			"button_position_pdp"    => get_option( "wc_settings_tab_simpl_button_position_pdp" ),
 			"button_position_cart"   => get_option( "wc_settings_tab_simpl_button_position_cart" ),
+			"button_position_flyout_cart"   => get_option( "wc_settings_tab_simpl_button_position_flyout_cart" ),
+			"button_position_checkout"   => get_option( "wc_settings_tab_simpl_button_position_checkout" ),			
 			"test_env"               => get_option( "wc_settings_tab_simpl_test_env" ) == 'yes' ? 1 : 0,
 			"button_activated"       => get_option( "wc_settings_tab_simpl_button_activated" ) == 'yes' ? 1 : 0,
 			"button_pdp_activated"   => get_option( "wc_settings_tab_simpl_button_pdp_activated" ) == 'yes' ? 1 : 0,
 			"button_cart_activated"  => get_option( "wc_settings_tab_simpl_button_cart_activated" ) == 'yes' ? 1 : 0,
 			"button_mini_cart_activated"  => get_option( "wc_settings_tab_simpl_button_mini_cart_activated" ) == 'yes' ? 1 : 0,
+			"button_flyout_cart_activated"  => get_option( "wc_settings_tab_simpl_button_flyout_cart_activated" ) == 'yes' ? 1 : 0,
 			"button_checkout_activated"  => get_option( "wc_settings_tab_simpl_button_checkout_activated" ) == 'yes' ? 1 : 0,
 			"enabled_to_admin"       => get_option( "wc_settings_tab_simpl_enabled_to_admin" ) == 'yes' ? 1 : 0,
 		);
@@ -276,7 +289,7 @@ class Simpl_WC_Settings {
 			'title' => 'Configure your Merchant Client ID and Merchant Client Secret',
 			'type'  => 'title',
 			'desc'  => "$step1Validate Merchant Client ID and Merchant Client Secret can be retrieved from 'Simpl Merchant Dashboard'",
-			'id'    => 'checkout_endpoint_options_step1',
+			'id'    => 'checkout_endpoint_options_step1'
 		);
 
 		$settings[] = array(
@@ -284,7 +297,7 @@ class Simpl_WC_Settings {
 			'type'     => 'checkbox',
 			'id'       => 'wc_settings_tab_simpl_test_env',
 			'desc'     => 'It can be used to enable sandbox',
-			'desc_tip' => true,
+			'desc_tip' => true
 		);
 
 		$settings[] = array(
@@ -292,7 +305,7 @@ class Simpl_WC_Settings {
 			'type'     => 'checkbox',
 			'id'       => 'wc_settings_tab_simpl_debug_logs',
 			'desc'     => 'It can be used to get simpl logs',
-			'desc_tip' => true,
+			'desc_tip' => true
 		);
 
 		$settings[] = array(
@@ -341,7 +354,7 @@ class Simpl_WC_Settings {
 				'title' => 'Authorize access for Simpl',
 				'type'  => 'title',
 				'desc'  => "$step2Validate Click below button to provide permissions to Simpl",
-				'id'    => 'checkout_endpoint_options',
+				'id'    => 'checkout_endpoint_options'
 			);
 
 
@@ -364,7 +377,7 @@ class Simpl_WC_Settings {
 				'title' => 'Configure Simpl Checkout Button Visibility',
 				'type'  => 'title',
 				'desc'  => $dummyDom . 'Enable/disable sections where you want to display button',
-				'id'    => 'wc_settings_tab_simpl_button_visibility',
+				'id'    => 'wc_settings_tab_simpl_button_visibility'
 			);
 			$settings[] = array(
 				'name' => 'Product Page',
@@ -397,6 +410,13 @@ class Simpl_WC_Settings {
 			);
 
 			$settings[] = array(
+				'name' => 'Flyout Cart',
+				'type' => 'checkbox',
+				'desc' => 'Show Simpl checkout button on Flyout cart',
+				'id'   => 'wc_settings_tab_simpl_button_flyout_cart_activated'
+			);
+
+			$settings[] = array(
 				'name' => 'Checkout Page',
 				'type' => 'checkbox',
 				'desc' => 'Show Simpl checkout button on Checkout page',
@@ -405,14 +425,14 @@ class Simpl_WC_Settings {
 
 			$settings[] = array(
 				'type' => 'sectionend',
-				'id'   => 'wc_settings_tab_simpl_button_section_end',
+				'id'   => 'wc_settings_tab_simpl_button_section_end'
 			);
 
 			$settings[] = array(
 				'title' => 'Configure Simpl Checkout Button Position',
 				'type'  => 'title',
 				'desc'  => $dummyDom . 'Display simpl button above/below the add to cart button',
-				'id'    => 'wc_settings_tab_simpl_button_section_configuration',
+				'id'    => 'wc_settings_tab_simpl_button_section_configuration'
 			);
 
 			$settings[] = array(
@@ -438,7 +458,20 @@ class Simpl_WC_Settings {
 				),
 				'default'  => 'woocommerce_proceed_to_checkout',
 				'desc'     => "This position will be relative to the 'Proceed to Checkout' button",
-				'desc_tip' => true,
+				'desc_tip' => true
+			);
+
+			$settings[] = array(
+				'name'     => 'Button Position on Flyout Cart',
+				'type'     => 'select',
+				'id'       => 'wc_settings_tab_simpl_button_position_flyout_cart',
+				'options'  => array(
+					'woocommerce_widget_shopping_cart_before_buttons' => 'Before cart buttons',
+					'woocommerce_widget_shopping_cart_after_buttons'   => 'After cart buttons'
+				),
+				'default'  => 'woocommerce_widget_shopping_cart_after_buttons',
+				'desc'     => "This position will be relative to the 'Shopping cart' buttons",
+				'desc_tip' => true
 			);
 
 			$settings[] = array(
@@ -453,7 +486,7 @@ class Simpl_WC_Settings {
 				),
 				'default'  => 'woocommerce_checkout_billing',
 				'desc'     => "This position will be relative to the 'Checkout form",
-				'desc_tip' => true,
+				'desc_tip' => true
 			);
 
 			$settings[] = array(
