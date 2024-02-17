@@ -12,6 +12,8 @@ function simpl_init_wc_session() {
 }
 
 function simpl_order_refunded_hook($order_id) {
+	simpl_get_logger()->debug("order-hook-handler->simpl_order_refunded_hook order_id: ". $order_id);
+	
     $order = wc_get_order($order_id);
 
     if (!$order->meta_exists('simpl_order_id')) {
@@ -33,11 +35,13 @@ function simpl_order_refunded_hook($order_id) {
     }
 
     if (!simpl_is_success_response($simplHttpResponse)) {
+		simpl_get_logger()->error(wc_print_r($simplHttpResponse, true));
         throw new Exception('Failed refunding order with Simpl Checkout');
     }
 }
 
 function simpl_order_cancelled_hook($order_id) {
+	simpl_get_logger()->debug("order-hook-handler->simpl_order_cancelled_hook order_id: ". $order_id);	
     $order = wc_get_order($order_id);
 
     if (!$order->meta_exists('simpl_order_id')) {
@@ -59,11 +63,13 @@ function simpl_order_cancelled_hook($order_id) {
     }
 
     if (!simpl_is_success_response($simplHttpResponse)) {
+		simpl_get_logger()->error(wc_print_r($simplHttpResponse, true));
         throw new Exception('Failed cancelling order with Simpl Checkout');
     }
 }
 
 function simpl_order_created_hook($order_id, $order) {
+	simpl_get_logger()->debug("order-hook-handler->simpl_order_created_hook order_id: ". $order_id);		
     if (WC()->session == null) {
         simpl_init_wc_session();
     }
@@ -87,6 +93,7 @@ function simpl_order_created_hook($order_id, $order) {
 }
 
 function simpl_checkout_update_order_hook($posted_data) {
+	simpl_get_logger()->debug("order-hook-handler->simpl_checkout_update_order_hook");			
     // unsetting checkout_token if it is expired
     simpl_unset_checkout_token_if_expired();
 
@@ -128,6 +135,7 @@ function simpl_add_sync_order_action( $actions, $order ) {
 }
 
 function simpl_sync_order_hook( $order ) {
+	simpl_get_logger()->debug("order-hook-handler->simpl_sync_order_hook order_id: ". $order->get_id());	
     if (!$order->meta_exists('simpl_order_id')) {
         return;
     }
@@ -148,6 +156,7 @@ function simpl_sync_order_hook( $order ) {
 
     // add the order sync note to order
     if (!simpl_is_success_response($simplHttpResponse)) {
+        simpl_get_logger()->error(wc_print_r($simplHttpResponse, true));
         $message = sprintf( 'Order sync with Simpl Checkout failed!', wp_get_current_user()->display_name );
         $order->add_order_note( $message );
         return;
@@ -167,14 +176,14 @@ function simpl_fetch_order_data($order) {
 }
 
 function simpl_fetch_checkout_data($posted_data) {
-    $posted_data = urldecode($posted_data);
+	    $posted_data = urldecode($posted_data);
     parse_str($posted_data, $params);
     $params['cart'] = WC()->cart->get_cart();
     return $params;
 }
 
 function simpl_set_checkout_token() {
-    if (WC()->session == null) {
+	    if (WC()->session == null) {
         simpl_init_wc_session();
     }
     
