@@ -156,7 +156,7 @@ class SimplCartResponse {
         $response["total_discount"] = wc_format_decimal($discount_amount, 2);
         $response["item_subtotal_price"] = wc_format_decimal($order->get_subtotal(), 2);
         $response["total_tax"] = wc_format_decimal($order->get_total_tax(), 2);
-        $response["total_shipping"] = wc_format_decimal($order->get_shipping_total() + $order->get_shipping_tax(), 2);
+        $response["total_shipping"] = wc_format_decimal(wc_format_decimal($order->get_shipping_total('edit'), 2) + wc_format_decimal($order->get_shipping_tax('edit'), 2), 2);
         $response["shipping_methods"] = $this->simpl_formatted_shipping_methods($order->get_shipping_methods());
         $response["status"] = $order->get_status();
         $response["is_paid"] = $order->is_paid();
@@ -276,7 +276,7 @@ class SimplCartResponse {
 		if ( $fees ) {
 			foreach ( $fees as $id => $fee ) {
 				$fee_name = $fee->get_name();
-                $fee_amount = wc_format_decimal($fee->get_total() + $fee->get_total_tax(), 2);
+                $fee_amount = wc_format_decimal(wc_format_decimal($fee->get_total('edit'), 2) + wc_format_decimal($fee->get_total_tax('edit'), 2), 2);
                 array_push( $applied_fees, array( "name" => $fee_name, "type" => $fee_name, "amount" => $fee_amount ) );
                 $fees_total += $fee_amount;
 							}

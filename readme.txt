@@ -3,7 +3,7 @@ Contributors: simpl
 Tags: woocommerce,simpl,ecommerce,e-commerce,checkout,buy-now-pay-later,payments,india
 Requires at least: 5.8
 Tested up to: 6.4.2
-Stable tag: 2.0.1
+Stable tag: 2.0.3
 Requires PHP: 7.0
 WC requires at least: 7.0
 WC tested up to: 8.4
@@ -30,15 +30,29 @@ COUNTRIES SUPPORTED
 Simpl Checkout is available for Merchants in
 - India
 
-=== How to Get Started ===
-* [Sign up for Simpl](https://getsimpl.com/contact-us).
-* [Install the plugin] on your site.
-* Get your store approved by Simpl, and start selling.
-
 == Installation ==
 1. Install the plugin or upload plugin folder to to the “/wp-content/plugins/” directory.
 2. Activate the plugin through the “Plugins” menu in WordPress.
 3. Go WooCommerce Settings –> Simpl Checkout and configure your Simpl Checkout settings.
+
+== Integration with Simpl ==
+Simpl Checkout extends the checkout functionality by integrating Simpl Payment Gateway into your store. Simpl is a third-party service that facilitates secure and seamless payments for your customers. Before using this extension, you need to create and configure an account under WooCommerce settings.
+Upon installation and configuration, this plugin will push order details to Simpl servers to facilitate payment collection from users. The integration ensures a smooth checkout experience for your customers while securely handling payment processing through Simpl.
+
+== Third-Party Service Disclaimer ==
+It's important to note that this plugin relies on Simpl as a third-party service provider for payment processing. By using this plugin, you agree to the terms and conditions set forth by Simpl. Please review Simpl's terms of use and privacy policies for more information:
+* [Simpl Service](https://getsimpl.com/about-us)
+* [Simpl Terms of Use](https://getsimpl.com/terms-and-conditions-bill-sigma)
+* [Simpl Privacy Policy](https://getsimpl.com/privacy-policy-bill-sigma)
+
+== How to Get Started ==
+* [Sign up for Simpl](https://getsimpl.com/contact-us).
+* [Install the plugin] on your site.
+* Get your store approved by Simpl, and start selling.
+For detailed instructions on setting up and configuring the plugin, please refer to the documentation provided.
+
+== Support and Feedback ==
+For any inquiries, issues, or feedback regarding this plugin, feel free to reach out to our support team. We're committed to providing assistance and enhancing your experience with Simpl Payment Gateway for WooCommerce.
 
 == Frequently Asked Questions ==
 
@@ -68,3 +82,6 @@ To initiate the return customer can download the Simpl app and go to ‘Manage y
 
 = 2.0.2 =
 * express on native checkout
+
+= 2.0.3 =
+* Checkout breaks when theme redirects to cart from PDP

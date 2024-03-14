@@ -64,7 +64,7 @@ class SimplCheckoutCartController {
 
             // fetch woocommerce session_cookies
             $wc_session_cookie_key = apply_filters( 'woocommerce_cookie', 'wp_woocommerce_session_' . COOKIEHASH );
-            $wc_session_cookie = esc_attr( $_COOKIE[$wc_session_cookie_key] );
+            $wc_session_cookie = $_COOKIE[$wc_session_cookie_key];
 
             // Cookie is not set until add_to_cart call is complete.
 			// Hence, we extract the cookie from headers

@@ -6,6 +6,17 @@ add_action( 'before_woocommerce_init', 'simpl_before_woocommerce_init', 5 );
 add_action( 'woocommerce_init', 'simpl_woocommerce_init', 5 );
 add_filter( 'woocommerce_is_rest_api_request', 'simpl_is_woocommerce_rest_api_request');
 add_filter( 'woocommerce_rest_is_request_to_rest_api', 'simpl_is_woocommerce_rest_api_request');
+add_filter( 'woocommerce_add_to_cart_redirect', 'simpl_add_to_cart_redirect' );
+
+// Restrict redirect to cart from PDP
+function simpl_add_to_cart_redirect() {
+	
+	// Native should still redirect.
+	// Hence additional check for merchant_additional_details which would exist for Simpl only
+	if ( isset( $_POST['add-to-cart'] ) && isset( $_POST['merchant_additional_details'] ) ) {
+		return null;			
+	}	
+}
 
 function simpl_woocommerce_init() {
 	
@@ -51,7 +62,7 @@ function simpl_before_woocommerce_init() {
 		$wc_session_cookie = get_transient($cart_session_token);
 	} elseif ( isset( $_REQUEST['checkout_order_id'] ) ) {
 	//We get the params as part of REQUEST object for HTTP DELETE method - remove coupons
-		$order_id = wp_unslash( $_REQUEST['checkout_order_id'] );
+		$order_id = sanitize_key( $_REQUEST['checkout_order_id'] );
 		$cart_session_token = get_transient('simpl_'.$order_id);
 		$wc_session_cookie = get_transient($cart_session_token);
 	}

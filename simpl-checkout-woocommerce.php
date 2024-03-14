@@ -14,7 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  * 
  * Text Domain: simpl-checkout-for-woocommerce
  * 
- * Version: 2.0.2
+ * Version: 2.0.3
+ * 
+ * License: GPLv3 or later
+ * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

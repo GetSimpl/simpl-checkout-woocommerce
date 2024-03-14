@@ -8,7 +8,7 @@ function simpl_init_gateway_class() {
 
         public function __construct() {
             $this->id                 = SIMPL_PAYMENT_GATEWAY;
-            $this->icon               = 'https://assets.getsimpl.com/images/banner-logo.png';
+            //$this->icon               = 'https://assets.getsimpl.com/images/banner-logo.png';
             $this->has_fields         = false;
             $this->method_title       = SIMPL_PAYMENT_METHOD;
             $this->method_description = 'Allows payments by Paylater, Pay-in-3, Credit/Debit Cards, NetBanking, UPI, and multiple Wallets';

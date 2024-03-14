@@ -16,7 +16,7 @@ function simpl_force_login () {
 			// If user is already logged-in, do nothing
 			if ( is_user_logged_in() ) return;
 
-			$order_id = wc_get_order_id_by_order_key( esc_attr( $_GET['key'] ) );
+			$order_id = wc_get_order_id_by_order_key( sanitize_key( $_GET['key'] ) );
 			$order = wc_get_order( $order_id );
 
 			// Force login only for Simpl checkout
